@@ -165,6 +165,17 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         } else {
             $tab = array_values(Tools::getValue('options'));
             if (count($tab) && Validate::isLoadedObject($this->product)) {
+                $imageAssignments = [];
+                foreach (Tools::getAllValues() as $key => $value) {
+                    if (strpos($key, 'image_impact_') === 0) {
+                        $attrId = (int) substr($key, strlen('image_impact_'));
+                        $ids = array_filter(array_map('intval', (array) $value));
+                        if ($ids) {
+                            $imageAssignments[$attrId] = $ids;
+                        }
+                    }
+                }
+
                 static::setAttributesImpacts($this->product->id, $tab);
                 $this->combinations = array_values(static::createCombinations($tab));
 
@@ -189,6 +200,33 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                     $counter++;
                 }
                 $this->product->generateMultipleCombinations($values, $this->combinations);
+
+                if ($imageAssignments) {
+                    $insert = [];
+                    foreach ($this->combinations as $combination) {
+                        $imgIds = [];
+                        foreach ($combination as $attrId) {
+                            if (isset($imageAssignments[$attrId])) {
+                                $imgIds = array_merge($imgIds, $imageAssignments[$attrId]);
+                            }
+                        }
+                        $imgIds = array_unique($imgIds);
+                        if ($imgIds) {
+                            $idProductAttribute = (int) $this->product->productAttributeExists($combination, false, null, true, true);
+                            if ($idProductAttribute) {
+                                foreach ($imgIds as $imgId) {
+                                    $insert[] = [
+                                        'id_product_attribute' => $idProductAttribute,
+                                        'id_image'             => (int) $imgId,
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                    if ($insert) {
+                        Db::getInstance()->insert('product_attribute_image', $insert);
+                    }
+                }
 
                 // Reset cached default attribute for the product and get a new one
                 Product::getDefaultAttribute($this->product->id, 0, true);
