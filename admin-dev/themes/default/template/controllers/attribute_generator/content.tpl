@@ -35,6 +35,7 @@
 
   var productImages = {$images|json_encode};
   var groupsAffectingView = {$groups_affecting_view|json_encode};
+  var selectImagesLabel = '{l s="Images" js=1}';
 
 	{foreach $attribute_js as $idgrp => $group}
 		{assign var="row" value="attrs[{$idgrp}] = new Array(0, '---'"}
@@ -99,14 +100,19 @@
                         <div class="col-lg-9">
                                 <div class="alert alert-info"><strong>{l s='Step 1: On the left side, select the attributes you want to use (Hold down the "Ctrl" key on your keyboard and validate by clicking on "Add")'}</strong></div>
 
-                                {if $images|count}
-                                    <div class="mb-3">
-                                        {foreach $images as $img}
-                                            <img src="{$img.url}" alt="" class="img-thumbnail" />
-                                        {/foreach}
-                                    </div>
-                                {else}
-                                    <div class="alert alert-warning">{l s='Currently no images are uploaded'}</div>
+                                {if $has_groups_affecting_view}
+                                    {if $images|count}
+                                        <div class="clearfix" style="margin-bottom:15px">
+                                            {foreach $images as $img}
+                                                <div class="pull-left text-center" style="margin-right:10px">
+                                                    <img src="{$img.url}" alt="" class="img-thumbnail" />
+                                                    <div class="text-muted">{$img.id}</div>
+                                                </div>
+                                            {/foreach}
+                                        </div>
+                                    {else}
+                                        <div class="alert alert-warning">{l s='Currently no images are uploaded'}</div>
+                                    {/if}
                                 {/if}
 
 				{foreach $attribute_groups as $k => $attribute_group}

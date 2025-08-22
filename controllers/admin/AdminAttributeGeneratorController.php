@@ -165,6 +165,17 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         } else {
             $tab = array_values(Tools::getValue('options'));
             if (count($tab) && Validate::isLoadedObject($this->product)) {
+                $imageAssignments = [];
+                foreach (Tools::getAllValues() as $key => $value) {
+                    if (strpos($key, 'image_impact_') === 0) {
+                        $attrId = (int) substr($key, strlen('image_impact_'));
+                        $ids = array_filter(array_map('intval', (array) $value));
+                        if ($ids) {
+                            $imageAssignments[$attrId] = $ids;
+                        }
+                    }
+                }
+
                 static::setAttributesImpacts($this->product->id, $tab);
                 $this->combinations = array_values(static::createCombinations($tab));
 
@@ -189,6 +200,33 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                     $counter++;
                 }
                 $this->product->generateMultipleCombinations($values, $this->combinations);
+
+                if ($imageAssignments) {
+                    $insert = [];
+                    foreach ($this->combinations as $combination) {
+                        $imgIds = [];
+                        foreach ($combination as $attrId) {
+                            if (isset($imageAssignments[$attrId])) {
+                                $imgIds = array_merge($imgIds, $imageAssignments[$attrId]);
+                            }
+                        }
+                        $imgIds = array_unique($imgIds);
+                        if ($imgIds) {
+                            $idProductAttribute = (int) $this->product->productAttributeExists($combination, false, null, true, true);
+                            if ($idProductAttribute) {
+                                foreach ($imgIds as $imgId) {
+                                    $insert[] = [
+                                        'id_product_attribute' => $idProductAttribute,
+                                        'id_image'             => (int) $imgId,
+                                    ];
+                                }
+                            }
+                        }
+                    }
+                    if ($insert) {
+                        Db::getInstance()->insert('product_attribute_image', $insert);
+                    }
+                }
 
                 // Reset cached default attribute for the product and get a new one
                 Product::getDefaultAttribute($this->product->id, 0, true);
@@ -271,13 +309,19 @@ class AdminAttributeGeneratorControllerCore extends AdminController
         foreach ($images as $img) {
             $formattedImages[] = [
                 'id'  => $img['id_image'],
-                'url' => $this->context->link->getImageLink($this->product->link_rewrite[$this->context->language->id] ?? '', $img['id_image'], ImageType::getFormattedName('small')),
+                'url' => $this->context->link->getImageLink(
+                    $this->product->link_rewrite[$this->context->language->id] ?? '',
+                    $img['id_image'],
+                    ImageType::getFormatedName('small')
+                ),
             ];
         }
         $groupsAffectingView = [];
         foreach ($attributeGroups as $group) {
             $groupsAffectingView[$group['id_attribute_group']] = (bool)($group['affects_product_view'] ?? false);
         }
+
+        $hasGroupsAffectingView = in_array(true, $groupsAffectingView, true);
 
         $this->context->smarty->assign(
             [
@@ -291,6 +335,7 @@ class AdminAttributeGeneratorControllerCore extends AdminController
                 'attribute_js'              => $attributeJs,
                 'images'                    => $formattedImages,
                 'groups_affecting_view'     => $groupsAffectingView,
+                'has_groups_affecting_view' => $hasGroupsAffectingView,
                 'toolbar_btn'               => $this->toolbar_btn,
                 'toolbar_scroll'            => true,
                 'show_page_header_toolbar'  => $this->show_page_header_toolbar,
