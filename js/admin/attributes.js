@@ -27,7 +27,7 @@
  *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-/* global window, getE, toggle, jAlert */
+/* global window, getE, toggle, jAlert, groupsAffectingView, productImages */
 
 var storeUsedGroups = {};
 
@@ -152,6 +152,14 @@ function create_attribute_row(id, idGroup, name, price, weight, width, height, d
   html += '<td><input type="text" value="' + width + '" name="width_impact_' + id + '"></td>';
   html += '<td><input type="text" value="' + height + '" name="height_impact_' + id + '"></td>';
   html += '<td><input type="text" value="' + depth + '" name="depth_impact_' + id + '"></td>';
+  if (groupsAffectingView && groupsAffectingView[idGroup]) {
+    html += '<td><select name="image_impact_' + id + '">';
+    html += '<option value="0">---</option>';
+    for (var i = 0; i < productImages.length; i += 1) {
+      html += '<option value="' + productImages[i].id + '">' + productImages[i].id + '</option>';
+    }
+    html += '</select></td>';
+  }
   html += '</tr>';
 
   return html;
