@@ -98,7 +98,7 @@
 				</div>
 			</div>
                         <div class="col-lg-9">
-                                <div class="alert alert-info"><strong>{l s='Step 1: On the left side, select the attributes you want to use (Hold down the "Ctrl" key on your keyboard and validate by clicking on "Add")'}</strong></div>
+                                <div class="alert alert-info">{l s='On the left side, select the attributes you want to use (Hold down the "Ctrl" key on your keyboard and validate by clicking on "Add")'}</div>
 
                                 {if $has_groups_affecting_view}
                                     {if $images|count}
@@ -174,7 +174,9 @@
 						{/if}
 					{/if}
 				{/foreach}
-				<div class="alert alert-info">{l s='Select a default quantity, and reference, for each combination the generator will create for this product.'}</div>
+				<div class="alert alert-info">
+				  {l s='Specify the default quantity and reference to apply to each combination generated for this product.'}{if $has_groups_affecting_view} {l s='Choose images to link to attributes that affect the product view.'}{/if}
+				</div>
 				<table class="table">
 					<tbody>
 						<tr>

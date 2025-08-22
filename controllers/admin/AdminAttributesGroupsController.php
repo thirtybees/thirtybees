@@ -342,8 +342,8 @@ class AdminAttributesGroupsControllerCore extends AdminController
                     'label'    => $this->l('Affecting product view'),
                     'name'     => 'affects_product_view',
                     'is_bool'  => true,
-                    'hint'     => $this->l('Determines if attributes in this group could use Combinations generator and uploaded images'),
-                    'desc'     => $this->l('Set YES to be able to use Combinations generator to assign preuploaded images to attributes in this group'),
+                    'hint'     => $this->l('Determines if this attributes group is afecting the product view so we can assign different images in Combinations generator.'),
+                    'desc'     => $this->l('Enable to assign existing product images to the attributes in this group using the Combinations generator.'),
                     'values'   => [
                         [
                             'id'    => 'affects_product_view_on',
