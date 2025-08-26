@@ -409,8 +409,10 @@ class ImageManagerCore
                 imagepalettetotruecolor($resource); // Otherwise gif to webp can lead in fatal error
                 return $resource;
 
-            case IMAGETYPE_PNG :
-                return imagecreatefrompng($filename);
+            case IMAGETYPE_PNG:
+                $resource = imagecreatefrompng($filename);
+                imagepalettetotruecolor($resource);
+                return $resource;
 
             case IMAGETYPE_WEBP:
                 return imagecreatefromwebp($filename);
