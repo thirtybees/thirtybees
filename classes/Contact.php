@@ -136,13 +136,13 @@ class ContactCore extends ObjectModel
     {
         return Db::readOnly()->getArray(
             (new DbQuery())
-                ->select('cl.*')
+                ->select('cl.*, contact_shop.`id_shop`, s.`name` AS `shop_name`')
                 ->from('contact', 'ct')
                 ->join(Shop::addSqlAssociation('contact', 'ct', false))
                 ->leftJoin('contact_lang', 'cl', 'cl.`id_contact` = ct.`id_contact` AND cl.`id_lang` = '.(int) Context::getContext()->language->id)
+                ->leftJoin('shop', 's', 's.`id_shop` = contact_shop.`id_shop`')
                 ->where('ct.`customer_service` = 1')
-                ->where('contact_shop.`id_shop` IN ('.implode(', ', array_map('intval', Shop::getContextListShopID())).')')
-                ->groupBy('ct.`id_contact`')
+                ->groupBy('ct.`id_contact`, contact_shop.`id_shop`')
         );
     }
 }
