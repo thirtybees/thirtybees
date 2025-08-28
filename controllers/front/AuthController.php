@@ -350,6 +350,8 @@ class AuthControllerCore extends FrontController
                 $this->context->cookie->email = $customer->email;
 
                 // Add customer to the context
+                $customer->clearResetPasswordToken();
+                $customer->update();
                 $this->context->customer = $customer;
 
                 if (Configuration::get('PS_CART_FOLLOWING') && (empty($this->context->cookie->id_cart) || Cart::getNbProducts($this->context->cookie->id_cart) == 0) && $idCart = (int) Cart::lastNoneOrderedCart($this->context->customer->id)) {
