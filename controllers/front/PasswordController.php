@@ -115,11 +115,24 @@ class PasswordControllerCore extends FrontController
         } elseif ($customer = $this->getCustomer()) {
             if ((strtotime($customer->last_passwd_gen.'+'.(int) Configuration::get('PS_PASSWD_TIME_FRONT').' minutes') - time()) > 0) {
                 Tools::redirect('index.php?controller=authentication&error_regen_pwd');
-            } else {
+            } elseif (Tools::isSubmit('password')) {
+                $posted = (string) Tools::getValue('csrf_token', '');
+                $stored = (string) $this->context->cookie->__get('csrf_password');
+
+                if ($stored === '' || $posted === '' || !hash_equals($stored, $posted)) {
+                    $this->errors[] = Tools::displayError('Invalid token.');
+                    return;
+                }
+
+                // one-time use
+                $this->context->cookie->__unset('csrf_password');
+                $this->context->cookie->write();
+
                 $password = Tools::getValue('password');
-                $confirm = Tools::getValue('confirm_password');
+                $confirm  = Tools::getValue('confirm_password');
+
                 if ($password) {
-                    if (! Validate::isPasswd($password)) {
+                    if (!Validate::isPasswd($password)) {
                         $this->errors[] = Tools::displayError('This password does not meet security criteria');
                     } elseif ($password != $confirm) {
                         $this->errors[] = Tools::displayError('Password does not match value from confirmation field');
@@ -143,14 +156,20 @@ class PasswordControllerCore extends FrontController
     public function initContent()
     {
         parent::initContent();
+
         if ($customer = $this->getCustomer()) {
+            // One-time CSRF token for the password-set form
+            $csrf = bin2hex(Tools::getBytes(32));
+            $this->context->cookie->__set('csrf_password', $csrf);
+            $this->context->cookie->write();
+
             $this->context->smarty->assign([
-                'customer' => $customer,
-                'token'    => Tools::getValue('token'),
+                'customer'   => $customer,
+                'token'      => Tools::getValue('token'),
+                'csrf_token' => $csrf,
             ]);
+
             $this->setTemplate(_PS_THEME_DIR_.'password-set.tpl');
-        } else {
-            $this->setTemplate(_PS_THEME_DIR_.'password.tpl');
         }
     }
 
