@@ -726,6 +726,25 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public function __construct($idProduct = null, $full = false, $idLang = null, $idShop = null, ?Context $context = null)
     {
         parent::__construct($idProduct, $idLang, $idShop);
+        if ($this->id && Shop::isFeatureActive()) {
+            $shopId = $idShop !== null ? (int) $idShop : (int) $this->id_shop;
+            if (!$shopId && Context::getContext()->shop) {
+                $shopId = (int) Context::getContext()->shop->id;
+            }
+
+            if (!$shopId || !$this->isAssociatedToShop($shopId)) {
+                $defaultShopId = (int) $this->getDefaultShopId();
+                if ($defaultShopId && $defaultShopId !== $shopId) {
+                    /** @var Adapter_EntityMapper $entityMapper */
+                    $entityMapper = Adapter_ServiceLocator::get('Adapter_EntityMapper');
+                    $entityMapper->load($this->id, $idLang, $this, $this->def, $defaultShopId, static::$cache_objects);
+                }
+                if ($defaultShopId) {
+                    $this->id_shop = $defaultShopId;
+                }
+            }
+        }
+
         if ($full && $this->id) {
             if (!$context) {
                 $context = Context::getContext();
