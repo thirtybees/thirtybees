@@ -65,6 +65,8 @@ class ContactControllerCore extends FrontController
             }
 
             $fileAttachment = Tools::fileAttachment('fileUpload');
+            $fileAttachments = CustomerMessage::normalizeFileAttachments($fileAttachment);
+            $emailAttachments = [];
             $message = (string)Tools::getValue('message');
             if (!($from = Tools::convertEmailToIdn(trim(Tools::getValue('from')))) || !Validate::isEmail($from)) {
                 $this->errors[] = Tools::displayError('Invalid email address.');
@@ -74,10 +76,19 @@ class ContactControllerCore extends FrontController
                 $this->errors[] = Tools::displayError('Invalid message');
             } elseif (!($idContact = Tools::getIntValue('id_contact')) || !(Validate::isLoadedObject($contact = new Contact($idContact, $this->context->language->id)))) {
                 $this->errors[] = Tools::displayError('Please select a subject from the list provided. ');
-            } elseif (!empty($fileAttachment['name']) && $fileAttachment['error'] != 0) {
-                $this->errors[] = Tools::displayError('An error occurred during the file-upload process.');
-            } elseif (!empty($fileAttachment['name']) && !in_array(mb_strtolower(substr($fileAttachment['name'], -4)), $extension) && !in_array(mb_strtolower(substr($fileAttachment['name'], -5)), $extension)) {
-                $this->errors[] = Tools::displayError('Bad file extension');
+            } elseif (!empty($fileAttachments)) {
+                foreach ($fileAttachments as $attachment) {
+                    if (!empty($attachment['name']) && ($attachment['error'] ?? 0) != 0) {
+                        $this->errors[] = Tools::displayError('An error occurred during the file-upload process.');
+                        break;
+                    }
+                    $extensionChunk = mb_strtolower(substr((string) $attachment['name'], -4));
+                    $extensionChunk5 = mb_strtolower(substr((string) $attachment['name'], -5));
+                    if (!in_array($extensionChunk, $extension) && !in_array($extensionChunk5, $extension)) {
+                        $this->errors[] = Tools::displayError('Bad file extension');
+                        break;
+                    }
+                }
             } else {
                 $customer = $this->context->customer;
                 if (!$customer->id) {
@@ -142,16 +153,40 @@ class ContactControllerCore extends FrontController
                             $cm = new CustomerMessage();
                             $cm->id_customer_thread = $ct->id;
                             $cm->message = $message;
-                            if (!empty($fileAttachment['rename'])) {
-                                $cm->file_name = basename($fileAttachment['rename']);
-                                if (! rename($fileAttachment['tmp_name'], $cm->getFilePath())) {
-                                    $cm->file_name = null;
+                            $storedAttachments = [];
+                            $emailAttachments = [];
+
+                            foreach ($fileAttachments as $attachment) {
+                                if (!empty($attachment['name']) && ($attachment['error'] ?? 0) != 0) {
+                                    $this->errors[] = Tools::displayError('An error occurred during the file-upload process.');
+                                    continue;
+                                }
+
+                                if (!empty($attachment['rename'])) {
+                                    $storedName = basename($attachment['rename']);
+                                    if (rename($attachment['tmp_name'], _PS_UPLOAD_DIR_.$storedName)) {
+                                        $storedAttachments[] = [
+                                            'stored_name'   => $storedName,
+                                            'original_name' => $attachment['name'] ?? $storedName,
+                                            'mime'          => $attachment['mime'] ?? null,
+                                        ];
+                                        $emailAttachments[] = [
+                                            'content' => $attachment['content'] ?? null,
+                                            'name'    => $attachment['name'] ?? $storedName,
+                                            'mime'    => $attachment['mime'] ?? null,
+                                        ];
+                                        @chmod(_PS_UPLOAD_DIR_.$storedName, 0664);
+                                    } else {
+                                        $this->errors[] = Tools::displayError('An error occurred during the file-upload process.');
+                                    }
                                 }
                             }
+
+                            $cm->file_name = CustomerMessage::encodeAttachments($storedAttachments);
                             $cm->ip_address = (int)ip2long(Tools::getRemoteAddr());
                             $length = ObjectModel::getDefinition('CustomerMessage', 'user_agent')['size'];
                             $cm->user_agent = substr($_SERVER['HTTP_USER_AGENT'], 0, $length);
-                            if (!$cm->add()) {
+                            if (!$this->errors && !$cm->add()) {
                                 $this->errors[] = Tools::displayError('An error occurred while sending the message.');
                             }
                         } else {
@@ -160,7 +195,7 @@ class ContactControllerCore extends FrontController
                     }
 
                     if (! $this->errors) {
-                        $this->sendEmails($message, $from, $fileAttachment, $ct, $contact);
+                        $this->sendEmails($message, $from, $emailAttachments ?: null, $ct, $contact);
                     }
                 }
 
@@ -427,8 +462,21 @@ class ContactControllerCore extends FrontController
             '{product_name}' => '',
         ];
 
-        if (isset($fileAttachment['name'])) {
-            $varList['{attached_file}'] = $fileAttachment['name'];
+        if ($fileAttachment) {
+            $attachmentNames = [];
+            if (isset($fileAttachment['name'])) {
+                $attachmentNames[] = $fileAttachment['name'];
+            } elseif (is_array($fileAttachment)) {
+                foreach ($fileAttachment as $attachment) {
+                    if (is_array($attachment) && !empty($attachment['name'])) {
+                        $attachmentNames[] = $attachment['name'];
+                    }
+                }
+            }
+
+            if ($attachmentNames) {
+                $varList['{attached_file}'] = implode(', ', $attachmentNames);
+            }
         }
 
         if (Validate::isLoadedObject($ct) && $ct->id_order) {
