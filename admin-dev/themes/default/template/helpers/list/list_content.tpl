@@ -159,15 +159,17 @@
 	{if $has_actions}
 		<td class="text-right"{if isset($tr.color) && $color_on_bg} style="background-color: {$tr.color};color:{if Tools::getBrightness($tr.color) < 128}white{else}#383838{/if}"{/if}>
 			{assign var='compiled_actions' value=array()}
+			{$first_action = true}
 			{foreach $actions AS $key => $action}
 				{if isset($tr.$action)}
 					{if $key == 0}
 						{assign var='action' value=$action}
 					{/if}
-					{if $action == 'delete' && $actions|@count > 2}
+					{if $action == 'delete' && !$first_action && $actions|@count > 2}
 						{$compiled_actions[] = 'divider'}
 					{/if}
 					{$compiled_actions[] = $tr.$action}
+					{$first_action = false}
 				{/if}
 			{/foreach}
 			{if $compiled_actions|count > 0}
