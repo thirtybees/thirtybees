@@ -40,7 +40,6 @@
 	{if $customer_message}
 		<tr>
 			<td class="center small white" colspan="3">
-				<br/><br/>
 				<b>{l s='Customer Message' pdf='true'}</b><br/>
 				{$customer_message}
 			</td>
