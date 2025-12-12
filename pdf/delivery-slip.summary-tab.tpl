@@ -37,5 +37,14 @@
 			<td class="center small white">{$carrier->name}</td>
 		{/if}
 	</tr>
+	{if $customer_message}
+		<tr>
+			<td class="center small white" colspan="3">
+				<br/><br/>
+				<b>{l s='Customer Message' pdf='true'}</b><br/>
+				{$customer_message}
+			</td>
+		</tr>
+	{/if}
 </table>
 

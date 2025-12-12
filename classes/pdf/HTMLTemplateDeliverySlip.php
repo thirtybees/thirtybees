@@ -144,6 +144,8 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
             unset($orderDetail); // don't overwrite the last order_detail later
         }
 
+        $message = $this->order->getFirstMessage();
+
         $this->smarty->assign(
             [
                 'order'                  => $this->order,
@@ -153,6 +155,7 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
                 'order_invoice'          => $this->order_invoice,
                 'carrier'                => $carrier,
                 'display_product_images' => Configuration::get('PS_PDF_IMG_DELIVERY'),
+                'customer_message'       => $message,
             ]
         );
 
