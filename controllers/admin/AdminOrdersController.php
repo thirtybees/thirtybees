@@ -1356,13 +1356,19 @@ class AdminOrdersControllerCore extends AdminController
                         $this->errors[] = Tools::displayError('This invoice address country is not active.');
                     }
                 } else {
+                    $orderMessage = $this->l('Manual order -- Employee:').' '.substr($employee->firstname, 0, 1).'. '.$employee->lastname; 
+                    if (Configuration::get('TB_HIDE_MANUAL_ORDER_MESSAGE'))
+                    {
+                        $orderMessage = "";
+                    }
+
                     $employee = new Employee((int) $this->context->cookie->id_employee);
                     $paymentModule->validateOrder(
                         (int) $cart->id,
                         (int) $idOrderState,
                         $cart->getOrderTotal(true, Cart::BOTH),
                         $paymentModule->displayName,
-                        $this->l('Manual order -- Employee:').' '.substr($employee->firstname, 0, 1).'. '.$employee->lastname,
+                        $orderMessage,
                         [],
                         null,
                         false,
