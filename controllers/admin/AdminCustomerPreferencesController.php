@@ -132,7 +132,7 @@ class AdminCustomerPreferencesControllerCore extends AdminController
                 'title'  => $this->l('Backend'),
                 'icon'   => 'icon-cogs',
                 'fields' => [
-                    'PS_CUSTOMER_FULL_FIRSTNAME' => [
+                    'TB_CUSTOMER_FULL_FIRSTNAME' => [
                         'title'      => $this->l('Show full first name in grids'),
                         'hint'       => $this->l('Show full customer first name in Customers and Orders grids'),
                         'validation' => 'isBool',

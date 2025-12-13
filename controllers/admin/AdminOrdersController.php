@@ -66,7 +66,7 @@ class AdminOrdersControllerCore extends AdminController
         $fname = "LEFT(c.`firstname`, 1)";
         $nameSeparator = ". ";
 
-        if (Configuration::get('PS_CUSTOMER_FULL_FIRSTNAME'))
+        if (Configuration::get('TB_CUSTOMER_FULL_FIRSTNAME'))
         {
             $fname = "c.`firstname`";
             $nameSeparator = " ";
