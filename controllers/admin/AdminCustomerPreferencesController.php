@@ -128,6 +128,20 @@ class AdminCustomerPreferencesControllerCore extends AdminController
                 ],
                 'submit' => ['title' => $this->l('Save')],
             ],
+            'backend' => [ 
+                'title'  => $this->l('Backend'),
+                'icon'   => 'icon-cogs',
+                'fields' => [
+                    'PS_CUSTOMER_FULL_FIRSTNAME' => [
+                        'title'      => $this->l('Show full first name in grids'),
+                        'hint'       => $this->l('Show full customer first name in Customers and Orders grids'),
+                        'validation' => 'isBool',
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
+                    ]
+                ], 
+                'submit' => ['title' => $this->l('Save')],
+            ]
         ];
     }
 

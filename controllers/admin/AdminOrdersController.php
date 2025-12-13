@@ -63,10 +63,19 @@ class AdminOrdersControllerCore extends AdminController
         $this->deleted = false;
         $this->context = Context::getContext();
 
+        $fname = "LEFT(c.`firstname`, 1)";
+        $nameSeparator = ". ";
+
+        if (Configuration::get('PS_CUSTOMER_FULL_FIRSTNAME'))
+        {
+            $fname = "c.`firstname`";
+            $nameSeparator = " ";
+        }
+
         $this->_select = '
 		a.id_currency,
 		a.id_order AS id_pdf,
-		CONCAT(LEFT(c.`firstname`, 1), \'. \', c.`lastname`) AS `customer`,
+		CONCAT('.$fname.', \''.$nameSeparator.'\', c.`lastname`) AS `customer`,
 		osl.`name` AS `osname`,
 		os.`color`,
 		IF((SELECT so.id_order FROM `'._DB_PREFIX_.'orders` so WHERE so.id_customer = a.id_customer AND so.id_order < a.id_order LIMIT 1) > 0, 0, 1) as new,
