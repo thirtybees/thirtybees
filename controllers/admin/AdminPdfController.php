@@ -136,7 +136,7 @@ class AdminPdfControllerCore extends AdminController
     {
         $pdf = new PDF($object, $template, $this->context->smarty);
         
-        if (Configuration::get('PS_DISPLAY_PDF_INLINE'))
+        if (Configuration::get('TB_DISPLAY_PDF_INLINE'))
             $pdf->render("I");
         else 
             $pdf->render();

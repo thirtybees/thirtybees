@@ -60,7 +60,7 @@ class AttachmentControllerCore extends FrontController
             ob_end_clean();
         }
 
-        $disposition = Configuration::get('PS_DISPLAY_PDF_INLINE') ? "inline" : "attachment";
+        $disposition = Configuration::get('TB_DISPLAY_PDF_INLINE') ? "inline" : "attachment";
 
         header('Content-Transfer-Encoding: binary');
         header('Content-Type: '.$a->mime);

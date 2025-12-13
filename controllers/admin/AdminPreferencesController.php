@@ -226,7 +226,7 @@ class AdminPreferencesControllerCore extends AdminController
                         'class'        => 'fixed-width-sm',
                         'defaultValue' => ','
                     ],
-                    'PS_DISPLAY_PDF_INLINE'     => [
+                    'TB_DISPLAY_PDF_INLINE'     => [
                         'title'      => $this->l('Display PDFs Inline'),
                         'desc'       => $this->l('Render PDFs (product attachments, invoices, delivery slips, etc) inline instead of as an attachment'),
                         'validation' => 'isBool',
