@@ -436,7 +436,7 @@ class PackCore
         $combinationId = $this->combinationId;
         $shopId = (int)$context->shop->id;
 
-        $sql = 'SELECT p.*, product_shop.*, pl.*, image_shop.`id_image` id_image, il.`legend`, cl.`name` AS category_default, a.quantity AS pack_quantity, product_shop.`id_category_default`, a.id_product_pack, a.id_product_attribute_item
+        $sql = 'SELECT p.*, product_shop.*, pl.*, image_shop.`id_image` id_image, il.`legend`, cl.`name` AS category_default, a.quantity AS pack_quantity, product_shop.`id_category_default`, a.id_product_pack, a.id_product_item, a.id_product_attribute_item
 				FROM `' . _DB_PREFIX_ . 'pack` a
 				LEFT JOIN `' . _DB_PREFIX_ . 'product` p ON p.id_product = a.id_product_item
 				LEFT JOIN `' . _DB_PREFIX_ . 'product_lang` pl
@@ -461,18 +461,23 @@ class PackCore
 
         foreach ($result as &$line) {
             if (Combination::isFeatureActive() && isset($line['id_product_attribute_item']) && $line['id_product_attribute_item']) {
-                $line['cache_default_attribute'] = $line['id_product_attribute'] = $line['id_product_attribute_item'];
+                $combinationId = (int)$line['id_product_attribute_item'];
+                if ($combinationId === Pack::VIRTUAL_PRODUCT_ATTRIBUTE) {
+                    $combinationId = Product::getProductDefaultCombinationId($line['id_product_item']);
+                    $line['id_product_attribute_item'] = $combinationId;
+                }
+                $line['cache_default_attribute'] = $line['id_product_attribute'] = $combinationId;
 
                 $sql = 'SELECT agl.`name` AS group_name, al.`name` AS attribute_name,  pai.`id_image` AS id_product_attribute_image
 				FROM `' . _DB_PREFIX_ . 'product_attribute` pa
 				' . Shop::addSqlAssociation('product_attribute', 'pa') . '
-				LEFT JOIN `' . _DB_PREFIX_ . 'product_attribute_combination` pac ON pac.`id_product_attribute` = ' . (int)$line['id_product_attribute_item'] . '
+				LEFT JOIN `' . _DB_PREFIX_ . 'product_attribute_combination` pac ON pac.`id_product_attribute` = ' . $combinationId . '
 				LEFT JOIN `' . _DB_PREFIX_ . 'attribute` a ON a.`id_attribute` = pac.`id_attribute`
 				LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group` ag ON ag.`id_attribute_group` = a.`id_attribute_group`
 				LEFT JOIN `' . _DB_PREFIX_ . 'attribute_lang` al ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = ' . $langId . ')
 				LEFT JOIN `' . _DB_PREFIX_ . 'attribute_group_lang` agl ON (ag.`id_attribute_group` = agl.`id_attribute_group` AND agl.`id_lang` = ' . $langId . ')
-				LEFT JOIN `' . _DB_PREFIX_ . 'product_attribute_image` pai ON (' . $line['id_product_attribute_item'] . ' = pai.`id_product_attribute`)
-				WHERE pa.`id_product` = ' . (int)$line['id_product'] . ' AND pa.`id_product_attribute` = ' . $line['id_product_attribute_item'] . '
+				LEFT JOIN `' . _DB_PREFIX_ . 'product_attribute_image` pai ON (' . $combinationId . ' = pai.`id_product_attribute`)
+				WHERE pa.`id_product` = ' . (int)$line['id_product'] . ' AND pa.`id_product_attribute` = ' . $combinationId . '
 				GROUP BY pa.`id_product_attribute`, ag.`id_attribute_group`
 				ORDER BY pa.`id_product_attribute`';
 
