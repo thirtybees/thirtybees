@@ -521,8 +521,8 @@ class AttributeGroupCore extends ObjectModel
             $attributeGroup->id_product_ref = $productId;
             foreach ($product->name as $langId => $name) {
                 $name = (string)$name;
-                $attributeGroup->name[$langId] = sprintf(Translate::getAdminTranslation('Product variant: %s'), $name);
-                $attributeGroup->public_name[$langId] = $name;
+                $attributeGroup->name[$langId] = substr(sprintf(Translate::getAdminTranslation('Product variant: %s'), $name), 0, 128);
+                $attributeGroup->public_name[$langId] = substr($name, 0, 64);
             }
             $attributeGroup->add();
         } else {
