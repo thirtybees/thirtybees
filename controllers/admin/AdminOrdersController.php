@@ -2057,6 +2057,14 @@ class AdminOrdersControllerCore extends AdminController
                     'customer' => $customer,
                 ]
             ),
+            'HOOK_TAB_ORDER_BUTTONS'      => Hook::displayHook(
+                'displayAdminOrderButtons',
+                [
+                    'order'    => $order,
+                    'products' => $products,
+                    'customer' => $customer,
+                ]
+            ),
             'HOOK_TAB_SHIP'                => Hook::displayHook(
                 'displayAdminOrderTabShip', [
                     'order'    => $order,
