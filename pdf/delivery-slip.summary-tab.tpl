@@ -41,7 +41,7 @@
 		<tr>
 			<td class="center small white" colspan="3">
 				<b>{l s='Customer Message' pdf='true'}</b><br/>
-				{$customer_message}
+				{$customer_message|truncate:1000:'...'}
 			</td>
 		</tr>
 	{/if}

@@ -145,11 +145,7 @@ class HTMLTemplateDeliverySlipCore extends HTMLTemplate
         }
 
         $message = $this->order->getFirstMessage();
-        if (strlen($message) > 1000)
-        {
-            $message = substr($message, 0, 1000) . "...";
-        }
-
+        
         $this->smarty->assign(
             [
                 'order'                  => $this->order,
