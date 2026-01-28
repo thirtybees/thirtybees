@@ -227,6 +227,22 @@ class ContactControllerCore extends FrontController
     {
         parent::initContent();
 
+        $response = Hook::getFirstResponse('actionOverrideContactForm', ['controller' => $this]);
+        if (is_array($response) && isset($response['template']) && isset($response['params'])) {
+            $this->context->smarty->assign($response['params']);
+            $this->setTemplate($response['template']);
+        } else {
+            $this->initStandardContactForm();
+        }
+    }
+
+    /**
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function initStandardContactForm()
+    {
         $this->assignOrderList();
 
         $email = Tools::convertEmailToIdn(Tools::safeOutput(
