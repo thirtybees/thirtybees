@@ -1357,12 +1357,19 @@ class AdminOrdersControllerCore extends AdminController
                     }
                 } else {
                     $employee = new Employee((int) $this->context->cookie->id_employee);
+                    
+                    $orderMessage = $this->l('Manual order -- Employee:').' '.substr($employee->firstname, 0, 1).'. '.$employee->lastname; 
+                    if (Configuration::get('TB_HIDE_MANUAL_ORDER_MESSAGE'))
+                    {
+                        $orderMessage = "";
+                    }
+
                     $paymentModule->validateOrder(
                         (int) $cart->id,
                         (int) $idOrderState,
                         $cart->getOrderTotal(true, Cart::BOTH),
                         $paymentModule->displayName,
-                        $this->l('Manual order -- Employee:').' '.substr($employee->firstname, 0, 1).'. '.$employee->lastname,
+                        $orderMessage,
                         [],
                         null,
                         false,

@@ -161,6 +161,13 @@ class AdminOrderPreferencesControllerCore extends AdminController
                         'identifier' => 'id',
                         'list'       => $contacts,
                     ],
+                    'TB_HIDE_MANUAL_ORDER_MESSAGE' => [
+                        'title'      => $this->l('Hide Manual Order Message'),
+                        'hint'       => $this->l('Removes the  manual order message and the employee who created the order'),
+                        'validation' => 'isBool',
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
+                    ],
                 ],
                 'submit' => ['title' => $this->l('Save')],
             ],
