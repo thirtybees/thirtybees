@@ -836,6 +836,25 @@
                   <p class="message-item-text">
                     {$message['message']|escape:'html':'UTF-8'|nl2br}
                   </p>
+                  {if isset($message.attachments) && count($message.attachments)}
+                    <div class="message-attachment">
+                      <strong>{l s='Attached files:'}</strong>
+                      <ul class="list-unstyled">
+                        {foreach from=$message.attachments item=attachment}
+                          <li>
+                            <i class="icon-paperclip"></i>
+                            {if isset($attachment.stored_name)}
+                              <a href="{$link->getAdminLink('AdminCustomerThreads', true, ['showMessageAttachment' => $message.id_customer_message, 'attachment' => $attachment.stored_name])|escape:'htmlall':'UTF-8'}" target="_blank">
+                                {$attachment.original_name|default:$attachment.stored_name|escape:'html':'UTF-8'}
+                              </a>
+                            {else}
+                              {$attachment.original_name|default:$attachment.stored_name|escape:'html':'UTF-8'}
+                            {/if}
+                          </li>
+                        {/foreach}
+                      </ul>
+                    </div>
+                  {/if}
                 </div>
                 {*if ($message['is_new_for_me'])}
                   <a class="new_message" title="{l s='Mark this message as \'viewed\''}" href="{$smarty.server.REQUEST_URI}&amp;token={$smarty.get.token}&amp;messageReaded={$message['id_message']}">
@@ -907,7 +926,7 @@
               <div class="form-group">
                 <label class="control-label col-lg-3">{l s='Attach file'}</label>
                 <div class="col-lg-9">
-                  <input type="file" id="file_attachment" name="file_attachment" class="form-control">
+                  <input type="file" id="file_attachment" name="file_attachment[]" class="form-control" multiple="multiple">
                 </div>
               </div>
 

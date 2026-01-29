@@ -4254,17 +4254,45 @@ FileETag none
     public static function fileAttachment($input = 'fileUpload', $return_content = true)
     {
         $file_attachment = null;
-        if (!empty($_FILES[$input]['name']) && !empty($_FILES[$input]['tmp_name'])) {
-            $file_attachment['rename'] = uniqid().mb_strtolower(substr($_FILES[$input]['name'], -5));
-            if ($return_content) {
-                $file_attachment['content'] = file_get_contents($_FILES[$input]['tmp_name']);
-            }
-            $file_attachment['tmp_name'] = $_FILES[$input]['tmp_name'];
-            $file_attachment['name'] = $_FILES[$input]['name'];
-            $file_attachment['mime'] = $_FILES[$input]['type'];
-            $file_attachment['error'] = $_FILES[$input]['error'];
-            $file_attachment['size'] = $_FILES[$input]['size'];
+
+        if (empty($_FILES[$input]['name']) || empty($_FILES[$input]['tmp_name'])) {
+            return $file_attachment;
         }
+
+        if (is_array($_FILES[$input]['name'])) {
+            foreach ($_FILES[$input]['name'] as $index => $name) {
+                if (empty($name) || empty($_FILES[$input]['tmp_name'][$index])) {
+                    continue;
+                }
+
+                $attachment = [
+                    'rename'   => uniqid().mb_strtolower(substr($name, -5)),
+                    'tmp_name' => $_FILES[$input]['tmp_name'][$index],
+                    'name'     => $name,
+                    'mime'     => $_FILES[$input]['type'][$index] ?? null,
+                    'error'    => $_FILES[$input]['error'][$index] ?? null,
+                    'size'     => $_FILES[$input]['size'][$index] ?? null,
+                ];
+
+                if ($return_content) {
+                    $attachment['content'] = file_get_contents($_FILES[$input]['tmp_name'][$index]);
+                }
+
+                $file_attachment[] = $attachment;
+            }
+
+            return $file_attachment;
+        }
+
+        $file_attachment['rename'] = uniqid().mb_strtolower(substr($_FILES[$input]['name'], -5));
+        if ($return_content) {
+            $file_attachment['content'] = file_get_contents($_FILES[$input]['tmp_name']);
+        }
+        $file_attachment['tmp_name'] = $_FILES[$input]['tmp_name'];
+        $file_attachment['name'] = $_FILES[$input]['name'];
+        $file_attachment['mime'] = $_FILES[$input]['type'];
+        $file_attachment['error'] = $_FILES[$input]['error'];
+        $file_attachment['size'] = $_FILES[$input]['size'];
 
         return $file_attachment;
     }
