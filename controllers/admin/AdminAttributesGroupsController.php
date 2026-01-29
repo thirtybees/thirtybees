@@ -337,6 +337,27 @@ class AdminAttributesGroupsControllerCore extends AdminController
                     'col'      => '2',
                     'hint'     => $this->l('The way the attribute\'s values will be presented to the customers in the product\'s page.'),
                 ],
+                [
+                    'type'     => 'switch',
+                    'label'    => $this->l('Affecting product view'),
+                    'name'     => 'affects_product_view',
+                    'is_bool'  => true,
+                    'hint'     => $this->l('Determines if this attributes group is afecting the product view so we can assign different images in Combinations generator.'),
+                    'desc'     => $this->l('Enable to assign existing product images to the attributes in this group using the Combinations generator.'),
+                    'values'   => [
+                        [
+                            'id'    => 'affects_product_view_on',
+                            'value' => 1,
+                            'label' => $this->l('Yes'),
+                        ],
+                        [
+                            'id'    => 'affects_product_view_off',
+                            'value' => 0,
+                            'label' => $this->l('No'),
+                        ],
+                    ],
+                    'col'      => '2',
+                ],
             ],
         ];
 
