@@ -3,16 +3,15 @@
 
 Hi {firstname} {lastname},
 
-Your guest account for {shop_name} was converted to a customer
-account.
+Your guest account for {shop_name} was converted to a customer account.
 
-E-MAIL ADDRESS: {email}
+To set your password, please use the following link:
+{url}
 
-PASSWORD: ******
+This link is valid for {token_lifetime} hour(s).
 
-Please be careful when sharing these login details with others.
+Please don't share this link with others.
 
-You can access your customer account on our shop: {shop_url}
+You can access your customer account on our shop after setting your password: {shop_url}
 
 {shop_name} [{shop_url}]
-
