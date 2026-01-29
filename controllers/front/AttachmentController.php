@@ -60,10 +60,12 @@ class AttachmentControllerCore extends FrontController
             ob_end_clean();
         }
 
+        $disposition = Configuration::get('TB_DISPLAY_PDF_INLINE') ? "inline" : "attachment";
+
         header('Content-Transfer-Encoding: binary');
         header('Content-Type: '.$a->mime);
         header('Content-Length: '.filesize($a->getFilePath()));
-        header('Content-Disposition: attachment; filename="'.mb_convert_encoding($a->file_name, 'ISO-8859-1', 'UTF-8').'"');
+        header('Content-Disposition: '.$disposition.'; filename="'.mb_convert_encoding($a->file_name, 'ISO-8859-1', 'UTF-8').'"');
         @set_time_limit(0);
         readfile($a->getFilePath());
         exit;
