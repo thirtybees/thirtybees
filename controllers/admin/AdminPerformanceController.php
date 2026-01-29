@@ -1173,10 +1173,16 @@ class AdminPerformanceControllerCore extends AdminController
 
         if (Tools::getValue('ccc_up')) {
             if ($this->hasEditPermission()) {
-                $themeCacheDirectory = _PS_ALL_THEMES_DIR_.$this->context->shop->theme_directory.'/cache/';
-                if ((Tools::getValue('PS_CSS_THEME_CACHE') || Tools::getValue('PS_JS_THEME_CACHE')) && !is_writable($themeCacheDirectory)) {
+                $themeCacheDirectory = _PS_ALL_THEMES_DIR_ . $this->context->shop->theme_directory . '/cache/';
+                if (
+                    (Tools::getValue('PS_CSS_THEME_CACHE') || Tools::getValue('PS_JS_THEME_CACHE'))
+                    && !is_writable($themeCacheDirectory)
+                ) {
                     if (@file_exists($themeCacheDirectory) || !@mkdir($themeCacheDirectory, 0777, true)) {
-                        $this->errors[] = sprintf(Tools::displayError('To use Smart Cache directory %s must be writable.'), realpath($themeCacheDirectory));
+                        $this->errors[] = sprintf(
+                            Tools::displayError('To use Smart Cache directory %s must be writable.'),
+                            realpath($themeCacheDirectory)
+                        );
                     }
                 }
 
@@ -1194,25 +1200,70 @@ class AdminPerformanceControllerCore extends AdminController
                     }
                 }
 
-                if (!Configuration::updateValue('PS_CSS_THEME_CACHE', Tools::getIntValue('PS_CSS_THEME_CACHE')) ||
-                    !Configuration::updateValue('PS_JS_THEME_CACHE', Tools::getIntValue('PS_JS_THEME_CACHE')) ||
-                    !Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION', Tools::getIntValue('PS_JS_HTML_THEME_COMPRESSION')) ||
-                    !Configuration::updateValue('PS_JS_DEFER', Tools::getIntValue('PS_JS_DEFER')) ||
-                    !Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, Tools::getIntValue(Configuration::CCC_ASSETS_RETENTION_PERIOD)) ||
-                    !Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', Tools::getIntValue('PS_HTACCESS_CACHE_CONTROL'))
-                ) {
-                    $this->errors[] = Tools::displayError('Unknown error.');
-                } else {
-                    $redirectAdmin = true;
-                    if (Configuration::get('PS_HTACCESS_CACHE_CONTROL')) {
-                        if (is_writable(_PS_ROOT_DIR_.'/.htaccess')) {
-                            Tools::generateHtaccess();
-                        } else {
-                            $message = $this->l('Before being able to use this tool, you need to:');
-                            $message .= '<br />- '.$this->l('Create a blank .htaccess in your root directory.');
-                            $message .= '<br />- '.$this->l('Give it write permissions (CHMOD 666 on Unix system).');
-                            $this->errors[] = Tools::displayError($message, false);
-                            Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', false);
+                $valueCss       = (int) Tools::getIntValue('PS_CSS_THEME_CACHE');
+                $valueJs        = (int) Tools::getIntValue('PS_JS_THEME_CACHE');
+                $valueInlineJs  = (int) Tools::getIntValue('PS_JS_HTML_THEME_COMPRESSION');
+                $valueDefer     = (int) Tools::getIntValue('PS_JS_DEFER');
+                $valueRetention = (int) Tools::getIntValue(Configuration::CCC_ASSETS_RETENTION_PERIOD);
+                $valueHtaccess  = (int) Tools::getIntValue('PS_HTACCESS_CACHE_CONTROL');
+
+                switch (Shop::getContext()) {
+                    case Shop::CONTEXT_ALL:
+                        // 1) Update the global setting so the "All shops" sliders read correctly:
+                        Configuration::updateGlobalValue('PS_CSS_THEME_CACHE',              $valueCss);
+                        Configuration::updateGlobalValue('PS_JS_THEME_CACHE',               $valueJs);
+                        Configuration::updateGlobalValue('PS_JS_HTML_THEME_COMPRESSION',    $valueInlineJs);
+                        Configuration::updateGlobalValue('PS_JS_DEFER',                     $valueDefer);
+                        Configuration::updateGlobalValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, $valueRetention);
+                        Configuration::updateGlobalValue('PS_HTACCESS_CACHE_CONTROL',       $valueHtaccess);
+
+                        // 2) Then fall‐through into the shop-loop so every shop row is also overridden,
+                        //    ensuring that if you switch back into a single shop its sliders match:
+                        $shopIds = Shop::getShops(false, null, true);
+                        break;
+
+                    case Shop::CONTEXT_GROUP:
+                        // 1) Update the group-level setting so the "Group" sliders read correctly:
+                        $groupId = (int) $this->context->shop->id_shop_group;
+                        Configuration::updateValue('PS_CSS_THEME_CACHE',              $valueCss,      false, $groupId, null);
+                        Configuration::updateValue('PS_JS_THEME_CACHE',               $valueJs,       false, $groupId, null);
+                        Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION',    $valueInlineJs, false, $groupId, null);
+                        Configuration::updateValue('PS_JS_DEFER',                     $valueDefer,    false, $groupId, null);
+                        Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, $valueRetention, false, $groupId, null);
+                        Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL',       $valueHtaccess, false, $groupId, null);
+
+                        // 2) And still override every individual shop in that group:
+                        $shopsData = ShopGroup::getShopsFromGroup($groupId);
+                        $shopIds   = array_column($shopsData, 'id_shop');
+                        break;
+
+                    default:
+                        // Single‐shop context: only update the current shop
+                        $shopIds = [(int)$this->context->shop->id];
+                        break;
+                }
+
+                foreach ($shopIds as $idShop) {
+                    Configuration::updateValue('PS_CSS_THEME_CACHE',               $valueCss,      false, null, $idShop);
+                    Configuration::updateValue('PS_JS_THEME_CACHE',                $valueJs,       false, null, $idShop);
+                    Configuration::updateValue('PS_JS_HTML_THEME_COMPRESSION',     $valueInlineJs, false, null, $idShop);
+                    Configuration::updateValue('PS_JS_DEFER',                      $valueDefer,    false, null, $idShop);
+                    Configuration::updateValue(Configuration::CCC_ASSETS_RETENTION_PERIOD, $valueRetention, false, null, $idShop);
+                    Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL',        $valueHtaccess, false, null, $idShop);
+                }
+
+                $redirectAdmin = true;
+                if ($valueHtaccess) {
+                    if (is_writable(_PS_ROOT_DIR_.'/.htaccess')) {
+                        Tools::generateHtaccess();
+                    } else {
+                        $message  = $this->l('Before being able to use this tool, you need to:');
+                        $message .= '<br />- '.$this->l('Create a blank .htaccess in your root directory.');
+                        $message .= '<br />- '.$this->l('Give it write permissions (CHMOD 666 on Unix system).');
+                        $this->errors[] = Tools::displayError($message, false);
+
+                        foreach ($shopIds as $idShop) {
+                            Configuration::updateValue('PS_HTACCESS_CACHE_CONTROL', 0, false, null, $idShop);
                         }
                     }
                 }
