@@ -1608,6 +1608,14 @@ class CartCore extends ObjectModel
             uasort($array, ['Cart', 'sortDeliveryOptionList']);
         }
 
+        Hook::triggerEvent(
+            'actionFilterDeliveryOptionList',
+            [
+                'delivery_option_list' => &$delivery_option_list,
+                'cart' => $this,
+            ]
+        );
+
         return $deliveryOptionList;
     }
 
