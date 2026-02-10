@@ -30,8 +30,12 @@
     var priceDisplayPrecision = 0;
   {/if}
   var priceDatabasePrecision = {$smarty.const._TB_PRICE_DATABASE_PRECISION_};
-	var attrs = new Array();
-	attrs[0] = new Array(0, '---');
+        var attrs = new Array();
+        attrs[0] = new Array(0, '---');
+
+  var productImages = {$images|json_encode};
+  var groupsAffectingView = {$groups_affecting_view|json_encode};
+  var selectImagesLabel = '{l s="Images" js=1}';
 
 	{foreach $attribute_js as $idgrp => $group}
 		{assign var="row" value="attrs[{$idgrp}] = new Array(0, '---'"}
@@ -93,12 +97,23 @@
 					<button type="button" class="btn btn-default pull-right" onclick="add_attr_multiple();"><i class="icon-plus-sign"></i> {l s='Add'}</button>
 				</div>
 			</div>
-			<div class="col-lg-8 col-lg-offset-1">
-				<div class="alert alert-info">{l s='The Combinations Generator is a tool that allows you to easily create a series of combinations by selecting the related attributes. For example, if you\'re selling t-shirts in three different sizes and two different colors, the generator will create six combinations for you.'}</div>
+                        <div class="col-lg-9">
+                                <div class="alert alert-info">{l s='On the left side, select the attributes you want to use (Hold down the "Ctrl" key on your keyboard and validate by clicking on "Add")'}</div>
 
-				<div class="alert alert-info">{l s='You\'re currently generating combinations for the following product:'} <b>{$product_name|escape:'html':'UTF-8'}</b></div>
-
-				<div class="alert alert-info"><strong>{l s='Step 1: On the left side, select the attributes you want to use (Hold down the "Ctrl" key on your keyboard and validate by clicking on "Add")'}</strong></div>
+                                {if $has_groups_affecting_view}
+                                    {if $images|count}
+                                        <div class="clearfix" style="margin-bottom:15px">
+                                            {foreach $images as $img}
+                                                <div class="pull-left text-center" style="margin-right:10px">
+                                                    <img src="{$img.url}" alt="" class="img-thumbnail" />
+                                                    <div class="text-muted">{$img.id}</div>
+                                                </div>
+                                            {/foreach}
+                                        </div>
+                                    {else}
+                                        <div class="alert alert-warning">{l s='Currently no images are uploaded'}</div>
+                                    {/if}
+                                {/if}
 
 				{foreach $attribute_groups as $k => $attribute_group}
 					{if isset($attribute_js[$attribute_group['id_attribute_group']])}
@@ -124,13 +139,18 @@
 									<th>
 										<span class="title_box">{l s='Length [%s]' sprintf=[$dimension_unit]}</span>
 									</th>
-									<th>
-										<span class="title_box">{l s='Depth [%s]' sprintf=[$dimension_unit]}</span>
-									</th>
-								</tr>
-							</thead>
-							<tbody id="table_{$attribute_group['id_attribute_group']}" name="result_table">
-							</tbody>
+                                                                        <th>
+                                                                                <span class="title_box">{l s='Depth [%s]' sprintf=[$dimension_unit]}</span>
+                                                                        </th>
+                                                                        {if $attribute_group['affects_product_view']}
+                                                                        <th>
+                                                                                <span class="title_box">{l s='Image'}</span>
+                                                                        </th>
+                                                                        {/if}
+                                                                </tr>
+                                                        </thead>
+                                                        <tbody id="table_{$attribute_group['id_attribute_group']}" name="result_table">
+                                                        </tbody>
 						</table>
 					</div>
 						{if isset($attributes[$attribute_group['id_attribute_group']])}
@@ -154,7 +174,9 @@
 						{/if}
 					{/if}
 				{/foreach}
-				<div class="alert alert-info">{l s='Select a default quantity, and reference, for each combination the generator will create for this product.'}</div>
+				<div class="alert alert-info">
+				  {l s='Specify the default quantity and reference to apply to each combination generated for this product.'}{if $has_groups_affecting_view} {l s='Choose images to link to attributes that affect the product view.'}{/if}
+				</div>
 				<table class="table">
 					<tbody>
 						<tr>
