@@ -176,6 +176,7 @@
               {l s='Partial refund'}
             </a>
           {/if}
+          {$HOOK_TAB_ORDER_BUTTONS}
         </div>
         <!-- Tab nav -->
         <ul class="nav nav-tabs" id="tabOrder">
