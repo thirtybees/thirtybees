@@ -801,9 +801,19 @@ class AdminProductsControllerCore extends AdminController
      */
     public function processDuplicate()
     {
-        $product = new Product(Tools::getIntValue('id_product'));
+        $idProduct = Tools::getIntValue('id_product');
+        $product = new Product($idProduct);
         if (Validate::isLoadedObject($product)) {
             $idProductOld = $product->id;
+            $associatedShops = $product->getAssociatedShops();
+            
+            // If the product is not associated with current shop context, load data
+            // from the product's default shop to populate shop specific fields.
+            if (!$product->isAssociatedToShop(Shop::getContextShopID()) && $product->id_shop_default) {
+                $product = new Product($idProductOld, false, null, $product->id_shop_default);
+            }
+            $product->id_shop_list = $associatedShops;
+            
             if (empty($product->price) && Shop::getContext() == Shop::CONTEXT_GROUP) {
                 $shops = ShopGroup::getShopsFromGroup(Shop::getContextShopGroupID());
                 foreach ($shops as $shop) {
