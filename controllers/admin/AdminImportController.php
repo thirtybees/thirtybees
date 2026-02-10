@@ -2548,11 +2548,16 @@ class AdminImportControllerCore extends AdminController
         $validLink = Validate::isLinkRewrite($linkRewrite);
         if (!$validLink) {
             if (isset($product->name[$idLang])) {
-                $productName = $product->name[$idLang] ?? '';
-                $linkRewrite = Tools::link_rewrite($product->name[$idLang] ?? '');
-                if ($linkRewrite == '') {
+                $productName = trim($product->name[$idLang] ?? '');
+                $product->name[$idLang] = $productName;
+                $product->validateFields();
+                $linkRewrite = Tools::link_rewrite($product->name[$idLang]);
+
+                if (!Validate::isLinkRewrite($linkRewrite)) {
                     $linkRewrite = 'friendly-url-autogeneration-failed';
                 }
+
+                $product->link_rewrite[$idLang] = $linkRewrite;
 
                 $this->informations[] = sprintf(
                     $this->l('Rewrite link for %1$s (ID %2$s): re-written as %3$s.'),
