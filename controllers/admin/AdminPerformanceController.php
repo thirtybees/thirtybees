@@ -30,6 +30,7 @@
  */
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Key;
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
 
 /**
  * Class AdminPerformanceControllerCore
@@ -1445,10 +1446,11 @@ class AdminPerformanceControllerCore extends AdminController
      * Is profiling enabled?
      *
      * @return bool Whether profiling is enabled
+     * @throws PrestaShopException
      */
     public function isProfilingEnabled()
     {
-        return defined('_PS_DEBUG_PROFILING_') && _PS_DEBUG_PROFILING_;
+        return ServiceLocator::getInstance()->getProfiling()->isEnabledGlobally();
     }
 
     /**
