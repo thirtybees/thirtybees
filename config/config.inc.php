@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 use Thirtybees\Core\DependencyInjection\ServiceLocator;
 use Thirtybees\Core\Error\BootstrapErrorHandler;
@@ -31,8 +31,6 @@ use Thirtybees\Core\Error\BootstrapErrorHandler;
  *  @license   http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
-
-/** @noinspection PhpUnhandledExceptionInspection */
 
 $currentDir = dirname(__FILE__);
 
@@ -87,7 +85,7 @@ if (is_file(_PS_CUSTOM_CONFIG_FILE_)) {
     include_once(_PS_CUSTOM_CONFIG_FILE_);
 }
 
-if (_PS_DEBUG_PROFILING_) {
+if (ServiceLocator::getInstance()->getProfiling()->isEnabled()) {
     include_once(_PS_TOOL_DIR_.'profiling/Controller.php');
     include_once(_PS_TOOL_DIR_.'profiling/ObjectModel.php');
     include_once(_PS_TOOL_DIR_.'profiling/Db.php');

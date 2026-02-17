@@ -29,6 +29,7 @@ use Thirtybees\Core\Error\Response\CliErrorResponse;
 use Thirtybees\Core\Error\Response\DebugErrorPage;
 use Thirtybees\Core\Error\Response\ErrorResponseInterface;
 use Thirtybees\Core\Error\Response\ProductionErrorPage;
+use Thirtybees\Core\Profiling;
 use Thirtybees\Core\WorkQueue\Scheduler;
 use Thirtybees\Core\WorkQueue\WorkQueueClient;
 use Throwable;
@@ -46,6 +47,7 @@ class ServiceLocatorCore
     const SERVICE_READ_WRITE_CONNECTION = 'Db';
     const SERVICE_ERROR_HANDLER = 'Thirtybees\Core\Error\ErrorHandler';
     const SERVICE_ERROR_RESPONSE = 'Thirtybees\Core\Error\Response\ErrorResponseInterface';
+    const SERVICE_PROFILING = 'Thirtybees\Core\Profiling';
 
     // Legacy services
     const SERVICE_ADAPTER_CONFIGURATION = 'Core_Business_ConfigurationInterface';
@@ -71,6 +73,10 @@ class ServiceLocatorCore
         $this->container = is_null($container)
             ? new Core_Foundation_IoC_Container()
             : $container;
+
+        if (! $this->container->knows(static::SERVICE_PROFILING)) {
+            $this->container->bind(static::SERVICE_PROFILING, new Profiling(), true);
+        }
 
         // initialize error page
         $this->container->bind(static::SERVICE_ERROR_RESPONSE, $this->getErrorResponse(), true);
@@ -132,6 +138,17 @@ class ServiceLocatorCore
     public function getWorkQueueClient()
     {
         return $this->getByServiceName(static::SERVICE_WORK_QUEUE_CLIENT);
+    }
+
+    /**
+     * Returns Profiling object
+     *
+     * @return Profiling
+     * @throws PrestaShopException
+     */
+    public function getProfiling()
+    {
+        return $this->getByServiceName(static::SERVICE_PROFILING);
     }
 
     /**

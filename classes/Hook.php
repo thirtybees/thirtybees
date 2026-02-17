@@ -29,6 +29,9 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Profiling;
+
 /**
  * Class HookCore
  */
@@ -826,7 +829,8 @@ class HookCore extends ObjectModel
     {
         // Define if we will log modules performances for this session
         if (Module::$_log_modules_perfs === null) {
-            $modulo = _PS_DEBUG_PROFILING_ ? 1 : Configuration::get('PS_log_modules_perfs_MODULO');
+            $profiling = ServiceLocator::getInstance()->getProfiling()->isEnabled();
+            $modulo = $profiling ? 1 : Configuration::get('PS_log_modules_perfs_MODULO');
             Module::$_log_modules_perfs = ($modulo && mt_rand(0, $modulo - 1) == 0);
             if (Module::$_log_modules_perfs) {
                 Module::$_log_modules_perfs_session = mt_rand();
