@@ -29,6 +29,8 @@
  *  PrestaShop is an internationally registered trademark & property of PrestaShop SA
  */
 
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+
 /**
  * Class AdminEmployeesControllerCore
  *
@@ -322,7 +324,41 @@ class AdminEmployeesControllerCore extends AdminController
             return parent::renderForm();
         }
 
-        $this->fields_form = [
+        $profiling = ServiceLocator::getInstance()->getProfiling();
+        if (!$profiling->isEnabledGlobally()) {
+            $profilingForm = [
+                'legend' => [
+                    'title' => $this->l('Profiling'),
+                    'icon' => 'icon-cogs',
+                ],
+                'input' => [
+                    [
+                        'type' => 'switch',
+                        'label' => $this->l('Profiling'),
+                        'name' => 'employeeProfiling',
+                        'required' => false,
+                        'is_bool' => true,
+                        'values' => [
+                            [
+                                'value' => 1,
+                                'label' => $this->l('Yes'),
+                            ],
+                            [
+                                'value' => 0,
+                                'label' => $this->l('No'),
+                            ],
+                        ],
+                        'hint' => $this->l('Temporarily enable performance profiling'),
+                    ],
+                ],
+                'submit' => [
+                    'title' => $this->l('Save'),
+                ]
+            ];
+            $this->fields_value['employeeProfiling'] = $profiling->isEnabled();
+        }
+
+        $employeeForm = [
             'legend' => [
                 'title' => $this->l('Employees'),
                 'icon'  => 'icon-user',
@@ -355,13 +391,13 @@ class AdminEmployeesControllerCore extends AdminController
         ];
 
         if ($this->restrict_edition) {
-            $this->fields_form['input'][] = [
+            $employeeForm['input'][] = [
                 'type'  => 'change-password',
                 'label' => $this->l('Password'),
                 'name'  => 'passwd',
             ];
         } else {
-            $this->fields_form['input'][] = [
+            $employeeForm['input'][] = [
                 'type'  => 'password',
                 'label' => $this->l('Password'),
                 'hint'  => sprintf($this->l('Password should be at least %s characters long.'), Validate::ADMIN_PASSWORD_LENGTH),
@@ -373,8 +409,8 @@ class AdminEmployeesControllerCore extends AdminController
         $imageUrl = ImageManager::thumbnail($image, $this->table.'_'.(int) $obj->id.'.'.$this->imageType, 150, $this->imageType, true, true);
 
 
-        $this->fields_form['input'] = array_merge(
-            $this->fields_form['input'], [
+        $employeeForm['input'] = array_merge(
+            $employeeForm['input'], [
                 [
                     'type'          => 'file',
                     'label'         => $this->l('Avatar'),
@@ -456,7 +492,7 @@ class AdminEmployeesControllerCore extends AdminController
         );
 
         if ((int) $this->hasEditPermission() && !$this->restrict_edition) {
-            $this->fields_form['input'][] = [
+            $employeeForm['input'][] = [
                 'type'     => 'switch',
                 'label'    => $this->l('Active'),
                 'name'     => 'active',
@@ -486,7 +522,7 @@ class AdminEmployeesControllerCore extends AdminController
                     }
                 }
             }
-            $this->fields_form['input'][] = [
+            $employeeForm['input'][] = [
                 'type'     => 'select',
                 'label'    => $this->l('Permission profile'),
                 'name'     => 'id_profile',
@@ -504,7 +540,7 @@ class AdminEmployeesControllerCore extends AdminController
 
             if (Shop::isFeatureActive()) {
                 $this->context->smarty->assign('_PS_ADMIN_PROFILE_', (int) _PS_ADMIN_PROFILE_);
-                $this->fields_form['input'][] = [
+                $employeeForm['input'][] = [
                     'type'  => 'shop',
                     'label' => $this->l('Shop association'),
                     'hint'  => $this->l('Select the shops the employee is allowed to access.'),
@@ -513,9 +549,17 @@ class AdminEmployeesControllerCore extends AdminController
             }
         }
 
-        $this->fields_form['submit'] = [
+        $employeeForm['submit'] = [
             'title' => $this->l('Save'),
         ];
+
+        $this->fields_form = [[ 'form' => $employeeForm ]];
+
+        if (isset($profilingForm) && (int)$obj->id === Context::getContext()->employee->id) {
+            $this->fields_form[] = ['form' => $profilingForm];
+        }
+
+        $this->multiple_fieldsets = true;
 
         $this->fields_value['passwd'] = false;
         $this->fields_value['bo_theme_css'] = $obj->bo_theme.'|'.$obj->bo_css;
@@ -683,6 +727,16 @@ class AdminEmployeesControllerCore extends AdminController
             }
             if (isset($boTheme[1])) {
                 $_POST['bo_css'] = $boTheme[1];
+            }
+        }
+
+        if (Tools::isSubmit('employeeProfiling')) {
+            $profiling = ServiceLocator::getInstance()->getProfiling();
+            $profilingEnabled = Tools::getBoolValue('employeeProfiling');
+            if ($profilingEnabled) {
+                $profiling->enableForSession();
+            } else {
+                $profiling->disableForSession();
             }
         }
 
