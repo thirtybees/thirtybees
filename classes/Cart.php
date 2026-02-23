@@ -4455,6 +4455,8 @@ class CartCore extends ObjectModel
 
         $conn = Db::getInstance();
         $success = true;
+        $unavailableProducts = [];
+        $duplicatedProducts = [];
         $products = $conn->getArray(
             (new DbQuery())
                 ->select('*')
@@ -4485,7 +4487,7 @@ class CartCore extends ObjectModel
                 }
             }
 
-            $success = $cart->updateQty(
+            $updated = $cart->updateQty(
                 (int) $product['quantity'],
                 (int) $product['id_product'],
                 (int) $product['id_product_attribute'],
@@ -4494,7 +4496,17 @@ class CartCore extends ObjectModel
                 (int) $idAddressDelivery,
                 new Shop((int) $cart->id_shop),
                 false
-            ) && $success;
+            );
+
+            if ($updated) {
+                $duplicatedProducts[(int) $product['id_product'].':'.(int) $product['id_product_attribute']] = true;
+            } else {
+                $success = false;
+                $name = Product::getProductName((int) $product['id_product'], (int) $product['id_product_attribute']);
+                if ($name) {
+                    $unavailableProducts[$name] = $name;
+                }
+            }
         }
 
         // Customized products
@@ -4510,6 +4522,11 @@ class CartCore extends ObjectModel
         $customsById = [];
         foreach ($customs as $custom) {
             if (!isset($customsById[$custom['id_customization']])) {
+                $productKey = (int) $custom['id_product'].':'.(int) $custom['id_product_attribute'];
+                if (!isset($duplicatedProducts[$productKey])) {
+                    continue;
+                }
+
                 $customsById[$custom['id_customization']] = [
                     'id_product_attribute' => $custom['id_product_attribute'],
                     'id_product'           => $custom['id_product'],
@@ -4540,6 +4557,10 @@ class CartCore extends ObjectModel
         // Insert customized_data
         if (count($customs)) {
             foreach ($customs as $custom) {
+                if (!isset($customIds[$custom['id_customization']])) {
+                    continue;
+                }
+
                 $customizedValue = $custom['value'];
 
                 if ((int) $custom['type'] === Product::CUSTOMIZE_FILE) {
@@ -4557,7 +4578,11 @@ class CartCore extends ObjectModel
             }
         }
 
-        return ['cart' => $cart, 'success' => $success];
+        return [
+            'cart'                 => $cart,
+            'success'              => $success,
+            'unavailable_products' => array_values($unavailableProducts),
+        ];
     }
 
     /**

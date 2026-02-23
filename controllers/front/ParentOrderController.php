@@ -109,18 +109,31 @@ class ParentOrderControllerCore extends FrontController
             $duplication = $oldCart->duplicate();
             if (!$duplication || !Validate::isLoadedObject($duplication['cart'])) {
                 $this->errors[] = Tools::displayError('Sorry. We cannot renew your order.');
-            } elseif (!$duplication['success']) {
-                $this->errors[] = Tools::displayError('Some items are no longer available, and we are unable to renew your order.');
             } else {
                 $this->context->cookie->id_cart = $duplication['cart']->id;
                 $context = $this->context;
                 $context->cart = $duplication['cart'];
                 CartRule::autoAddToCart($context);
+                if (!empty($duplication['unavailable_products'])) {
+                    $this->context->cookie->reorder_unavailable_products = implode('|', $duplication['unavailable_products']);
+                }
                 $this->context->cookie->write();
                 if (Configuration::get('PS_ORDER_PROCESS_TYPE') == 1) {
                     Tools::redirect('index.php?controller=order-opc');
                 }
                 Tools::redirect('index.php?controller=order');
+            }
+        }
+
+        if (!empty($this->context->cookie->reorder_unavailable_products)) {
+            $unavailableProducts = array_filter(array_unique(explode('|', (string) $this->context->cookie->reorder_unavailable_products)));
+            unset($this->context->cookie->reorder_unavailable_products);
+
+            if ($unavailableProducts) {
+                $this->errors[] = sprintf(
+                    Tools::displayError('Some items are no longer available and have not been included in your new order: %s'),
+                    implode(', ', $unavailableProducts)
+                );
             }
         }
 
