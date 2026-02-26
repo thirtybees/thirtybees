@@ -505,7 +505,7 @@
               {/foreach}
               <tr class="current-edit hidden-print">
                 <td>
-                  <div class="input-group fixed-width-xl">
+                  <div class="input-group fixed-width-md">
                     <input type="text" name="payment_date" class="datepicker" value="{date('Y-m-d')}"/>
                     <div class="input-group-addon">
                       <i class="icon-calendar-o"></i>
