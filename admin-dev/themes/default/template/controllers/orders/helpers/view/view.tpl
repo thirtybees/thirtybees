@@ -513,12 +513,11 @@
                   </div>
                 </td>
                 <td>
-                  <input name="payment_method" list="payment_method" class="payment_method">
-                  <datalist id="payment_method">
+                  <select name="payment_method" class="form-control">
                     {foreach from=$payment_methods item=payment_method}
-                    <option value="{$payment_method}">
-                      {/foreach}
-                  </datalist>
+                      <option value="{$payment_method}">{$payment_method}</option>
+                    {/foreach}
+                  </select>
                 </td>
                 <td>
                   <input type="text" name="payment_transaction_id" value="" class="form-control fixed-width-sm"/>
@@ -533,7 +532,7 @@
                 </td>
                 <td>
                   {if $invoices}
-                    <select name="payment_invoice" id="payment_invoice">
+                    <select name="payment_invoice" id="payment_invoice" class="form-control">
                       {foreach from=$invoices item=invoice}
                         <option value="{$invoice.id}" selected="selected">{$invoice.name}</option>
                       {/foreach}
