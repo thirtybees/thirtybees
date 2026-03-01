@@ -3322,7 +3322,17 @@ class AdminOrdersControllerCore extends AdminController
             }
         }
 
-        ksort($products);
+        uasort($products, static function (array $a, array $b) {
+            $nameA = trim((string)($a['product_name'] ?? ''));
+            $nameB = trim((string)($b['product_name'] ?? ''));
+
+            $cmp = strcasecmp($nameA, $nameB);
+            if ($cmp !== 0) {
+                return $cmp;
+            }
+
+            return ((int)($a['id_order_detail'] ?? 0)) <=> ((int)($b['id_order_detail'] ?? 0));
+        });
 
         return $products;
     }
