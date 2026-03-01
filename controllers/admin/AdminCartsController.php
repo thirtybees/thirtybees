@@ -286,6 +286,21 @@ class AdminCartsControllerCore extends AdminController
         if (!($cart = $this->loadObject(true))) {
             return '';
         }
+
+        // Ensure the cart is viewed in its own shop context (runtime-only).
+        $idCartShop = (int)$cart->id_shop;
+        if (
+            Shop::isFeatureActive()
+            && $idCartShop > 0
+            && $this->context->employee->hasAuthOnShop($idCartShop)
+        ) {
+            Shop::setContext(Shop::CONTEXT_SHOP, $idCartShop);
+
+            if (!Validate::isLoadedObject($this->context->shop) || (int)$this->context->shop->id !== $idCartShop) {
+                $this->context->shop = new Shop($idCartShop);
+            }
+        }
+
         $customer = new Customer($cart->id_customer);
         $currency = new Currency($cart->id_currency);
         $this->context->cart = $cart;
