@@ -151,6 +151,8 @@ function toggleApplyDiscount(percent, amount, apply_to)
 			toggleApplyDiscountTo();
 		$('#apply_discount_to_cheapest').show();
 		$('*[for=apply_discount_to_cheapest]').show();
+		$('#apply_discount_to_cart_cheapest').show();
+		$('*[for=apply_discount_to_cart_cheapest]').show();
 		$('#apply_discount_to_selection').show();
 		$('*[for=apply_discount_to_selection]').show();
 	}
@@ -168,10 +170,19 @@ function toggleApplyDiscount(percent, amount, apply_to)
 			toggleApplyDiscountTo();
 		$('#apply_discount_to_cheapest').hide();
 		$('*[for=apply_discount_to_cheapest]').hide();
-		$('#apply_discount_to_cheapest').prop('checked', false);
+		$('#apply_discount_to_cart_cheapest').hide();
+		$('*[for=apply_discount_to_cart_cheapest]').hide();
 		$('#apply_discount_to_selection').hide();
 		$('*[for=apply_discount_to_selection]').hide();
+		if ($('#apply_discount_to_cheapest').prop('checked')
+			|| $('#apply_discount_to_selection').prop('checked')
+			|| $('#apply_discount_to_cart_cheapest').prop('checked')) {
+			$('#apply_discount_to_order').prop('checked', true);
+		}
+		$('#apply_discount_to_cheapest').prop('checked', false);
 		$('#apply_discount_to_selection').prop('checked', false);
+		$('#apply_discount_to_cart_cheapest').prop('checked', false);
+		toggleApplyDiscountTo();
 	}
 	else
 	{
@@ -196,6 +207,11 @@ function toggleApplyDiscount(percent, amount, apply_to)
 
 function toggleApplyDiscountTo()
 {
+	if ($('#apply_discount_to_cart_cheapest').prop('checked'))
+		$('#apply_discount_to_cart_cheapest_quantity_div').show(400);
+	else
+		$('#apply_discount_to_cart_cheapest_quantity_div').hide(200);
+
 	if ($('#apply_discount_to_product').prop('checked'))
 		$('#apply_discount_to_product_div').show(400);
 	else
@@ -207,6 +223,9 @@ function toggleApplyDiscountTo()
 		}
 		if ($('#apply_discount_to_cheapest').prop('checked')) {
 			$('#reduction_product').val(APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_FROM_SELECTION);
+		}
+		if ($('#apply_discount_to_cart_cheapest').prop('checked')) {
+			$('#reduction_product').val(APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_IN_CART);
 		}
 		if ($('#apply_discount_to_selection').prop('checked')) {
 			$('#reduction_product').val(APPLY_DISCOUNT_TO_SELECTED_PRODUCTS);
@@ -260,6 +279,12 @@ $('#apply_discount_to_cheapest').click(function(){
 	toggleApplyDiscountTo();}
 );
 if ($('#apply_discount_to_cheapest').prop('checked'))
+	toggleApplyDiscountTo();
+
+$('#apply_discount_to_cart_cheapest').click(function(){
+	toggleApplyDiscountTo();}
+);
+if ($('#apply_discount_to_cart_cheapest').prop('checked'))
 	toggleApplyDiscountTo();
 
 $('#apply_discount_to_selection').click(function(){

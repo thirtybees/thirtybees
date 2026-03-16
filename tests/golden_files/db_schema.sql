@@ -8,6 +8,7 @@ CREATE TABLE `PREFIX_access` (
   PRIMARY KEY (`id_profile`,`id_tab`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
 CREATE TABLE `PREFIX_accessory` (
   `id_product_1` int(11) unsigned NOT NULL,
   `id_product_2` int(11) unsigned NOT NULL,
@@ -294,6 +295,7 @@ CREATE TABLE `PREFIX_cart_rule` (
   `reduction_tax` tinyint(1) unsigned NOT NULL DEFAULT '0',
   `reduction_currency` int(11) unsigned NOT NULL DEFAULT '0',
   `reduction_product` int(10) NOT NULL DEFAULT '0',
+  `reduction_cart_quantity` int(10) unsigned NOT NULL DEFAULT '0',
   `gift_product` int(11) unsigned NOT NULL DEFAULT '0',
   `gift_product_attribute` int(11) unsigned NOT NULL DEFAULT '0',
   `highlight` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -2865,4 +2867,3 @@ CREATE TABLE `PREFIX_zone_shop` (
   PRIMARY KEY (`id_zone`,`id_shop`),
   KEY `id_shop` (`id_shop`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
