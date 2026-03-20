@@ -812,6 +812,8 @@ class ProductControllerCore extends FrontController
                 $combinations[$combinationId]['weight'] = (float) $row['weight'];
                 $combinations[$combinationId]['quantity'] = (int) $row['quantity'];
                 $combinations[$combinationId]['reference'] = $row['reference'];
+                $combinations[$combinationId]['ean13'] = $row['ean13'];
+                $combinations[$combinationId]['upc'] = $row['upc'];
                 $combinations[$combinationId]['unit_impact'] = Tools::convertPriceFull($row['unit_price_impact'], null, $this->context->currency);
                 $combinations[$combinationId]['minimal_quantity'] = $row['minimal_quantity'];
                 if ($row['available_date'] != '0000-00-00' && Validate::isDate($row['available_date'])) {

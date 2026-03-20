@@ -3808,7 +3808,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
                 }
                 $valuesNotCustom = $conn->getArray(
                     '
-				SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` AS `attribute`, agl.`name` AS `group`
+				SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` AS `attribute`, agl.`name` AS `group`, pa.`ean13`, pa.`upc`
 				FROM `'._DB_PREFIX_.'attribute` a
 				LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
 					ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) Context::getContext()->language->id.')
@@ -3827,7 +3827,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             } else {
                 $result = $conn->getArray(
                     '
-				SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` AS `attribute`, agl.`name` AS `group`
+				SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` AS `attribute`, agl.`name` AS `group`, pa.`ean13`, pa.`upc`
 				FROM `'._DB_PREFIX_.'attribute` a
 				LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
 					ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) Context::getContext()->language->id.')
@@ -3845,7 +3845,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         } else {
             $result = $conn->getArray(
                 '
-			SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` AS `attribute`, agl.`name` AS `group`
+			SELECT DISTINCT a.`id_attribute`, a.`id_attribute_group`, al.`name` AS `attribute`, agl.`name` AS `group`, pa.`ean13`, pa.`upc`
 			FROM `'._DB_PREFIX_.'attribute` a
 			LEFT JOIN `'._DB_PREFIX_.'attribute_lang` al
 				ON (a.`id_attribute` = al.`id_attribute` AND al.`id_lang` = '.(int) Context::getContext()->language->id.')
@@ -6254,7 +6254,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $sql = 'SELECT ag.`id_attribute_group`, ag.`is_color_group`, agl.`name` AS group_name, agl.`public_name` AS public_group_name,
 					a.`id_attribute`, al.`name` AS attribute_name, a.`color` AS attribute_color, product_attribute_shop.`id_product_attribute`,
 					IFNULL(stock.quantity, 0) AS quantity, product_attribute_shop.`price`, product_attribute_shop.`ecotax`, product_attribute_shop.`weight`,
-					product_attribute_shop.`default_on`, pa.`reference`, product_attribute_shop.`unit_price_impact`,
+					product_attribute_shop.`default_on`, pa.`reference`, pa.`ean13`, pa.`upc`, product_attribute_shop.`unit_price_impact`,
 					product_attribute_shop.`minimal_quantity`, product_attribute_shop.`available_date`, ag.`group_type`,
 					product_attribute_shop.`width`, product_attribute_shop.`height`, product_attribute_shop.`depth`
 				FROM `'._DB_PREFIX_.'product_attribute` pa
