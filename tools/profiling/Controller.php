@@ -314,8 +314,12 @@ abstract class Controller extends ControllerCore
                 $this->profiler[] = $this->stamp('initHeader');
             }
 
-            $this->initContent();
-            $this->profiler[] = $this->stamp('initContent');
+            if ($this->viewAccess()) {
+                $this->initContent();
+                $this->profiler[] = $this->stamp('initContent');
+            } else {
+                $this->errors[] = Tools::displayError('Access denied.');
+            }
 
             if (!$this->content_only && ($this->display_footer || (isset($this->className) && $this->className))) {
                 $this->initFooter();
@@ -323,6 +327,7 @@ abstract class Controller extends ControllerCore
             }
 
             if ($this->ajax) {
+                register_shutdown_function([$this, 'shutdown']);
                 $action = Tools::toCamelCase(Tools::getValue('action'), true);
                 if (!empty($action) && method_exists($this, 'displayAjax'.$action)) {
                     $this->{'displayAjax'.$action}();
@@ -372,11 +377,14 @@ abstract class Controller extends ControllerCore
 
     /**
      * @return void
-     * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     protected function processProfilingData()
     {
+        if ($this->total_filesize) {
+            return;
+        }
+
         global $start_time;
 
         // Including a lot of files uses memory
@@ -454,7 +462,7 @@ abstract class Controller extends ControllerCore
                     $query_row['filesort'] = true;
                 }
                 foreach ($explain as $row) {
-                    $query_row['rows'] *= $row['rows'];
+                    $query_row['rows'] *= (int)$row['rows'];
                 }
                 if (stristr($data['query'], 'group by') && !preg_match('/(avg|count|min|max|group_concat|sum)\s*\(/i', $data['query'])) {
                     $query_row['group_by'] = true;
@@ -605,7 +613,7 @@ abstract class Controller extends ControllerCore
 				<tr><td>Memory limit</td><td>'.ini_get('memory_limit').'</td></tr>
 				<tr><td>Max execution time</td><td>'.ini_get('max_execution_time').'s</td></tr>
 				<tr><td>Smarty cache</td><td><span style="color:'.(Configuration::get('PS_SMARTY_CACHE') ? 'green">enabled' : 'red">disabled').'</td></tr>
-				<tr><td>Smarty Compilation</td><td><span style="color:'.(Configuration::get('PS_SMARTY_FORCE_COMPILE') == 0 ? 'green">never recompile' : (Configuration::get('PS_SMARTY_FORCE_COMPILE') == 1 ? '#EF8B00">auto' : 'red">force compile')).'</td></tr>
+				<tr><td>Smarty Compilation</td><td><span style=" color:'.(Configuration::get('PS_SMARTY_FORCE_COMPILE') == 0 ? 'green">never recompile' : (Configuration::get('PS_SMARTY_FORCE_COMPILE') == 1 ? '#EF8B00">auto' : 'red">force compile')).'</td></tr>
 			</table>
 		</div>';
     }
@@ -941,4 +949,83 @@ abstract class Controller extends ControllerCore
         }
         return ($a['time'] > $b['time']) ? -1 : 1;
     }
+
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
+    public function shutdown()
+    {
+        $this->logProfilingToFile();
+    }
+
+
+    /**
+     * @return void
+     * @throws PrestaShopException
+     */
+    protected function logProfilingToFile()
+    {
+        $this->processProfilingData();
+
+        global $start_time;
+
+        $content = "Request Uri: " . $_SERVER['REQUEST_URI']."\n";
+        $content .= "Request Method: " . $_SERVER['REQUEST_METHOD']."\n";
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $content .= "Request POST parameters:\n";
+            foreach ($_POST as $name => $value) {
+                $content .= "  - $name = " . var_export($value, true) . "\n";
+            }
+        }
+        $content .= "Load time: " . round(1000*($this->profiler[count($this->profiler) - 1]['time'] - $start_time), 2) ." ms\n";
+        $content .= "Querying time: ".(round(1000 * $this->total_query_time, 2))." ms\n";
+        $content .= "Queries: ".count($this->array_queries)."\n";
+
+
+        $content .= "\n==========================================================================\n\n";
+
+        $cnt = 0;
+        foreach ($this->array_queries as $data) {
+            $cnt++;
+            $content .= "Query #$cnt)\n\n";
+            $content .= "  - time: ".round($data['time'] * 1000, 2)." ms\n";
+            $content .= "  - rows: ".(int)($data['rows'])."\n";
+            $content .= "  - filesort: ".($data['filesort'] ? 'Yes' : 'No') . "\n";
+            $content .= "  - group by: ".($data['group_by'] ? 'Yes' : 'No') . "\n";
+            $content .= "  - location:\n".$this->formatIndented($data['location']."\n".implode("\n", $data['stack']), 6) . "\n";
+            $content .= "  - query:\n".$this->formatIndented($data['query'], 6)."\n";
+            $content .= "\n==========================================================================\n\n";
+        }
+
+        foreach (Db::getInstance()->uniqQueries as $q => $nb) {
+            if ($nb > 1) {
+                $sql = str_replace('<span style="color:blue">XX</span>', "?", $q);
+                $content .= "Query executed multiple times: $nb\n\n";
+                $content .= $this->formatIndented($sql, 4);
+                $content .= "\n==========================================================================\n\n";
+            }
+        }
+
+        $dir = _PS_ROOT_DIR_ . "/log/profiling";
+        if (! file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        $filename = $dir . "/" . date('YmdHis') . '_'. (int)Module::$_log_modules_perfs_session . '.log';
+        file_put_contents($filename, $content, FILE_APPEND);
+    }
+
+    /**
+     * @param string $content
+     * @param int $indent
+     * @return string
+     */
+    protected function formatIndented(string $content, int $indent): string
+    {
+        $indent = str_repeat(' ', $indent);
+        $content = trim($content);
+        $content = $indent . str_replace("\n", "\n$indent", $content);
+        return $content;
+    }
+
 }
