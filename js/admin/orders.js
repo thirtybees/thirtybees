@@ -110,7 +110,7 @@ function populateWarehouseList(warehouseList) {
   $('#add_product_warehouse').html('');
   var warehouseSelected = false;
   $.each(warehouseList, function () {
-    if (!warehouseSelected && $.inArray(this.id_warehouse, orderWarehouseList)) {
+    if (!warehouseSelected && $.inArray(String(this.id_warehouse), orderWarehouseList) !== -1) {
       warehouseSelected = this.id_warehouse;
     }
 
@@ -119,6 +119,150 @@ function populateWarehouseList(warehouseList) {
   if (warehouseSelected) {
     $('#add_product_warehouse').val(warehouseSelected);
   }
+}
+
+function getCurrentProductCollection(collectionName, fallbackValue) {
+  if (!window.current_product || typeof window.current_product[collectionName] === 'undefined') {
+    return fallbackValue;
+  }
+
+  return window.current_product[collectionName];
+}
+
+function getCurrentProductCombinations() {
+  return getCurrentProductCollection('combinations', {});
+}
+
+function hasCurrentProductCombinations() {
+  return !$.isEmptyObject(getCurrentProductCombinations());
+}
+
+function getCurrentProductIndexedValue(collectionName, key, fallbackValue) {
+  var collection = getCurrentProductCollection(collectionName, fallbackValue);
+  if (typeof key === 'undefined' || key === null || key === '') {
+    return fallbackValue;
+  }
+
+  if (typeof collection[key] !== 'undefined') {
+    return collection[key];
+  }
+
+  var numericKey = parseInt(key, 10);
+  if (!isNaN(numericKey) && typeof collection[numericKey] !== 'undefined') {
+    return collection[numericKey];
+  }
+
+  return fallbackValue;
+}
+
+function getCurrentProductCombination(idProductAttribute) {
+  if (!idProductAttribute) {
+    return null;
+  }
+
+  return getCurrentProductIndexedValue('combinations', idProductAttribute, null);
+}
+
+function getCurrentProductWarehouseList(idProductAttribute) {
+  return getCurrentProductIndexedValue('warehouse_list', idProductAttribute, []);
+}
+
+function getPriceRatio(priceTaxExcl, priceTaxIncl, taxRate) {
+  var normalizedPriceTaxExcl = parseFloat(priceTaxExcl);
+  var normalizedPriceTaxIncl = parseFloat(priceTaxIncl);
+  var normalizedTaxRate = parseFloat(taxRate);
+  var taxBasedRatio = !isNaN(normalizedTaxRate) ? ((normalizedTaxRate / 100) + 1) : NaN;
+
+  if (!isNaN(normalizedPriceTaxExcl) && normalizedPriceTaxExcl > 0
+    && !isNaN(normalizedPriceTaxIncl) && normalizedPriceTaxIncl >= 0) {
+    var priceBasedRatio = normalizedPriceTaxIncl / normalizedPriceTaxExcl;
+    if (!isNaN(taxBasedRatio) && taxBasedRatio > 1 && priceBasedRatio <= 1.00001) {
+      return taxBasedRatio;
+    }
+    return priceBasedRatio;
+  }
+
+  if (!isNaN(taxBasedRatio)) {
+    return taxBasedRatio;
+  }
+
+  return 1;
+}
+
+function getCurrentAddProductPriceRatio() {
+  var combination = getCurrentProductCombination($('#add_product_product_attribute_id').val());
+  if (combination) {
+    return getPriceRatio(combination.price_tax_excl, combination.price_tax_incl, window.current_product ? window.current_product.tax_rate : null);
+  }
+
+  if (!window.current_product) {
+    return 1;
+  }
+
+  return getPriceRatio(window.current_product.price_tax_excl, window.current_product.price_tax_incl, window.current_product.tax_rate);
+}
+
+function getCurrentEditProductPriceRatio() {
+  if (!window.current_product) {
+    return 1;
+  }
+
+  return getPriceRatio(window.current_product.price_tax_excl, window.current_product.price_tax_incl, window.current_product.tax_rate);
+}
+
+function displayCurrencyPrecisionValue(price) {
+  if (isNaN(price) || price === '') {
+    price = 0;
+  }
+
+  return ps_round(price, priceDisplayPrecision).toFixed(priceDisplayPrecision);
+}
+
+function updateAddProductPriceFields(priceTaxIncl, priceTaxExcl) {
+  $('#add_product_product_price_tax_incl').val(displayPriceValue(priceTaxIncl));
+  $('#add_product_product_price_tax_excl').val(displayPriceValue(priceTaxExcl));
+}
+
+function disableAddProductSelection() {
+  $('tr#new_product input, tr#new_product select, tr#new_product button').each(function () {
+    if ($(this).attr('id') !== 'add_product_product_name') {
+      $(this).attr('disabled', true);
+    }
+  });
+
+  $('#add_product_product_id').val('');
+  $('#add_product_product_attribute_id').html('');
+  $('#add_product_product_attribute_area').hide();
+  $('#add_product_product_price_tax_incl').val('');
+  $('#add_product_product_price_tax_excl').val('');
+  $('#add_product_warehouse').html('');
+  $('#add_product_product_warehouse_area').hide();
+  if (window.stock_management) {
+    $('#add_product_product_stock').html('0');
+  }
+  addProductRefreshTotal();
+  window.current_product = null;
+}
+
+function applyAddProductSelection(idProductAttribute) {
+  var combination = getCurrentProductCombination(idProductAttribute);
+
+  if (combination) {
+    $('#add_product_product_attribute_id').val(String(combination.id_product_attribute));
+    updateAddProductPriceFields(combination.price_tax_incl, combination.price_tax_excl);
+    populateWarehouseList(getCurrentProductWarehouseList(combination.id_product_attribute));
+    if (window.stock_management) {
+      $('#add_product_product_stock').html(combination.qty_in_stock);
+    }
+  } else if (window.current_product) {
+    updateAddProductPriceFields(window.current_product.price_tax_incl, window.current_product.price_tax_excl);
+    populateWarehouseList(getCurrentProductWarehouseList(0));
+    if (window.stock_management) {
+      $('#add_product_product_stock').html(window.current_product.stock[0]);
+    }
+  }
+
+  addProductRefreshTotal();
 }
 
 function addProductRefreshTotal() {
@@ -373,6 +517,12 @@ function init() {
     $('tr#new_product td').fadeOut('fast');
   });
 
+  $('#add_product_product_name').unbind('input').on('input', function () {
+    if (window.current_product && $(this).val() !== window.current_product.name) {
+      disableAddProductSelection();
+    }
+  });
+
   $('#add_product_product_name').autocomplete(window.admin_order_tab_link,
     {
       minChars: 3,
@@ -398,6 +548,7 @@ function init() {
         ajax: true,
         token: window.token,
         action: 'searchProducts',
+        id_order: window.id_order,
         id_lang: window.id_lang,
         id_currency: window.id_currency,
         id_address: window.id_address,
@@ -410,71 +561,40 @@ function init() {
   )
     .result(function (event, data) {
       if (!data) {
-        $('tr#new_product input, tr#new_product select').each(function () {
-          if ($(this).attr('id') !== 'add_product_product_name') {
-            $('tr#new_product input, tr#new_product select, tr#new_product button').attr('disabled', true);
-          }
-        });
+        disableAddProductSelection();
       } else {
         $('tr#new_product input, tr#new_product select, tr#new_product button').removeAttr('disabled');
         // Keep product variable
         window.current_product = data;
         $('#add_product_product_id').val(data.id_product);
         $('#add_product_product_name').val(data.name);
-        $('#add_product_product_price_tax_incl').val(displayPriceValue(
-          data.price_tax_incl
-        ));
-        $('#add_product_product_price_tax_excl').val(displayPriceValue(
-          data.price_tax_excl
-        ));
-        addProductRefreshTotal();
-        if (window.stock_management) {
-          $('#add_product_product_stock').html(data.stock[0]);
-        }
 
-        if (current_product.combinations.length !== 0) {
+        if (hasCurrentProductCombinations()) {
           // Reset combinations list
           $('select#add_product_product_attribute_id').html('');
-          var defaultAttribute = 0;
-          $.each(current_product.combinations, function () {
-            $('select#add_product_product_attribute_id').append('<option value="' + this.id_product_attribute + '"' + (this.default_on === 1 ? ' selected="selected"' : '') + '>' + this.attributes + '</option>');
-            if (this.default_on === 1) {
-              if (window.stock_management) {
-                $('#add_product_product_stock').html(this.qty_in_stock);
-              }
-              defaultAttribute = this.id_product_attribute;
+          var defaultAttribute = null;
+          $.each(getCurrentProductCombinations(), function (idProductAttribute, combination) {
+            $('select#add_product_product_attribute_id').append('<option value="' + combination.id_product_attribute + '"' + (combination.default_on === 1 ? ' selected="selected"' : '') + '>' + combination.attributes + '</option>');
+            if (defaultAttribute === null || combination.default_on === 1) {
+              defaultAttribute = combination.id_product_attribute;
             }
           });
           // Show select list
           $('#add_product_product_attribute_area').show();
-
-          populateWarehouseList(current_product.warehouse_list[defaultAttribute]);
+          applyAddProductSelection(defaultAttribute);
         } else {
           // Reset combinations list
           $('select#add_product_product_attribute_id').html('');
           // Hide select list
           $('#add_product_product_attribute_area').hide();
-
-          populateWarehouseList(current_product.warehouse_list[0]);
+          applyAddProductSelection(0);
         }
       }
     });
 
   $('select#add_product_product_attribute_id').unbind('change');
   $('select#add_product_product_attribute_id').change(function () {
-    $('#add_product_product_price_tax_incl').val(displayPriceValue(
-      current_product.combinations[$(this).val()].price_tax_incl
-    ));
-    $('#add_product_product_price_tax_excl').val(displayPriceValue(
-      current_product.combinations[$(this).val()].price_tax_excl
-    ));
-
-    populateWarehouseList(current_product.warehouse_list[$(this).val()]);
-
-    addProductRefreshTotal();
-    if (window.stock_management) {
-      $('#add_product_product_stock').html(current_product.combinations[$(this).val()].qty_in_stock);
-    }
+    applyAddProductSelection($(this).val());
   });
 
   $('input#add_product_product_quantity').unbind('keyup').keyup(function () {
@@ -599,8 +719,8 @@ function init() {
       priceTaxExcl = 0;
     }
 
-    var taxRate = (current_product.tax_rate / 100) + 1;
-    $('#add_product_product_price_tax_incl').val(displayPriceValue(
+    var taxRate = getCurrentAddProductPriceRatio();
+    $('#add_product_product_price_tax_incl').val(displayCurrencyPrecisionValue(
       priceTaxExcl * taxRate
     ));
 
@@ -614,8 +734,8 @@ function init() {
       priceTaxIncl = 0;
     }
 
-    var taxRate = (current_product.tax_rate / 100) + 1;
-    $('#add_product_product_price_tax_excl').val(displayPriceValue(
+    var taxRate = getCurrentAddProductPriceRatio();
+    $('#add_product_product_price_tax_excl').val(displayCurrencyPrecisionValue(
       priceTaxIncl / taxRate
     ));
 
@@ -762,8 +882,8 @@ function init() {
     if (priceTaxExcl < 0 || isNaN(priceTaxExcl)) {
       priceTaxExcl = 0;
     }
-    var taxRate = (current_product.tax_rate / 100) + 1;
-    $('.edit_product_price_tax_incl:visible').val(displayPriceValue(
+    var taxRate = getCurrentEditProductPriceRatio();
+    $('.edit_product_price_tax_incl:visible').val(displayCurrencyPrecisionValue(
       priceTaxExcl * taxRate
     ));
     // Update total product
@@ -778,8 +898,8 @@ function init() {
       priceTaxIncl = 0;
     }
 
-    var taxRate = (current_product.tax_rate / 100) + 1;
-    $('.edit_product_price_tax_excl:visible').val(displayPriceValue(
+    var taxRate = getCurrentEditProductPriceRatio();
+    $('.edit_product_price_tax_excl:visible').val(displayCurrencyPrecisionValue(
       priceTaxIncl / taxRate
     ));
     // Update total product
