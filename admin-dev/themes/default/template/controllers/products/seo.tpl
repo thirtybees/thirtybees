@@ -31,7 +31,7 @@
 			<div class="col-lg-9 col-lg-offset-3">
 				<p>
 					{if $languages|count > 1}
-						{l s='Generate all SEO fields for every language at once, regardless of which language is currently selected.'}
+						{l s='Generate all SEO fields for every language at once.'}
 					{else}
 						{l s='Generate all SEO fields at once.'}
 					{/if}
