@@ -26,6 +26,20 @@
 	<input type="hidden" name="submitted_tabs[]" value="Seo" />
 	<h3>{l s='SEO'}</h3>
 	{include file="controllers/products/multishop/check_fields.tpl" product_tab="Seo"}
+	<div class="alert alert-info">
+		<div class="row">
+			<div class="col-lg-9 col-lg-offset-3">
+				<p>
+					{if $languages|count > 1}
+						{l s='Generate all SEO fields for every language at once, regardless of which language is currently selected.'}
+					{else}
+						{l s='Generate all SEO fields at once.'}
+					{/if}
+				</p>
+				<button type="button" class="btn btn-default" onmousedown="generateAllSeoFields();"><i class="icon-random"></i> {l s='Generate everything'}</button>
+			</div>
+		</div>
+	</div>
 	<div class="form-group">
 		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="meta_title" type="default" multilang="true"}</span></div>
 		<label class="control-label col-lg-2" for="meta_title_{$id_lang}">
