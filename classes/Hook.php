@@ -440,7 +440,7 @@ class HookCore extends ObjectModel
         }
 
         //Allow namespaced objects to execute Hooks thirtybees\core will become thirtybees_core and can be defined as method
-        $hookName = str_replace('\\', '_', $hookName);
+		$hookName = Tools::toCamelCase($hookName);
 
         // Check arguments validity
         if (($idModule && !is_numeric($idModule)) || !Validate::isHookName($hookName)) {
