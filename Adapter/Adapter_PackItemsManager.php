@@ -66,7 +66,7 @@ class Adapter_PackItemsManager
      * @param int $itemAttributeId
      * @param int|bool $idLang
      *
-     * @return Product[] The packs that contains the given item, with special dynamic attribute [pack_item_quantity]
+     * @return Product[] The packs that contains the given item, with special attribute [pack_item_quantity]
      *
      * @throws PrestaShopException
      */
