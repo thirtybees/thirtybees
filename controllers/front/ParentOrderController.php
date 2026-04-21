@@ -859,4 +859,5 @@ class ParentOrderControllerCore extends FrontController
     {
         return CartRule::isFeatureActive() || StoreCredit::isFeatureActive();
     }
+
 }
