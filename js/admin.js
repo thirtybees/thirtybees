@@ -200,6 +200,33 @@ function updateMetaDescription() {
   counter.text(element.attr("data-maxchar") - val.length);
 }
 
+function generateAllSeoFields() {
+  if (typeof languages === 'undefined' || !languages.length) {
+    return;
+  }
+
+  $.each(languages, function (key, language) {
+    var languageId = language.id_lang;
+    var productName = getProductName(languageId);
+    var metaTitle = productName.substr(0, 128);
+    var descriptionHtml = $('#description_short_' + languageId).val() || '';
+    var tempDivElement = document.createElement("div");
+    tempDivElement.innerHTML = descriptionHtml;
+    var descriptionTxt = tempDivElement.textContent || tempDivElement.innerText;
+    var metaDescription = descriptionTxt.trim().substr(0, 255);
+    var friendlyUrl = getFriendlyUrlFromName(productName);
+
+    $('#meta_title_' + languageId).val(metaTitle);
+    $('#meta_title_' + languageId + '_counter').text($('#meta_title_' + languageId).attr("data-maxchar") - metaTitle.length);
+
+    $('#meta_description_' + languageId).val(metaDescription).trigger('autosize.resize');
+    $('#meta_description_' + languageId + '_counter').text($('#meta_description_' + languageId).attr("data-maxchar") - metaDescription.length);
+
+    $('#link_rewrite_' + languageId).val(friendlyUrl);
+    $('#friendly-url_' + languageId).text(str2url(friendlyUrl, 'UTF-8'));
+  });
+}
+
 function getFriendlyUrlFromName(name) {
   return str2url(name.replace(/^[0-9]+\./, '').replace('%', ''), 'UTF-8');
 }
