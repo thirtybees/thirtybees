@@ -200,22 +200,6 @@ function updateMetaDescription() {
   counter.text(element.attr("data-maxchar") - val.length);
 }
 
-function updateMetaKeywordsByTags(languageId) {
-  var $element = $('#meta_keywords_' + languageId);
-  if (!$element.length) {
-    return;
-  }
-
-  var tags = $.trim($('#tags_' + languageId).val() || '');
-  if (!tags.length) {
-    tags = getProductName(languageId);
-  }
-
-  var value = tags.substr(0, 255);
-  $element.val(value);
-  $('#meta_keywords_' + languageId + '_counter').text($element.attr("data-maxchar") - value.length);
-}
-
 function generateAllSeoFields() {
   if (typeof languages === 'undefined' || !languages.length) {
     return;
@@ -237,8 +221,6 @@ function generateAllSeoFields() {
 
     $('#meta_description_' + languageId).val(metaDescription).trigger('autosize.resize');
     $('#meta_description_' + languageId + '_counter').text($('#meta_description_' + languageId).attr("data-maxchar") - metaDescription.length);
-
-    updateMetaKeywordsByTags(languageId);
 
     $('#link_rewrite_' + languageId).val(friendlyUrl);
     $('#friendly-url_' + languageId).text(str2url(friendlyUrl, 'UTF-8'));
