@@ -765,6 +765,18 @@ class AdminCustomersControllerCore extends AdminController
     {
         parent::setMedia();
         $this->addJqueryPlugin(['typewatch', 'fancybox']);
+        Media::addJsDefL(
+            'customer_groups_at_least_one_group',
+            $this->l('A customer must belong to at least one group.', null, true, false)
+        );
+        Media::addJsDefL(
+            'customer_groups_update_failed',
+            $this->l('Could not update groups.', null, true, false)
+        );
+        Media::addJsDefL(
+            'customer_groups_updated',
+            $this->l('Group associations updated.', null, true, false)
+        );
         $this->addJS(_PS_JS_DIR_.'admin/customers.js');
     }
 

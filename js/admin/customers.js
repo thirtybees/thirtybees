@@ -29,6 +29,65 @@
  */
 
 $(function () {
+  var messages = {
+    atLeastOneGroup: window.customer_groups_at_least_one_group || 'A customer must belong to at least one group.',
+    updateFailed: window.customer_groups_update_failed || 'Could not update groups.',
+    groupsUpdated: window.customer_groups_updated || 'Group associations updated.'
+  };
+
+  function showGroupError(message) {
+    if (typeof showErrorMessage === 'function') {
+      showErrorMessage(message);
+    } else if ($.growl && $.growl.error) {
+      $.growl.error({ title: '', message: message });
+    }
+  }
+
+  function showGroupSuccess(message) {
+    if (typeof showSuccessMessage === 'function') {
+      showSuccessMessage(message);
+    } else if ($.growl && $.growl.notice) {
+      $.growl.notice({ title: '', message: message });
+    }
+  }
+
+  function getCheckedGroupsFromForm() {
+    return $('.groupBox:checked').map(function () {
+      var $group = $(this);
+      var name = $.trim($group.closest('tr').find('label').first().text());
+
+      return {
+        id_group: $group.val(),
+        name: name || $group.val()
+      };
+    }).get();
+  }
+
+  function updateDefaultGroupSelect(groups, preferredDefault) {
+    var $sel = $('#id_default_group');
+    if (!$sel.length) {
+      return;
+    }
+
+    var previous = preferredDefault || $sel.val() || $sel.data('prev');
+    $sel.empty();
+
+    $.each(groups, function (i, group) {
+      $('<option/>').val(group.id_group).text(group.name).appendTo($sel);
+    });
+
+    if (previous && $sel.find('option[value="' + previous + '"]').length) {
+      $sel.val(String(previous));
+    } else if (groups.length) {
+      $sel.prop('selectedIndex', 0);
+    }
+
+    $sel.data('prev', $sel.val());
+  }
+
+  function syncDefaultGroupSelectFromForm(preferredDefault) {
+    updateDefaultGroupSelect(getCheckedGroupsFromForm(), preferredDefault);
+  }
 
   // Handle the master header checkbox that calls checkDelBoxes(...)
   // It toggles all .groupBox without firing 'change', so we enforce at least one
@@ -46,12 +105,7 @@ $(function () {
           $all.first().prop('checked', true);
         }
 
-        // red popup
-        if (typeof showErrorMessage === 'function') {
-          showErrorMessage(window.i18n_at_least_one_group || 'A customer must belong to at least one group.');
-        } else if ($.growl && $.growl.error) {
-          $.growl.error({ title: '', message: window.i18n_at_least_one_group || 'A customer must belong to at least one group.' });
-        }
+        showGroupError(messages.atLeastOneGroup);
       }
 
       // trigger our normal handler so associations are saved
@@ -68,21 +122,19 @@ $(function () {
   $('.groupBox').on('change', function () {
     var $changed = $(this);
     var idCustomer = $('input[name="id_customer"]').val();
-    if (!idCustomer) {
+    var groups = getCheckedGroupsFromForm();
+
+    if (groups.length === 0) {
+      showGroupError(messages.atLeastOneGroup);
+      // revert the last toggle
+      $changed.prop('checked', !$changed.prop('checked'));
+      syncDefaultGroupSelectFromForm();
       return;
     }
 
-    var groups = $('.groupBox:checked').map(function () { return $(this).val(); }).get();
+    syncDefaultGroupSelectFromForm();
 
-    if (groups.length === 0) {
-      // popup (red)
-      if (typeof showErrorMessage === 'function') {
-        showErrorMessage(window.i18n_at_least_one_group || 'A customer must belong to at least one group.');
-      } else if ($.growl && $.growl.error) {
-        $.growl.error({ title: '', message: window.i18n_at_least_one_group || 'A customer must belong to at least one group.' });
-      }
-      // revert the last toggle
-      $changed.prop('checked', !$changed.prop('checked'));
+    if (!idCustomer) {
       return;
     }
 
@@ -90,68 +142,37 @@ $(function () {
       type: 'POST',
       url: window.currentIndex + '&ajax=1&action=updateCustomerGroups&token=' + window.token,
       dataType: 'json',
-      data: { id_customer: idCustomer, 'groupBox': groups }
+      data: { id_customer: idCustomer, 'groupBox': $.map(groups, function (group) { return group.id_group; }) }
     })
     .done(function (data) {
       // error from controller
       if (!data || data.success === false) {
-        var msg = (data && data.message) ? data.message : (window.i18n_groups_failed || 'Could not update groups.');
-        if (typeof showErrorMessage === 'function') {
-          showErrorMessage(msg);
-        } else if ($.growl && $.growl.error) {
-          $.growl.error({ title: '', message: msg });
-        }
+        var msg = (data && data.message) ? data.message : messages.updateFailed;
+        showGroupError(msg);
         // revert checkbox state
         $changed.prop('checked', !$changed.prop('checked'));
+        syncDefaultGroupSelectFromForm();
         return;
       }
 
       if (!Array.isArray(data.groups) || data.groups.length === 0) {
-        var m = (data && data.message) ? data.message : (window.i18n_at_least_one_group || 'A customer must belong to at least one group.');
-        if (typeof showErrorMessage === 'function') {
-          showErrorMessage(m);
-        } else if ($.growl && $.growl.error) {
-          $.growl.error({ title: '', message: m });
-        }
+        var m = (data && data.message) ? data.message : messages.atLeastOneGroup;
+        showGroupError(m);
         $changed.prop('checked', !$changed.prop('checked'));
+        syncDefaultGroupSelectFromForm();
         return;
       }
 
       // rebuild the "Default customer group" select
-      var $sel = $('#id_default_group');
-      $sel.empty();
-      $.each(data.groups, function (i, g) {
-        $('<option/>').val(g.id_group).text(g.name).appendTo($sel);
-      });
-
-      // select the server-sent default (covers the case when old default was removed)
-      if (typeof data.id_default !== 'undefined' && $sel.find('option[value="' + data.id_default + '"]').length) {
-        $sel.val(String(data.id_default));
-      } else {
-        var prev = $sel.data('prev') || null;
-        if (prev && $sel.find('option[value="' + prev + '"]').length) {
-          $sel.val(prev);
-        } else {
-          $sel.prop('selectedIndex', 0);
-        }
-      }
-      $sel.data('prev', $sel.val());
+      updateDefaultGroupSelect(data.groups, data.id_default);
 
       // green popup
-      if (typeof showSuccessMessage === 'function') {
-        showSuccessMessage(window.i18n_groups_updated || (data.message || 'Group associations updated.'));
-      } else if ($.growl && $.growl.notice) {
-        $.growl.notice({ title: '', message: window.i18n_groups_updated || (data.message || 'Group associations updated.') });
-      }
+      showGroupSuccess(data.message || messages.groupsUpdated);
     })
     .fail(function () {
-      var msg = window.i18n_groups_failed || 'Could not update groups.';
-      if (typeof showErrorMessage === 'function') {
-        showErrorMessage(msg);
-      } else if ($.growl && $.growl.error) {
-        $.growl.error({ title: '', message: msg });
-      }
+      showGroupError(messages.updateFailed);
       $changed.prop('checked', !$changed.prop('checked'));
+      syncDefaultGroupSelectFromForm();
     });
   });
 
