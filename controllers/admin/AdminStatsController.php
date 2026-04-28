@@ -1052,10 +1052,14 @@ class AdminStatsControllerCore extends AdminStatsTabController
                 '
 			SELECT
 				LEFT('.$dateColumn.', 10) as date,
-				SUM(od.`product_quantity` * IF(
+				SUM(IF(
 					od.`purchase_supplier_price` > 0,
-					od.`purchase_supplier_price` / `conversion_rate`,
-					od.`original_product_price` * '.(int) Configuration::get('CONF_AVERAGE_PRODUCT_MARGIN').' / 100
+					od.`product_quantity` * od.`purchase_supplier_price` / o.`conversion_rate`,
+					IF(
+						od.`original_wholesale_price` > 0,
+						od.`product_quantity` * od.`original_wholesale_price` / o.`conversion_rate`,
+						od.`total_price_tax_excl` / o.`conversion_rate` * (100 - '.(int) Configuration::get('CONF_AVERAGE_PRODUCT_MARGIN').') / 100
+					)
 				)) as total_purchase_price
 			FROM `'._DB_PREFIX_.'orders` o
 			LEFT JOIN `'._DB_PREFIX_.'order_detail` od ON o.id_order = od.id_order
@@ -1072,10 +1076,14 @@ class AdminStatsControllerCore extends AdminStatsTabController
         } else {
             return (float)$conn->getValue(
                 '
-			SELECT SUM(od.`product_quantity` * IF(
+			SELECT SUM(IF(
 				od.`purchase_supplier_price` > 0,
-				od.`purchase_supplier_price` / `conversion_rate`,
-				od.`original_product_price` * '.(int) Configuration::get('CONF_AVERAGE_PRODUCT_MARGIN').' / 100
+				od.`product_quantity` * od.`purchase_supplier_price` / o.`conversion_rate`,
+				IF(
+					od.`original_wholesale_price` > 0,
+					od.`product_quantity` * od.`original_wholesale_price` / o.`conversion_rate`,
+					od.`total_price_tax_excl` / o.`conversion_rate` * (100 - '.(int) Configuration::get('CONF_AVERAGE_PRODUCT_MARGIN').') / 100
+				)
 			)) as total_purchase_price
 			FROM `'._DB_PREFIX_.'orders` o
 			LEFT JOIN `'._DB_PREFIX_.'order_detail` od ON o.id_order = od.id_order
