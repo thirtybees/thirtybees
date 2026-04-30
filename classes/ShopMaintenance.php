@@ -27,6 +27,26 @@
 class ShopMaintenanceCore
 {
     /**
+     * General maintenance run interval, in seconds.
+     */
+    const MAINTENANCE_INTERVAL = 86400;
+
+    /**
+     * Automatic backup interval, in seconds.
+     */
+    const BACKUP_INTERVAL = 86400;
+
+    /**
+     * Global configuration key holding the timestamp of the last maintenance run.
+     */
+    const LAST_RUN_CONFIGURATION = 'SHOP_MAINTENANCE_LAST_RUN';
+
+    /**
+     * Global configuration key holding the timestamp of the last successful automatic backup.
+     */
+    const LAST_BACKUP_CONFIGURATION = 'SHOP_MAINTENANCE_LAST_BACKUP';
+
+    /**
      * Database lock name.
      */
     const BACKUP_LOCK_NAME = 'TB_AUTO_BACKUP_LOCK';
@@ -43,18 +63,22 @@ class ShopMaintenanceCore
     public static function run()
     {
         $now = time();
-        $lastRun = Configuration::getGlobalValue('SHOP_MAINTENANCE_LAST_RUN');
-        if ($now - $lastRun > 86400) {
+        $lastRun = (int) Configuration::getGlobalValue(static::LAST_RUN_CONFIGURATION);
+        if ($now - $lastRun > static::MAINTENANCE_INTERVAL) {
             // Run daily tasks.
             static::adjustThemeHeaders();
             static::optinShop();
             static::cleanAdminControllerMessages();
             static::cleanOldLogFiles();
             static::cleanOldThemeCacheFiles();
-            static::autoDbBackup();
             static::deleteOldDbBackupFiles();
 
-            Configuration::updateGlobalValue('SHOP_MAINTENANCE_LAST_RUN', $now);
+            Configuration::updateGlobalValue(static::LAST_RUN_CONFIGURATION, $now);
+        }
+
+        $lastBackup = (int) Configuration::getGlobalValue(static::LAST_BACKUP_CONFIGURATION);
+        if (Configuration::get('TB_DB_AUTO_BACKUP') && $now - $lastBackup > static::BACKUP_INTERVAL) {
+            static::autoDbBackup();
         }
     }
 
@@ -183,26 +207,44 @@ class ShopMaintenanceCore
     /**
      * Automatically create a database backup if the automatic backup feature is enabled.
      *
-     * @return void
-     * @throws PrestaShopException
+     * @return bool True if backup was created, false otherwise.
      */
     public static function autoDbBackup()
     {
         if (!Configuration::get('TB_DB_AUTO_BACKUP')) {
-            return;
+            return false;
         }
 
-        if (!self::lock()) {
-            throw new PrestaShopException('Automatic backup skipped - lock not acquired');
+        if (!static::lock()) {
+            return false;
         }
 
         try {
             $backup = new PrestaShopBackup();
-            if (!$backup->add()) {
-                throw new PrestaShopException('Automatic backup failed: backup->add() returned false');
+            $output = '';
+
+            ob_start();
+            try {
+                $result = $backup->add();
+            } finally {
+                $output = trim(strip_tags((string) ob_get_clean()));
             }
+
+            if (!$result) {
+                static::logBackupFailure($output ?: 'Automatic backup failed: backup->add() returned false');
+
+                return false;
+            }
+
+            Configuration::updateGlobalValue(static::LAST_BACKUP_CONFIGURATION, time());
+
+            return true;
+        } catch (Throwable $e) {
+            static::logBackupFailure('Automatic backup failed: ' . $e->getMessage());
+
+            return false;
         } finally {
-            self::releaseLock();
+            static::releaseLock();
         }
     }
 
@@ -215,7 +257,7 @@ class ShopMaintenanceCore
     {
         try {
             $connection = Db::getInstance();
-            return (bool)(int)$connection->getValue("SELECT GET_LOCK('" . static::BACKUP_LOCK_NAME . "', 3)");
+            return (bool)(int)$connection->getValue("SELECT GET_LOCK('" . static::BACKUP_LOCK_NAME . "', 0)");
         } catch (Throwable $e) {
             return false;
         }
@@ -233,6 +275,18 @@ class ShopMaintenanceCore
             $connection->execute("SELECT RELEASE_LOCK('" . static::BACKUP_LOCK_NAME . "')");
         } catch (Throwable $ignored) {
         }
+    }
+
+    /**
+     * Log automatic backup failures without interrupting the admin notification polling request.
+     *
+     * @param string $message
+     *
+     * @return void
+     */
+    protected static function logBackupFailure($message)
+    {
+        PrestaShopLogger::addLog($message, 3, null, 'ShopMaintenance', null, true);
     }
     
     /**
