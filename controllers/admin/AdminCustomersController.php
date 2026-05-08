@@ -748,6 +748,7 @@ class AdminCustomersControllerCore extends AdminController
                 break;
             }
         }
+        unset($input);
 
         foreach ($groups as $group) {
             $this->fields_value['groupBox_'.$group['id_group']] =
@@ -1425,90 +1426,6 @@ class AdminCustomersControllerCore extends AdminController
             }
             $this->ajaxDie('ok');
         }
-    }
-
-    /**
-     * Update customer groups
-     *
-     * @return void
-     *
-     * @throws PrestaShopException
-     */
-    public function ajaxProcessUpdateCustomerGroups()
-    {
-        if (!$this->hasEditPermission()) {
-            if (!headers_sent()) {
-                header('Content-Type: application/json; charset=utf-8');
-            }
-            $this->ajaxDie(json_encode([
-                'success' => false,
-                'message' => $this->l('You do not have permission to edit this.'),
-                'groups'  => [],
-            ]));
-        }
-
-        $idCustomer = Tools::getIntValue('id_customer');
-        $groupIds   = Tools::getValue('groupBox');
-        $groupIds   = is_array($groupIds) ? array_map('intval', $groupIds) : [];
-
-        if (empty($groupIds)) {
-            if (!headers_sent()) {
-                header('Content-Type: application/json; charset=utf-8');
-            }
-            $this->ajaxDie(json_encode([
-                'success' => false,
-                'message' => $this->l('A customer must belong to at least one group.'),
-                'groups'  => [],
-            ]));
-        }
-
-        $customer = new Customer($idCustomer);
-        if (!Validate::isLoadedObject($customer)) {
-            if (!headers_sent()) {
-                header('Content-Type: application/json; charset=utf-8');
-            }
-            $this->ajaxDie(json_encode([
-                'success' => false,
-                'message' => $this->l('Unable to load customer.'),
-                'groups'  => [],
-            ]));
-        }
-
-        // Determine the default group: keep if still associated, otherwise switch to the first posted group
-        $newDefault = in_array((int)$customer->id_default_group, $groupIds)
-            ? (int)$customer->id_default_group
-            : (int)reset($groupIds);
-
-        // Save associations
-        $customer->updateGroup($groupIds);
-
-        // Persist new default if it changed
-        if ($newDefault !== (int)$customer->id_default_group) {
-            $customer->id_default_group = $newDefault;
-            $customer->update();
-        }
-
-        // Build list for dropdown (associated groups only)
-        $groups = [];
-        $allGroups = Group::getGroups($this->context->language->id, true);
-        foreach ($allGroups as $g) {
-            if (in_array((int)$g['id_group'], $groupIds, true)) {
-                $groups[] = [
-                    'id_group' => (int)$g['id_group'],
-                    'name'     => $g['name'],
-                ];
-            }
-        }
-
-        if (!headers_sent()) {
-            header('Content-Type: application/json; charset=utf-8');
-        }
-        $this->ajaxDie(json_encode([
-            'success'    => true,
-            'message'    => $this->l('Group associations updated.'),
-            'groups'     => $groups,
-            'id_default' => $newDefault,
-        ]));
     }
 
     /**
