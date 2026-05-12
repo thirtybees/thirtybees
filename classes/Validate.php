@@ -1522,4 +1522,36 @@ class ValidateCore
     {
         return (bool)(preg_match('/^(?:'.Configuration::get('PS_INVOICE_PREFIX', Context::getContext()->language->id).')\s*([0-9]+)$/i', $id));
     }
+
+    /**
+     * @param string $s
+     * @return bool
+     */
+    public static function isHsCode($s)
+    {
+        $s = (string)$s;
+        return $s === '' || preg_match('/^[0-9]{6,12}$/', $s);
+    }
+
+    /**
+     * @param string $s
+     * @return bool
+     */
+    public static function isUnNumber($s)
+    {
+        $s = (string)$s;
+        return $s === '' || preg_match('/^[0-9]{4}$/', $s);
+    }
+
+    /**
+     * @param string $s
+     * @return bool
+     */
+    public static function isHazardClass($s)
+    {
+        // 1, 1.4S, 2.1, 9 ...
+        $s = (string)$s;
+        return $s === '' || preg_match('/^[1-9](\.[0-9][A-Z]?)?$/', $s);
+    }
+
 }
