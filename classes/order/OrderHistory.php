@@ -472,18 +472,22 @@ class OrderHistoryCore extends ObjectModel
             if (! $subject) {
                 $subject = trim((string)$result['osname']);
             }
-            $carrierUrl = '';
-            if (Validate::isLoadedObject($carrier = new Carrier((int) $order->id_carrier, $order->id_lang))) {
-                $carrierUrl = (string)$carrier->url;
-            }
 
+            $trackingNumber = '';
+            $trackingUrl = '';
+            $carrier = new Carrier((int) $order->id_carrier, $order->id_lang);
+
+            if (Validate::isLoadedObject($carrier)) {
+                $trackingNumber = $carrier->getTrackingNumber($order);
+                $trackingUrl = $carrier->getTrackingUrl($order, $trackingNumber);
+            }
             $data = [
                 '{lastname}'   => $result['lastname'],
                 '{firstname}'  => $result['firstname'],
                 '{id_order}'   => (int) $this->id_order,
                 '{order_name}' => $order->getUniqReference(),
-                '{followup}' => str_replace('@', $order->getWsShippingNumber(), $carrierUrl),
-                '{shipping_number}' => $order->getWsShippingNumber(),
+                '{followup}' => $trackingUrl,
+                '{shipping_number}' => $trackingNumber,
                 '{invoice_number}' => $order->invoice_number,
             ];
 
