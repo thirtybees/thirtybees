@@ -2832,17 +2832,27 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public static function getAccessoriesLight($idLang, $idProduct)
     {
+        $idProduct = (int) $idProduct;
+        $joinProduct = 'p.`id_product` = a.`id_product_2`';
+        $where = 'a.`id_product_1` = '.$idProduct;
+        if (static::areAccessoriesReciprocal()) {
+            $joinProduct = 'p.`id_product` = IF(a.`id_product_1` = '.$idProduct.', a.`id_product_2`, a.`id_product_1`)';
+            $where = '(a.`id_product_1` = '.$idProduct.' OR a.`id_product_2` = '.$idProduct.')';
+        }
+
         return Db::readOnly()->getArray(
             '
 			SELECT p.`id_product`, p.`reference`, pl.`name`
-			FROM `'._DB_PREFIX_.'accessory`
-			LEFT JOIN `'._DB_PREFIX_.'product` p ON (p.`id_product`= `id_product_2`)
+			FROM `'._DB_PREFIX_.'accessory` a
+			LEFT JOIN `'._DB_PREFIX_.'product` p ON ('.$joinProduct.')
 			'.Shop::addSqlAssociation('product', 'p').'
 			LEFT JOIN `'._DB_PREFIX_.'product_lang` pl ON (
 				p.`id_product` = pl.`id_product`
 				AND pl.`id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('pl').'
 			)
-			WHERE `id_product_1` = '.(int) $idProduct
+			WHERE '.$where.'
+                AND p.`id_product` != '.$idProduct.'
+            GROUP BY p.`id_product`'
         );
     }
 
@@ -2857,6 +2867,140 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public static function getAccessoryById($idProduct)
     {
         return Db::readOnly()->getRow('SELECT `id_product`, `name` FROM `'._DB_PREFIX_.'product_lang` WHERE `id_product` = '.(int) $idProduct);
+    }
+
+    /**
+     * Returns true when product accessories should be saved as reciprocal links.
+     *
+     * @return bool
+     */
+    public static function areAccessoriesReciprocal()
+    {
+        return (bool) Configuration::get('PS_PRODUCT_ACCESSORIES_RECIPROCAL');
+    }
+
+    /**
+     * @param array $accessoriesId
+     * @param int $idProduct
+     *
+     * @return int[]
+     */
+    protected static function normalizeAccessoryIds($accessoriesId, $idProduct)
+    {
+        if (!is_array($accessoriesId)) {
+            $accessoriesId = [$accessoriesId];
+        }
+
+        $normalized = [];
+        foreach ($accessoriesId as $idAccessory) {
+            $idAccessory = (int) $idAccessory;
+            if ($idAccessory > 0 && $idAccessory !== (int) $idProduct) {
+                $normalized[$idAccessory] = $idAccessory;
+            }
+        }
+
+        return array_values($normalized);
+    }
+
+    /**
+     * @param int $idProduct1
+     * @param int $idProduct2
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected static function accessoryLinkExists($idProduct1, $idProduct2)
+    {
+        return (bool) Db::readOnly()->getValue(
+            'SELECT 1
+            FROM `'._DB_PREFIX_.'accessory`
+            WHERE `id_product_1` = '.(int) $idProduct1.'
+                AND `id_product_2` = '.(int) $idProduct2
+        );
+    }
+
+    /**
+     * @param int $idProduct1
+     * @param int $idProduct2
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function addAccessoryLink($idProduct1, $idProduct2)
+    {
+        $idProduct1 = (int) $idProduct1;
+        $idProduct2 = (int) $idProduct2;
+        if ($idProduct1 <= 0 || $idProduct2 <= 0 || $idProduct1 === $idProduct2) {
+            return true;
+        }
+
+        if (static::accessoryLinkExists($idProduct1, $idProduct2)) {
+            return true;
+        }
+
+        return Db::getInstance()->insert(
+            'accessory',
+            [
+                'id_product_1' => $idProduct1,
+                'id_product_2' => $idProduct2,
+            ]
+        );
+    }
+
+    /**
+     * @param int $idProduct
+     * @param bool $reciprocal
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function deleteAccessoriesForProduct($idProduct, $reciprocal = false)
+    {
+        $idProduct = (int) $idProduct;
+        if ($idProduct <= 0) {
+            return true;
+        }
+
+        $where = '`id_product_1` = '.$idProduct;
+        if ($reciprocal) {
+            $where .= ' OR `id_product_2` = '.$idProduct;
+        }
+
+        return Db::getInstance()->delete('accessory', $where);
+    }
+
+    /**
+     * Link accessories with product without inflating a Product instance.
+     *
+     * @param array $accessoriesId Accessories ids
+     * @param int $idProduct
+     * @param bool|null $reciprocal
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function changeAccessoriesForProduct($accessoriesId, $idProduct, $reciprocal = null)
+    {
+        $idProduct = (int) $idProduct;
+        $reciprocal = ($reciprocal === null) ? static::areAccessoriesReciprocal() : (bool) $reciprocal;
+        $return = true;
+
+        foreach (static::normalizeAccessoryIds($accessoriesId, $idProduct) as $idProduct2) {
+            $return = static::addAccessoryLink($idProduct, $idProduct2) && $return;
+            if ($reciprocal) {
+                $return = static::addAccessoryLink($idProduct2, $idProduct) && $return;
+            }
+        }
+
+        return $return;
     }
 
     /**
@@ -3173,19 +3317,17 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public static function duplicateAccessories($idProductOld, $idProductNew)
     {
         $return = true;
+        $reciprocal = static::areAccessoriesReciprocal();
 
         $result = Db::readOnly()->getArray(
             '
 		SELECT *
 		FROM `'._DB_PREFIX_.'accessory`
-		WHERE `id_product_1` = '.(int) $idProductOld
+		WHERE `id_product_1` = '.(int) $idProductOld.($reciprocal ? ' OR `id_product_2` = '.(int) $idProductOld : '')
         );
         foreach ($result as $row) {
-            $data = [
-                'id_product_1' => (int) $idProductNew,
-                'id_product_2' => (int) $row['id_product_2'],
-            ];
-            $return = Db::getInstance()->insert('accessory', $data) && $return;
+            $idProduct2 = ((int) $row['id_product_1'] === (int) $idProductOld) ? (int) $row['id_product_2'] : (int) $row['id_product_1'];
+            $return = static::changeAccessoriesForProduct([$idProduct2], (int) $idProductNew, $reciprocal) && $return;
         }
 
         return $return;
@@ -4673,14 +4815,16 @@ class ProductCore extends ObjectModel implements InitializationCallback
     /**
      * Delete product accessories
      *
+     * @param bool $reciprocal
+     *
      * @return bool Deletion result
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function deleteAccessories()
+    public function deleteAccessories($reciprocal = false)
     {
-        return Db::getInstance()->delete('accessory', 'id_product_1 = '.(int) $this->id);
+        return static::deleteAccessoriesForProduct((int) $this->id, (bool) $reciprocal);
     }
 
     /**
@@ -6288,6 +6432,14 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public function getAccessories($idLang, $active = true)
     {
+        $idProduct = (int) $this->id;
+        $joinProduct = 'p.`id_product` = a.`id_product_2`';
+        $where = 'a.`id_product_1` = '.$idProduct;
+        if (static::areAccessoriesReciprocal()) {
+            $joinProduct = 'p.`id_product` = IF(a.`id_product_1` = '.$idProduct.', a.`id_product_2`, a.`id_product_1`)';
+            $where = '(a.`id_product_1` = '.$idProduct.' OR a.`id_product_2` = '.$idProduct.')';
+        }
+
         $sql = 'SELECT p.*, product_shop.*, stock.out_of_stock, IFNULL(stock.quantity, 0) as quantity, pl.`description`, pl.`description_short`, pl.`link_rewrite`,
 					pl.`meta_description`, pl.`meta_keywords`, pl.`meta_title`, pl.`name`, pl.`available_now`, pl.`available_later`,
 					image_shop.`id_image` id_image, il.`legend`, m.`name` as manufacturer_name, cl.`name` AS category_default, IFNULL(product_attribute_shop.id_product_attribute, 0) id_product_attribute,
@@ -6298,8 +6450,8 @@ class ProductCore extends ObjectModel implements InitializationCallback
 							INTERVAL '.(Validate::isUnsignedInt(Configuration::get('PS_NB_DAYS_NEW_PRODUCT')) ? Configuration::get('PS_NB_DAYS_NEW_PRODUCT') : 20).' DAY
 						)
 					) > 0 AS new
-				FROM `'._DB_PREFIX_.'accessory`
-				LEFT JOIN `'._DB_PREFIX_.'product` p ON p.`id_product` = `id_product_2`
+				FROM `'._DB_PREFIX_.'accessory` a
+				LEFT JOIN `'._DB_PREFIX_.'product` p ON '.$joinProduct.'
 				'.Shop::addSqlAssociation('product', 'p').'
 				LEFT JOIN `'._DB_PREFIX_.'product_attribute_shop` product_attribute_shop
 					ON (p.`id_product` = product_attribute_shop.`id_product` AND product_attribute_shop.`default_on` = 1 AND product_attribute_shop.id_shop='.(int) $this->id_shop.')
@@ -6316,7 +6468,8 @@ class ProductCore extends ObjectModel implements InitializationCallback
 				LEFT JOIN `'._DB_PREFIX_.'image_lang` il ON (image_shop.`id_image` = il.`id_image` AND il.`id_lang` = '.(int) $idLang.')
 				LEFT JOIN `'._DB_PREFIX_.'manufacturer` m ON (p.`id_manufacturer`= m.`id_manufacturer`)
 				'.static::sqlStock('p', 0).'
-				WHERE `id_product_1` = '.(int) $this->id.
+				WHERE '.$where.'
+                    AND p.`id_product` != '.$idProduct.
             ($active ? ' AND product_shop.`active` = 1 AND product_shop.`visibility` != \'none\'' : '').'
 				GROUP BY product_shop.id_product';
 
@@ -6336,20 +6489,32 @@ class ProductCore extends ObjectModel implements InitializationCallback
      *
      * @param array $accessoriesId Accessories ids
      *
+     * @return bool
+     *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
     public function changeAccessories($accessoriesId)
     {
-        foreach ($accessoriesId as $idProduct2) {
-            Db::getInstance()->insert(
-                'accessory',
-                [
-                    'id_product_1' => (int) $this->id,
-                    'id_product_2' => (int) $idProduct2,
-                ]
-            );
-        }
+        return static::changeAccessoriesForProduct($accessoriesId, (int) $this->id);
+    }
+
+    /**
+     * Replace product accessories with submitted accessories.
+     *
+     * @param array $accessoriesId Accessories ids
+     * @param bool|null $reciprocal
+     *
+     * @return bool
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function setAccessories($accessoriesId, $reciprocal = null)
+    {
+        $reciprocal = ($reciprocal === null) ? static::areAccessoriesReciprocal() : (bool) $reciprocal;
+
+        return $this->deleteAccessories($reciprocal) && static::changeAccessoriesForProduct($accessoriesId, (int) $this->id, $reciprocal);
     }
 
     /**
@@ -7214,13 +7379,23 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public function getWsAccessories()
     {
+        $idProduct = (int) $this->id;
+        $joinProduct = 'p.`id_product` = a.`id_product_2`';
+        $where = 'a.`id_product_1` = '.$idProduct;
+        if (static::areAccessoriesReciprocal()) {
+            $joinProduct = 'p.`id_product` = IF(a.`id_product_1` = '.$idProduct.', a.`id_product_2`, a.`id_product_1`)';
+            $where = '(a.`id_product_1` = '.$idProduct.' OR a.`id_product_2` = '.$idProduct.')';
+        }
+
         return Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('p.`id_product` AS `id`')
                 ->from('accessory', 'a')
-                ->leftJoin('product', 'p', 'p.`id_product` = a.`id_product_2`')
+                ->leftJoin('product', 'p', $joinProduct)
                 ->join(Shop::addSqlAssociation('product', 'p'))
-                ->where('a.`id_product_1` = '.(int) $this->id)
+                ->where($where)
+                ->where('p.`id_product` != '.$idProduct)
+                ->groupBy('p.`id_product`')
         );
     }
 
@@ -7234,19 +7409,14 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public function setWsAccessories($accessories)
     {
-        $this->deleteAccessories();
-        $id = (int)$this->id;
+        $accessoryIds = [];
         foreach ($accessories as $accessory) {
             if (isset($accessory['id']) && (int)$accessory['id']) {
-                $accessoryId = (int)$accessory['id'];
-                Db::getInstance()->insert('accessory', [
-                    'id_product_1' => $id,
-                    'id_product_2' => $accessoryId,
-                ]);
+                $accessoryIds[] = (int) $accessory['id'];
             }
         }
 
-        return true;
+        return $this->setAccessories($accessoryIds);
     }
 
     /**

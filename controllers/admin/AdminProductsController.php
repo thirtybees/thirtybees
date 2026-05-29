@@ -2182,14 +2182,12 @@ class AdminProductsControllerCore extends AdminController
      */
     public function updateAccessories($product)
     {
-        $product->deleteAccessories();
+        $accessoriesId = [];
         if ($accessories = Tools::getValue('inputAccessories')) {
-            $accessoriesId = array_unique(explode('-', $accessories));
-            if (count($accessoriesId)) {
-                array_pop($accessoriesId);
-                $product->changeAccessories($accessoriesId);
-            }
+            $accessoriesId = explode('-', $accessories);
         }
+
+        $product->setAccessories($accessoriesId);
     }
 
     /**
