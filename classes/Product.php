@@ -479,6 +479,146 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public $pack_quantity = null;
 
     /**
+     * Used by product CSV import to hold category IDs before association update.
+     *
+     * @var int[]
+     */
+    public $id_category;
+
+    /**
+     * Used by product CSV import to hold tax excluded price.
+     *
+     * @var float
+     */
+    public $price_tex;
+
+    /**
+     * Used by product CSV import to hold tax included price.
+     *
+     * @var float
+     */
+    public $price_tin;
+
+    /**
+     * Used by product CSV import to hold specific price reduction amount.
+     *
+     * @var float
+     */
+    public $reduction_price;
+
+    /**
+     * Used by product CSV import to hold specific price reduction percent.
+     *
+     * @var float
+     */
+    public $reduction_percent;
+
+    /**
+     * Used by product CSV import to hold specific price reduction start date.
+     *
+     * @var string
+     */
+    public $reduction_from;
+
+    /**
+     * Used by product CSV import to hold specific price reduction end date.
+     *
+     * @var string
+     */
+    public $reduction_to;
+
+    /**
+     * Used by product CSV import to hold supplier ID or name.
+     *
+     * @var int|string
+     */
+    public $supplier;
+
+    /**
+     * Used by product CSV import to hold manufacturer ID or name.
+     *
+     * @var int|string
+     */
+    public $manufacturer;
+
+    /**
+     * Used by product CSV import to hold image URLs.
+     *
+     * @var string[]
+     */
+    public $image;
+
+    /**
+     * Used by product CSV import to hold image alt texts.
+     *
+     * @var string[]
+     */
+    public $image_alt;
+
+    /**
+     * Used by product CSV import to request deletion of existing images.
+     *
+     * @var bool|int|string
+     */
+    public $delete_existing_images;
+
+    /**
+     * Used by product CSV import to hold feature definitions.
+     *
+     * @var string
+     */
+    public $features;
+
+    /**
+     * Used by product CSV import to hold shop IDs or names.
+     *
+     * @var int|string
+     */
+    public $shop;
+
+    /**
+     * Used by product CSV import to hold warehouse ID.
+     *
+     * @var int|string
+     */
+    public $warehouse;
+
+    /**
+     * Used by product CSV import to hold accessory product IDs.
+     *
+     * @var int[]
+     */
+    public $accessories;
+
+    /**
+     * Used by product CSV import to hold virtual product file URL.
+     *
+     * @var string
+     */
+    public $file_url;
+
+    /**
+     * Used by product CSV import to hold allowed download count.
+     *
+     * @var int|string
+     */
+    public $nb_downloadable;
+
+    /**
+     * Used by product CSV import to hold virtual product expiration date.
+     *
+     * @var string
+     */
+    public $date_expiration;
+
+    /**
+     * Used by product CSV import to hold virtual product access duration.
+     *
+     * @var int|string
+     */
+    public $nb_days_accessible;
+
+    /**
      * @var array
      */
     public static $definition = [
