@@ -1428,7 +1428,7 @@ class FrontControllerCore extends Controller
                 Logger::addLog('Frontcontroller::init - GEOLOCATION is deleting a cart', 1, null, 'Cart', (int) $this->context->cookie->id_cart, true);
                 unset($this->context->cookie->id_cart, $cart);
             } // update cart values
-            elseif ($this->context->cookie->id_customer != $cart->id_customer || $this->context->cookie->id_lang != $cart->id_lang || $currency->id != $cart->id_currency) {
+            elseif (Validate::isLoadedObject($cart) && ($this->context->cookie->id_customer != $cart->id_customer || $this->context->cookie->id_lang != $cart->id_lang || $currency->id != $cart->id_currency)) {
                 if ($this->context->cookie->id_customer) {
                     $cart->id_customer = (int) $this->context->cookie->id_customer;
                 }
@@ -1437,27 +1437,21 @@ class FrontControllerCore extends Controller
                 $cart->update();
             }
             /* Select an address if not set */
-            if (isset($cart) && $this->context->cookie->id_customer
-                && (!$cart->id_address_delivery || !$cart->id_address_invoice)) {
+            if (isset($cart) && Validate::isLoadedObject($cart) && (!$cart->id_address_delivery || !$cart->id_address_invoice)) {
                 $idFirstAddress = (int) Address::getFirstCustomerAddressId($cart->id_customer);
                 if ($idFirstAddress) {
-                    $toUpdate = false;
                     if (!$cart->id_address_delivery) {
-                        $toUpdate = true;
                         $cart->id_address_delivery = $idFirstAddress;
                     }
                     if (!$cart->id_address_invoice) {
-                        $toUpdate = true;
                         $cart->id_address_invoice = $idFirstAddress;
                     }
-                    if ($toUpdate) {
-                        $cart->update();
-                    }
+                    $cart->update();
                 }
             }
         }
 
-        if (!isset($cart) || !$cart->id) {
+        if (!isset($cart) || !Validate::isLoadedObject($cart)) {
             $cart = new Cart();
             $cart->id_lang = (int) $this->context->cookie->id_lang;
             $cart->id_currency = (int) $this->context->cookie->id_currency;
