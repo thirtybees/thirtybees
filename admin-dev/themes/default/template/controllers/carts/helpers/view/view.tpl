@@ -72,7 +72,7 @@
 			{else}
 				<h2>{l s='No order was created from this cart.'}</h2>
 				{if $customer->id}
-					<a class="btn btn-default" href="{$link->getAdminLink('AdminOrders')|escape:'html':'UTF-8'}&amp;id_cart={$cart->id|intval}&amp;addorder"><i class="icon-shopping-cart"></i> {l s='Create an order from this cart.'}</a>
+					<a class="btn btn-default" href="{$link->getAdminLink('AdminOrders')|escape:'html':'UTF-8'}&amp;id_cart={$cart->id|intval}&amp;addorder&amp;setShopContext=s-{$cart->id_shop|intval}"><i class="icon-shopping-cart"></i> {l s='Create an order from this cart.'}</a>
 				{/if}
 			{/if}
 		</div>
