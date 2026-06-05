@@ -2131,4 +2131,58 @@ class CarrierCore extends ObjectModel implements InitializationCallback
             'WHERE l.display_name = "" AND c.name != ""'
         );
     }
+
+    /**
+     * @param Order $order
+     * @param string|null $trackingNumber
+     * @return string
+     * @throws PrestaShopException
+     */
+    public function getTrackingUrl(Order $order, ?string $trackingNumber = null): string
+    {
+        if (! $this->url) {
+            return '';
+        }
+
+        $postcode = '';
+        $countryIso = '';
+
+        $tracking = is_null($trackingNumber)
+            ? $this->getTrackingNumber($order)
+            : (string)$trackingNumber;
+
+        $reference = (string)$order->reference;
+        if ((int) $order->id_address_delivery > 0) {
+            $address = new Address((int) $order->id_address_delivery);
+            if (Validate::isLoadedObject($address)) {
+                $postcode   = strtoupper(str_replace(' ', '', (string) $address->postcode));
+                $countryIso = (string) Country::getIsoById((int) $address->id_country);
+            }
+        }
+
+        $url = strtr($this->url, [
+            '{tracking_number}' => $tracking,
+            '{postcode}'        => $postcode,
+            '{country_iso}'     => $countryIso,
+            '{reference}'       => $reference,
+        ]);
+
+        return str_replace('@', $tracking, $url); // legacy alias
+    }
+
+    /**
+     * @param Order $order
+     * @return string
+     * @throws PrestaShopException
+     */
+    public function getTrackingNumber(Order $order): string
+    {
+        $sql = (new DbQuery())
+            ->select('tracking_number')
+            ->from('order_carrier', 'oc')
+            ->innerJoin('carrier', 'c', '(c.id_carrier = oc.id_carrier)')
+            ->where('c.id_reference = ' . (int)$this->id_reference)
+            ->where('oc.id_order = ' . (int)$order->id);
+        return (string)Db::readOnly()->getValue($sql);
+    }
 }

@@ -412,7 +412,7 @@ class OrderOpcControllerCore extends ParentOrderController
             return '<p class="center"><button class="button btn btn-default button-medium" name="confirmOrder" id="confirmOrder" onclick="confirmFreeOrder();" type="submit"> <span>'.Tools::displayError('I confirm my order.').'</span></button></p>';
         }
 
-        $return = Hook::displayHook('displayPayment');
+        $return = $this->getDisplayPaymentOptions();
         if (!$return) {
             return '<p class="warning">'.Tools::displayError('No payment method is available for use at this time. ').'</p>';
         }

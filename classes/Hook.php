@@ -439,6 +439,9 @@ class HookCore extends ObjectModel
             $disableNonNativeModules = (bool) Configuration::get('PS_DISABLE_NON_NATIVE_MODULE');
         }
 
+        //Allow namespaced objects to execute Hooks thirtybees\core will become thirtybees_core and can be defined as method
+        $hookName = static::normalizeHookName($hookName);
+
         // Check arguments validity
         if (($idModule && !is_numeric($idModule)) || !Validate::isHookName($hookName)) {
             throw new PrestaShopException('Invalid id_module or hook_name');
@@ -961,4 +964,14 @@ class HookCore extends ObjectModel
         return false;
     }
 
+    /**
+     * @param string $hookName
+     * @return string
+     */
+    protected static function normalizeHookName(string $hookName): string
+    {
+        return preg_replace_callback('#\\\([a-z])#i', function($c) {
+            return strtoupper($c[1]);
+        }, $hookName);
+    }
 }

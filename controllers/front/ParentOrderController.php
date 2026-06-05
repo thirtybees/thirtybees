@@ -738,7 +738,7 @@ class ParentOrderControllerCore extends FrontController
             $this->context->smarty->assign(
                 [
                     'HOOK_TOP_PAYMENT' => Hook::displayHook('displayPaymentTop'),
-                    'HOOK_PAYMENT'     => Hook::displayHook('displayPayment'),
+                    'HOOK_PAYMENT'     => $this->getDisplayPaymentOptions(),
                 ]
             );
         }
@@ -763,5 +763,31 @@ class ParentOrderControllerCore extends FrontController
         }
 
         return 0;
+    }
+
+    /**
+     * @return string
+     * @throws PrestaShopException
+     */
+    protected function getDisplayPaymentOptions(): string
+    {
+        $modulesList = Hook::getHookModuleExecList('actionProcessPaymentOptions');
+        if ($modulesList) {
+            $output = '';
+            $responses = Hook::getResponses('displayPayment');
+            foreach ($modulesList as $module) {
+                $moduleId = (int)$module['id_module'];
+                $newResponses = Hook::getResponse('actionProcessPaymentOptions', $moduleId, ['displayPayment' => $responses]);
+                if (is_array($newResponses)) {
+                    $responses = $newResponses;
+                }
+            }
+            if ($responses) {
+                $output = implode("\n", $responses);
+            }
+            return $output;
+        } else {
+            return Hook::displayHook('displayPayment') ;
+        }
     }
 }

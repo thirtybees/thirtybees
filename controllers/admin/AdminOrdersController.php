@@ -287,9 +287,6 @@ class AdminOrdersControllerCore extends AdminController
         if ($idCart && !Validate::isLoadedObject($cart)) {
             $this->errors[] = $this->l('This cart does not exists');
         }
-        if ($idCart && Validate::isLoadedObject($cart) && !$cart->id_customer) {
-            $this->errors[] = $this->l('The cart must have a customer');
-        }
         if (count($this->errors)) {
             return;
         }
@@ -526,11 +523,14 @@ class AdminOrdersControllerCore extends AdminController
                                     '{bankwire_details}' => (string) nl2br(Configuration::get('BANK_WIRE_DETAILS')),
                                     '{bankwire_address}' => (string) nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
                                 ];
-                                if ($history->id_order_state == Configuration::get('PS_OS_SHIPPING') && $order->shipping_number) {
-                                    $templateVars = [
-                                        '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
-                                        '{shipping_number}'  => $order->shipping_number,
-                                    ];
+                                if ($history->id_order_state == Configuration::get('PS_OS_SHIPPING')) {
+                                    $trackingNumber = $carrier->getTrackingNumber($order);
+                                    if ($trackingNumber) {
+                                        $templateVars = array_merge($templateVars, [
+                                            '{followup}' => $carrier->getTrackingUrl($order, $trackingNumber),
+                                            '{shipping_number}' => $trackingNumber,
+                                        ]);
+                                    }
                                 }
 
                                 if ($history->add()) {
@@ -674,11 +674,14 @@ class AdminOrdersControllerCore extends AdminController
                             '{bankwire_details}' => (string) nl2br(Configuration::get('BANK_WIRE_DETAILS')),
                             '{bankwire_address}' => (string) nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
                         ];
-                        if ($history->id_order_state == Configuration::get('PS_OS_SHIPPING') && $order->shipping_number) {
-                            $templateVars = [
-                                '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
-                                '{shipping_number}'  => $order->shipping_number,
-                            ];
+                        if ($history->id_order_state == Configuration::get('PS_OS_SHIPPING')) {
+                            $trackingNumber = $carrier->getTrackingNumber($order);
+                            if ($trackingNumber) {
+                                $templateVars = array_merge($templateVars, [
+                                    '{followup}' => $carrier->getTrackingUrl($order, $trackingNumber),
+                                    '{shipping_number}' => $trackingNumber,
+                                ]);
+                            }
                         }
 
                         // Save all changes
@@ -1353,32 +1356,36 @@ class AdminOrdersControllerCore extends AdminController
                 $paymentModule = $this->getPaymentModule();
 
                 $cart = new Cart((int) $idCart);
-                $this->context->currency = new Currency((int) $cart->id_currency);
-                $this->context->customer = new Customer((int) $cart->id_customer);
-
-                if (($badDelivery = !Address::isCountryActiveById((int) $cart->id_address_delivery))
-                    || !Address::isCountryActiveById((int) $cart->id_address_invoice)
-                ) {
-                    if ($badDelivery) {
-                        $this->errors[] = Tools::displayError('This delivery address country is not active.');
-                    } else {
-                        $this->errors[] = Tools::displayError('This invoice address country is not active.');
-                    }
+                if (!(int) $cart->id_customer) {
+                    $this->errors[] = Tools::displayError('You must select a customer before creating the order.');
                 } else {
-                    $employee = new Employee((int) $this->context->cookie->id_employee);
-                    $paymentModule->validateOrder(
-                        (int) $cart->id,
-                        (int) $idOrderState,
-                        $cart->getOrderTotal(true, Cart::BOTH),
-                        $paymentModule->displayName,
-                        $this->l('Manual order -- Employee:').' '.substr($employee->firstname, 0, 1).'. '.$employee->lastname,
-                        [],
-                        null,
-                        false,
-                        $cart->secure_key
-                    );
-                    if ($paymentModule->currentOrder) {
-                        Tools::redirectAdmin(static::$currentIndex.'&id_order='.$paymentModule->currentOrder.'&vieworder'.'&token='.$this->token);
+                    $this->context->currency = new Currency((int) $cart->id_currency);
+                    $this->context->customer = new Customer((int) $cart->id_customer);
+
+                    if (($badDelivery = !Address::isCountryActiveById((int) $cart->id_address_delivery))
+                        || !Address::isCountryActiveById((int) $cart->id_address_invoice)
+                    ) {
+                        if ($badDelivery) {
+                            $this->errors[] = Tools::displayError('This delivery address country is not active.');
+                        } else {
+                            $this->errors[] = Tools::displayError('This invoice address country is not active.');
+                        }
+                    } else {
+                        $employee = new Employee((int) $this->context->cookie->id_employee);
+                        $paymentModule->validateOrder(
+                            (int) $cart->id,
+                            (int) $idOrderState,
+                            $cart->getOrderTotal(true, Cart::BOTH),
+                            $paymentModule->displayName,
+                            $this->l('Manual order -- Employee:').' '.substr($employee->firstname, 0, 1).'. '.$employee->lastname,
+                            [],
+                            null,
+                            false,
+                            $cart->secure_key
+                        );
+                        if ($paymentModule->currentOrder) {
+                            Tools::redirectAdmin(static::$currentIndex.'&id_order='.$paymentModule->currentOrder.'&vieworder'.'&token='.$this->token);
+                        }
                     }
                 }
             } else {
@@ -1743,11 +1750,14 @@ class AdminOrdersControllerCore extends AdminController
                         '{bankwire_details}' => (string) nl2br(Configuration::get('BANK_WIRE_DETAILS')),
                         '{bankwire_address}' => (string) nl2br(Configuration::get('BANK_WIRE_ADDRESS')),
                     ];
-                    if ($orderState->id == Configuration::get('PS_OS_SHIPPING') && $order->shipping_number) {
-                        $templateVars = array_merge($templateVars, [
-                            '{followup}'         => str_replace('@', $order->shipping_number, $carrier->url),
-                            '{shipping_number}'  => $order->shipping_number,
-                        ]);
+                    if ($orderState->id == Configuration::get('PS_OS_SHIPPING')) {
+                        $trackingNumber = $carrier->getTrackingNumber($order);
+                        if ($trackingNumber) {
+                            $templateVars = array_merge($templateVars, [
+                                '{followup}' => $carrier->getTrackingUrl($order, $trackingNumber),
+                                '{shipping_number}' => $trackingNumber,
+                            ]);
+                        }
                     }
 
                     if ($history->sendEmail($order, $templateVars)) {
@@ -2050,6 +2060,14 @@ class AdminOrdersControllerCore extends AdminController
             ),
             'HOOK_TAB_ORDER'               => Hook::displayHook(
                 'displayAdminOrderTabOrder',
+                [
+                    'order'    => $order,
+                    'products' => $products,
+                    'customer' => $customer,
+                ]
+            ),
+            'HOOK_TAB_ORDER_BUTTONS'      => Hook::displayHook(
+                'displayAdminOrderButtons',
                 [
                     'order'    => $order,
                     'products' => $products,

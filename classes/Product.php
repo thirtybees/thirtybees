@@ -479,6 +479,42 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public $pack_quantity = null;
 
     /**
+     * @var string Harmonized System code
+     */
+    public $hs_code = '';
+
+    /**
+     * @var int Country of origin (FK ps_country)
+     */
+    public $country_of_origin = 0;
+
+    /**
+     * @var bool Requires age verification at checkout
+     */
+    public $age_verification = false;
+
+    /**
+     * @var bool Hazardous / dangerous good
+     */
+    public $dangerous_goods = false;
+
+    /**
+     * @var string ADR/IATA UN number
+     */
+    public $un_number;
+
+    /**
+     * @var string Hazard class
+     */
+    public $hazard_class;
+
+    /**
+     * @var string Packing group (I, II, III)
+     */
+    public $packing_group;
+
+
+    /**
      * @var array
      */
     public static $definition = [
@@ -535,6 +571,13 @@ class ProductCore extends ObjectModel implements InitializationCallback
             'advanced_stock_management' => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
             'pack_stock_type'           => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbDefault' => '3'],
             'pack_dynamic'              => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbDefault' => '0'],
+            'hs_code'                   => ['type' => self::TYPE_STRING, 'validate' => 'isHsCode', 'size' => 12, 'default' => ''],
+            'country_of_origin'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'dbNullable' => false, 'dbDefault' => '0'],
+            'age_verification'          => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'dangerous_goods'           => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'un_number'                 => ['type' => self::TYPE_STRING, 'validate' => 'isUnNumber', 'size' => 4, 'default' => ''],
+            'hazard_class'              => ['type' => self::TYPE_STRING, 'validate' => 'isHazardClass', 'size' => 8, 'default' => ''],
+            'packing_group'             => ['type' => self::TYPE_STRING, 'values' => ['', 'I', 'II', 'III'], 'default' => ''],
 
             /* Lang fields */
             'description'               => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_LONG_TEXT],

@@ -138,10 +138,8 @@ class OrderCarrierCore extends ObjectModel
 
             $sendMailResult = false;
             if ($sendMail) {
-                $followup_url = $followup = str_replace('@', $this->tracking_number, $carrier->url);
-                if (empty($followup)) {
-                    $followup = $this->tracking_number;
-                }
+                $followup = (string)$this->tracking_number;
+                $followup_url = $carrier->getTrackingUrl($orderObject, $followup);
                 if (empty($followup_url)) {
                     $followup_url = '#';
                 }

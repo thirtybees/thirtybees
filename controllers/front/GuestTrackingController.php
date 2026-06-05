@@ -161,7 +161,7 @@ class GuestTrackingControllerCore extends FrontController
             if ($order->carrier->url) {
                 $orderCarrier = new OrderCarrier($order->getIdOrderCarrier());
                 if (Validate::isLoadedObject($orderCarrier) && $orderCarrier->tracking_number) {
-                    $order->followup = str_replace('@', $orderCarrier->tracking_number, $order->carrier->url);
+                    $order->followup = $order->carrier->getTrackingUrl($order);
                 }
             }
             $order->hook_orderdetaildisplayed = Hook::displayHook('displayOrderDetail', ['order' => $order]);

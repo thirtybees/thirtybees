@@ -4866,8 +4866,9 @@ class AdminProductsControllerCore extends AdminController
                 'carrier_list'              => $this->getCarrierList(),
                 'currency'                  => $this->context->currency,
                 'country_display_tax_label' => $this->context->country->display_tax_label,
-                'shops' => Shop::getShops(),
-                'multi_shop'     => Shop::isFeatureActive(),
+                'shops'                     => Shop::getShops(),
+                'multi_shop'                => Shop::isFeatureActive(),
+                'countries'                 => Country::getCountries($this->context->language->id),
             ]
         );
         $productId = (int)$obj->id;

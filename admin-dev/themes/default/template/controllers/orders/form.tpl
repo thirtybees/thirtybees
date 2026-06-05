@@ -45,6 +45,9 @@
   var priceDisplayPrecision = 0; {* Set in displaySummary(). *}
   var priceDatabasePrecision = {$smarty.const._TB_PRICE_DATABASE_PRECISION_};
   var request = null;
+	var txt_missing_customer_before_create = '{l s='You must select or create a customer before creating the order.' js=1}';
+	var initial_cart_id = {$cart->id|intval};
+	var is_cart_from_visitor = (initial_cart_id > 0 && {$cart->id_customer|intval} <= 0);
 
 	{foreach from=$defaults_order_state key='module' item='id_order_state'}
 		defaults_order_state['{$module}'] = '{$id_order_state}';
@@ -124,8 +127,18 @@
 				add_cart_rule(data.id_cart_rule);
 			});
 		{if $cart->id}
-			setupCustomer({$cart->id_customer|intval});
-			useCart('{$cart->id|intval}');
+			$('#id_cart').val(initial_cart_id);
+			if (is_cart_from_visitor) {
+				$('#carts').hide();
+				$('#products_part').show();
+				$('#vouchers_part').show();
+				$('#address_part').show();
+				$('#carriers_part').show();
+				$('#summary_part').show();
+			} else {
+				setupCustomer({$cart->id_customer|intval});
+			}
+			useCart(initial_cart_id);
 		{/if}
 
 		$('.delete_product').live('click', function(e) {
@@ -249,12 +262,20 @@
 			return false;
 		});
 
+		$('form:has(button[name="submitAddOrder"])').on('submit', function(e){
+			if (parseInt(id_customer, 10) <= 0) {
+				e.preventDefault();
+				showMissingCustomerError();
+				return false;
+			}
+		});
+
 		$('#products_found').hide();
 		$('#carts').hide();
 
 		$('#customer_part').on('click','button.setup-customer',function(e){
 			e.preventDefault();
-			setupCustomer($(this).data('customer'));
+			setupCustomer($(this).data('customer'), is_cart_from_visitor);
 			$(this).removeClass('setup-customer').addClass('change-customer').html('<i class="icon-refresh"></i>&nbsp;{l s="Change"}').blur();
 			$(this).closest('.customerCard').addClass('selected-customer');
 			$('.selected-customer .panel-heading').prepend('<i class="icon-ok text-success"></i>');
@@ -281,6 +302,13 @@
 			$(this).blur();
 		});
 	});
+
+	function showMissingCustomerError()
+	{
+		$('#missing_customer_error').remove();
+		$('<div id="missing_customer_error" class="alert alert-danger"><button type="button" class="close" data-dismiss="alert">&times;</button>'+txt_missing_customer_before_create+'</div>').insertBefore($('.panel').first());
+		$('html, body').animate({ldelim}scrollTop: 0{rdelim}, 200);
+	}
 
 	function resetBind()
 	{
@@ -525,9 +553,9 @@
 	}
 
 
-	function setupCustomer(idCustomer)
+	function setupCustomer(idCustomer, preserveCurrentCart)
 	{
-		$('#carts').show();
+		$('#missing_customer_error').remove();
 		$('#products_part').show();
 		$('#vouchers_part').show();
 		$('#address_part').show();
@@ -535,8 +563,20 @@
 		$('#summary_part').show();
 		var address_link = $('#new_address').attr('href');
 		id_customer = idCustomer;
-		id_cart = 0;
 		$('#new_address').attr('href', address_link.replace(/id_customer=[0-9]+/, 'id_customer='+id_customer));
+
+		if (preserveCurrentCart) {
+			$('#carts').hide();
+			if (initial_cart_id > 0) {
+				id_cart = initial_cart_id;
+				$('#id_cart').val(id_cart);
+				useCart(id_cart);
+			}
+			return;
+		}
+
+		$('#carts').show();
+		id_cart = 0;
 		$.ajax({
 			type:"POST",
 			url : "{$link->getAdminLink('AdminCarts')|addslashes}",
