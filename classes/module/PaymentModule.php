@@ -752,6 +752,7 @@ abstract class PaymentModuleCore extends Module
                 foreach ($cartRules as $cartRuleEntry) {
                     /** @var CartRule $cartRule */
                     $cartRule = $cartRuleEntry['obj'];
+                    $sourceCartRuleId = (int)$cartRule->id;
                     $package = ['id_carrier' => $order->id_carrier, 'id_address' => $order->id_address_delivery, 'products' => $productList];
                     $values = [
                         'tax_incl' => $cartRule->getContextualValue(true, $this->context, CartRule::FILTER_ACTION_ALL_NOCAP, $package),
@@ -849,7 +850,9 @@ abstract class PaymentModuleCore extends Module
 
                     // Copy a cart rule in case the cheapest product that meets the requirements gets a discount
                     // The copied cart rule is converted into a product specific cart rule
-                    if ($cartRule->product_restriction && $cartRule->reduction_percent && $cartRule->applyDiscountToCheapestProductFromSelection()) {
+                    if ($cartRule->reduction_percent
+                        && ($cartRule->applyDiscountToCheapestProductFromSelection() || $cartRule->applyDiscountToCheapestProductInCart())
+                    ) {
                         // Create a new voucher from the original
                         $voucher = new CartRule((int) $cartRule->id); // We need to instantiate the CartRule without lang parameter to allow saving it
                         if ($cheapestProduct = $voucher->findCheapestProduct($package)) {
@@ -874,7 +877,17 @@ abstract class PaymentModuleCore extends Module
                             $voucher->active = 0;
                             $voucher->product_restriction = 1;
                             $voucher->reduction_product = CartRule::APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING;
-                            $voucher->setCheapestProductSystemRule((int)$cheapestProduct[0], (int)$cheapestProduct[1]);
+                            $voucher->setCheapestProductSystemRule(
+                                (int)$cheapestProduct[0],
+                                (int)$cheapestProduct[1],
+                                [
+                                    'order_id' => (int)$order->id,
+                                    'order_reference' => (string)$order->reference,
+                                    'source_cart_rule_id' => $sourceCartRuleId,
+                                    'source_name' => (string)$cartRule->name,
+                                    'source_code' => (string)$cartRule->code,
+                                ]
+                            );
                             $voucher->add();
 
                             // load new cart rule in single language context
@@ -887,11 +900,11 @@ abstract class PaymentModuleCore extends Module
 
                     $order->addCartRule($cartRule->id, $cartRule->name, $values, 0, $cartRule->free_shipping);
 
-                    if ($idOrderState != Configuration::get('PS_OS_ERROR') && $idOrderState != Configuration::get('PS_OS_CANCELED') && !in_array($cartRule->id, $cartRuleUsed)) {
-                        $cartRuleUsed[] = $cartRule->id;
+                    if ($idOrderState != Configuration::get('PS_OS_ERROR') && $idOrderState != Configuration::get('PS_OS_CANCELED') && !in_array($sourceCartRuleId, $cartRuleUsed)) {
+                        $cartRuleUsed[] = $sourceCartRuleId;
 
                         // Create a new instance of Cart Rule without id_lang, in order to update its quantity
-                        $cartRuleToUpdate = new CartRule((int) $cartRule->id);
+                        $cartRuleToUpdate = new CartRule($sourceCartRuleId);
                         $cartRuleToUpdate->quantity = max(0, $cartRuleToUpdate->quantity - 1);
                         $cartRuleToUpdate->update();
                     }

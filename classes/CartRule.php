@@ -46,6 +46,7 @@ class CartRuleCore extends ObjectModel
     const APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING = 0;
     const APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_FROM_SELECTION = -1;
     const APPLY_DISCOUNT_TO_SELECTED_PRODUCTS = -2;
+    const APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_IN_CART = -3;
 
     const SYSTEM_RULE_CHEAPEST_PRODUCT = 'cheapest_product';
 
@@ -212,6 +213,11 @@ class CartRuleCore extends ObjectModel
     public $reduction_product;
 
     /**
+     * @var int $reduction_cart_quantity
+     */
+    public $reduction_cart_quantity;
+
+    /**
      * @var int $gift_product
      */
     public $gift_product;
@@ -278,6 +284,7 @@ class CartRuleCore extends ObjectModel
             'reduction_tax'           => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbDefault' => '0'],
             'reduction_currency'      => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'dbDefault' => '0'],
             'reduction_product'       => ['type' => self::TYPE_INT,    'validate' => 'isInt', 'size' => 10, 'signed' => true, 'dbDefault' => '0'],
+            'reduction_cart_quantity' => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedInt', 'size' => 10, 'dbDefault' => '0'],
             'gift_product'            => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'dbDefault' => '0'],
             'gift_product_attribute'  => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId', 'dbDefault' => '0'],
             'highlight'               => ['type' => self::TYPE_BOOL,   'validate' => 'isBool', 'dbDefault' => '0'],
@@ -1167,6 +1174,15 @@ class CartRuleCore extends ObjectModel
             }
         }
 
+        if ($this->reduction_percent && $this->applyDiscountToCheapestProductInCart()) {
+            $requiredQuantity = $this->getReductionCartQuantity();
+            if ($this->getCartProductsQuantity($context) < $requiredQuantity) {
+                return (!$displayError)
+                    ? false
+                    : sprintf(Tools::displayError('You need at least %d product(s) in your cart to use this voucher'), $requiredQuantity);
+            }
+        }
+
         // Check if the cart rule is only usable by a specific customer, and if the current customer is the right one
         if ($this->id_customer && $context->cart->id_customer != $this->id_customer) {
             if (!Context::getContext()->customer->isLogged()) {
@@ -1550,34 +1566,35 @@ class CartRuleCore extends ObjectModel
 
             // Discount (%) on the cheapest product
             if ($this->reduction_percent && $this->applyDiscountToCheapestProductFromSelection()) {
-                $minPrice = false;
-                $cheapestProduct = null;
                 $selectedProducts = $this->checkProductRestrictions($context, true);
                 if (is_array($selectedProducts)) {
-
-                    // find the cheapest product price
-                    foreach ($allProducts as $product) {
-                        $productKey = (int)$product['id_product'] . '-' . (int)$product['id_product_attribute'];
-                        if (in_array($productKey, $selectedProducts)) {
-                            $price = $useTax
-                                ? (float)$product['price_wt']
-                                : (float)$product['price'];
-
-                            if ($price > 0 && ($minPrice === false || $minPrice > $price)) {
-                                $minPrice = $price;
-                                $cheapestProduct = $productKey;
+                    $cheapestProduct = $this->findCheapestDiscountProduct($allProducts, $selectedProducts, $context);
+                    if ($cheapestProduct) {
+                        $cheapestProductKey = $this->getDiscountProductKey($cheapestProduct);
+                        foreach ($packageProducts as $product) {
+                            if ($this->getDiscountProductKey($product) === $cheapestProductKey) {
+                                $price = $this->getDiscountProductUnitPrice($product, $useTax, $context);
+                                $reductionValue += Tools::roundPrice($price * $this->reduction_percent / 100);
+                                break;
                             }
                         }
                     }
+                }
+            }
 
-                    // Check if the cheapest product is in the package
-                    if ($cheapestProduct) {
-                        foreach ($packageProducts as $product) {
-                            $productKey = (int)$product['id_product'] . '-' . (int)$product['id_product_attribute'];
-                            if ($productKey === $cheapestProduct) {
-                                $reductionValue += Tools::roundPrice($minPrice * $this->reduction_percent / 100);
-                                break;
-                            }
+            // Discount (%) on the cheapest product in cart
+            if ($this->reduction_percent
+                && $this->applyDiscountToCheapestProductInCart()
+                && $this->getCartProductsQuantity($context, $allProducts) >= $this->getReductionCartQuantity()
+            ) {
+                $cheapestProduct = $this->findCheapestDiscountProduct($allProducts, null, $context);
+                if ($cheapestProduct) {
+                    $cheapestProductKey = $this->getDiscountProductKey($cheapestProduct);
+                    foreach ($packageProducts as $product) {
+                        if ($this->getDiscountProductKey($product) === $cheapestProductKey) {
+                            $price = $this->getDiscountProductUnitPrice($product, $useTax, $context);
+                            $reductionValue += Tools::roundPrice($price * $this->reduction_percent / 100);
+                            break;
                         }
                     }
                 }
@@ -1887,28 +1904,101 @@ class CartRuleCore extends ObjectModel
     public function findCheapestProduct($package)
     {
         $context = Context::getContext();
-        $cheapestProduct = null;
         $allProducts = $package['products'];
 
-        if ($this->reduction_percent && $this->applyDiscountToCheapestProductFromSelection()) {
-            $minPrice = false;
-            $selectedProducts = $this->checkProductRestrictions($context, true);
-            foreach ($allProducts as $product) {
-                if (!is_array($selectedProducts) ||
-                    (!in_array($product['id_product'].'-'.$product['id_product_attribute'], $selectedProducts) && !in_array($product['id_product'].'-0', $selectedProducts))
-                ) {
-                    continue;
-                }
+        if ($this->reduction_percent && ($this->applyDiscountToCheapestProductFromSelection() || $this->applyDiscountToCheapestProductInCart())) {
+            if ($this->applyDiscountToCheapestProductInCart() && $this->getCartProductsQuantity($context) < $this->getReductionCartQuantity()) {
+                return null;
+            }
 
-                $price = $product['price'];
-                if ($price > 0 && ($minPrice === false || $minPrice > $price)) {
-                    $minPrice = $price;
-                    $cheapestProduct = $product['id_product'].'-'.$product['id_product_attribute'];
+            $selectedProducts = null;
+            if ($this->applyDiscountToCheapestProductFromSelection()) {
+                $selectedProducts = $this->checkProductRestrictions($context, true);
+                if (!is_array($selectedProducts)) {
+                    return null;
                 }
+            }
+            $cheapestProduct = $this->findCheapestDiscountProduct($allProducts, $selectedProducts, $context);
+            if ($cheapestProduct) {
+                return $this->getDiscountProductKey($cheapestProduct);
             }
         }
 
-        return $cheapestProduct;
+        return null;
+    }
+
+    /**
+     * @param Context|null $context
+     *
+     * @return array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function getCheapestProductInCartNotifications(?Context $context = null): array
+    {
+        if (!$context) {
+            $context = Context::getContext();
+        }
+        if (!Validate::isLoadedObject($context->cart)) {
+            return [];
+        }
+
+        $products = $context->cart->getProducts();
+        if (!count($products)) {
+            return [];
+        }
+
+        $indexedProducts = [];
+        foreach ($products as $product) {
+            $productKey = (int)$product['id_product'].'-'.(int)$product['id_product_attribute'];
+            if (!isset($indexedProducts[$productKey])) {
+                $indexedProducts[$productKey] = $product;
+            }
+        }
+
+        $notifications = [];
+        $package = ['products' => $products];
+        foreach ($context->cart->getCartRules() as $cartRuleData) {
+            if (!isset($cartRuleData['obj']) || !($cartRuleData['obj'] instanceof CartRule)) {
+                continue;
+            }
+
+            /** @var CartRule $cartRule */
+            $cartRule = $cartRuleData['obj'];
+            if (!$cartRule->reduction_percent
+                || !$cartRule->applyDiscountToCheapestProductInCart()
+                || (float)$cartRuleData['value_real'] <= 0
+            ) {
+                continue;
+            }
+
+            $cheapestProductKey = $cartRule->findCheapestProduct($package);
+            if (!$cheapestProductKey || !isset($indexedProducts[$cheapestProductKey])) {
+                continue;
+            }
+
+            $product = $indexedProducts[$cheapestProductKey];
+            if ((int)$product['cart_quantity'] <= 1) {
+                continue;
+            }
+
+            $productLabel = (string)$product['name'];
+            $productAttributes = trim((string)($product['attributes_small'] ?? $product['attributes'] ?? ''));
+            if ($productAttributes !== '') {
+                $productLabel .= ' ('.$productAttributes.')';
+            }
+
+            $notifications[] = sprintf(
+                Tools::displayError(
+                    'Voucher "%1$s" applies to only one unit of %2$s. Any additional units remain at full price.'
+                ),
+                (string)$cartRuleData['name'],
+                $productLabel
+            );
+        }
+
+        return array_values(array_unique($notifications));
     }
 
     /**
@@ -1998,6 +2088,14 @@ class CartRuleCore extends ObjectModel
     /**
      * @return bool
      */
+    public function applyDiscountToCheapestProductInCart(): bool
+    {
+        return (int)$this->reduction_product === static::APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_IN_CART;
+    }
+
+    /**
+     * @return bool
+     */
     public function applyDiscountToSpecificProduct(): bool
     {
         return (int)$this->reduction_product > 0;
@@ -2015,6 +2113,169 @@ class CartRuleCore extends ObjectModel
     }
 
     /**
+     * @return int
+     */
+    public function getReductionCartQuantity(): int
+    {
+        return max(1, (int)$this->reduction_cart_quantity);
+    }
+
+    /**
+     * @param Context $context
+     * @param array|null $products
+     *
+     * @return int
+     */
+    protected function getCartProductsQuantity(Context $context, ?array $products = null): int
+    {
+        if ($products === null) {
+            $products = $context->cart->getProducts();
+        }
+
+        $quantity = 0;
+        foreach ($products as $product) {
+            $quantity += (int)$product['cart_quantity'];
+        }
+
+        return $quantity;
+    }
+
+    /**
+     * Selects the product line that should receive cheapest-product discount.
+     * The cheapest line is determined by the customer-facing end price (tax included),
+     * while the actual reduction amount is still derived from the chosen line's
+     * tax-inclusive or tax-exclusive unit price depending on the caller.
+     *
+     * @param array $products
+     * @param array|null $selectedProducts
+     *
+     * @return array|null
+     */
+    protected function findCheapestDiscountProduct(array $products, ?array $selectedProducts = null, ?Context $context = null): ?array
+    {
+        $cheapestProduct = null;
+        $minPrice = false;
+
+        foreach ($products as $product) {
+            if (is_array($selectedProducts) && !$this->isDiscountProductSelected($product, $selectedProducts)) {
+                continue;
+            }
+
+            $price = $this->getDiscountProductUnitPrice($product, true, $context);
+            if ($price > 0 && ($minPrice === false || $minPrice > $price)) {
+                $minPrice = $price;
+                $cheapestProduct = $product;
+            }
+        }
+
+        return $cheapestProduct;
+    }
+
+    /**
+     * @param array $product
+     * @param array $selectedProducts
+     *
+     * @return bool
+     */
+    protected function isDiscountProductSelected(array $product, array $selectedProducts): bool
+    {
+        $productId = (int)($product['id_product'] ?? $product['product_id'] ?? 0);
+        $productAttributeId = (int)($product['id_product_attribute'] ?? $product['product_attribute_id'] ?? 0);
+        $productKey = $productId.'-'.$productAttributeId;
+
+        return in_array($productKey, $selectedProducts) || in_array($productId.'-0', $selectedProducts);
+    }
+
+    /**
+     * @param array $product
+     *
+     * @return string
+     */
+    protected function getDiscountProductKey(array $product): string
+    {
+        $productId = (int)($product['id_product'] ?? $product['product_id'] ?? 0);
+        $productAttributeId = (int)($product['id_product_attribute'] ?? $product['product_attribute_id'] ?? 0);
+
+        return $productId.'-'.$productAttributeId;
+    }
+
+    /**
+     * Returns effective unit price for the product line using the cart price calculator.
+     * This bypasses customer tax-display mode, which would otherwise force getPriceStatic()
+     * to return tax-excluded values even in tax-included comparisons.
+     *
+     * @param array $product
+     * @param bool $useTax
+     * @param Context|null $context
+     *
+     * @return float
+     */
+    protected function getDiscountProductUnitPrice(array $product, bool $useTax, ?Context $context = null): float
+    {
+        if (!$context) {
+            $context = Context::getContext();
+        }
+
+        $productId = (int)($product['id_product'] ?? $product['product_id'] ?? 0);
+        if (!$productId || !Validate::isLoadedObject($context->cart)) {
+            return $useTax
+                ? (float)($product['price_wt'] ?? $product['price'] ?? 0)
+                : (float)($product['price'] ?? 0);
+        }
+
+        $productAttributeId = (int)($product['id_product_attribute'] ?? $product['product_attribute_id'] ?? 0);
+        $quantity = max(1, (int)($product['cart_quantity'] ?? $product['product_quantity'] ?? 1));
+        $cacheId = implode('-', [
+            'discount-unit-price',
+            (int)$context->cart->id,
+            $productId,
+            $productAttributeId,
+            $quantity,
+            (int)$useTax,
+        ]);
+
+        if (Cache::isStored($cacheId)) {
+            return (float)Cache::retrieve($cacheId);
+        }
+
+        $priceCalculator = Adapter_ServiceLocator::get('Adapter_ProductPriceCalculator');
+        $addressFactory = Adapter_ServiceLocator::get('Adapter_AddressFactory');
+        $virtualContext = $context->cloneContext();
+        $virtualContext->cart = $context->cart;
+
+        $idAddress = Configuration::get('PS_TAX_ADDRESS_TYPE') === 'id_address_invoice'
+            ? (int)$context->cart->id_address_invoice
+            : (int)($product['id_address_delivery'] ?? $context->cart->id_address_delivery);
+        if (!$addressFactory->addressExists($idAddress)) {
+            $idAddress = null;
+        }
+
+        $null = null;
+        $price = (float)$priceCalculator->getProductPrice(
+            $productId,
+            $useTax,
+            $productAttributeId,
+            _TB_PRICE_DATABASE_PRECISION_,
+            null,
+            false,
+            true,
+            $quantity,
+            false,
+            (int)$context->cart->id_customer ? (int)$context->cart->id_customer : null,
+            (int)$context->cart->id,
+            $idAddress,
+            $null,
+            (bool)Configuration::get('PS_USE_ECOTAX'),
+            true,
+            $virtualContext
+        );
+
+        Cache::store($cacheId, $price);
+
+        return $price;
+    }
+
+    /**
      * Returns true, if this cart rule is a special system cart rule generated for selected cheapest
      * product during cart-to-order conversion
      *
@@ -2022,13 +2283,8 @@ class CartRuleCore extends ObjectModel
      */
     public function isCheapestProductSystemRule(): bool
     {
-        $object = json_decode((string)$this->description);
-        return (
-            is_object($object) &&
-            isset($object->type) &&
-            $object->type === static::SYSTEM_RULE_CHEAPEST_PRODUCT &&
-            isset($object->id_product)
-        );
+        $data = $this->getCheapestProductSystemRuleData();
+        return is_array($data) && isset($data['id_product']);
     }
 
     /**
@@ -2036,13 +2292,19 @@ class CartRuleCore extends ObjectModel
      *
      * @param int $productId
      * @param int $combinationId
+     * @param array $metadata
      * @return void
      */
-    public function setCheapestProductSystemRule(int $productId, int $combinationId)
+    public function setCheapestProductSystemRule(int $productId, int $combinationId, array $metadata = [])
     {
         $this->description = json_encode([
             'id_product'           => $productId,
             'id_product_attribute' => $combinationId,
+            'order_id'             => (int)($metadata['order_id'] ?? 0),
+            'order_reference'      => (string)($metadata['order_reference'] ?? ''),
+            'source_cart_rule_id'  => (int)($metadata['source_cart_rule_id'] ?? 0),
+            'source_name'          => (string)($metadata['source_name'] ?? ''),
+            'source_code'          => (string)($metadata['source_code'] ?? ''),
             'type'                 => static::SYSTEM_RULE_CHEAPEST_PRODUCT,
         ]);
     }
@@ -2054,10 +2316,77 @@ class CartRuleCore extends ObjectModel
      */
     public function getCheapestProductId(): int
     {
-        if ($this->isCheapestProductSystemRule()) {
-            $object = json_decode((string)$this->description);
-            return $object->id_product ?? 0;
+        $data = $this->getCheapestProductSystemRuleData();
+        return (int)($data['id_product'] ?? 0);
+    }
+
+    /**
+     * @return int
+     */
+    public function getCheapestProductAttributeId(): int
+    {
+        $data = $this->getCheapestProductSystemRuleData();
+        return (int)($data['id_product_attribute'] ?? 0);
+    }
+
+    /**
+     * @return int
+     */
+    public function getCheapestProductSystemSourceCartRuleId(): int
+    {
+        $data = $this->getCheapestProductSystemRuleData();
+        return (int)($data['source_cart_rule_id'] ?? 0);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCheapestProductSystemSourceName(): string
+    {
+        $data = $this->getCheapestProductSystemRuleData();
+        return (string)($data['source_name'] ?? '');
+    }
+
+    /**
+     * @return string
+     */
+    public function getCheapestProductSystemSourceCode(): string
+    {
+        $data = $this->getCheapestProductSystemRuleData();
+        return (string)($data['source_code'] ?? '');
+    }
+
+    /**
+     * @return int
+     */
+    public function getCheapestProductSystemOrderId(): int
+    {
+        $data = $this->getCheapestProductSystemRuleData();
+        return (int)($data['order_id'] ?? 0);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCheapestProductSystemOrderReference(): string
+    {
+        $data = $this->getCheapestProductSystemRuleData();
+        return (string)($data['order_reference'] ?? '');
+    }
+
+    /**
+     * @return array|null
+     */
+    protected function getCheapestProductSystemRuleData(): ?array
+    {
+        $data = json_decode((string)$this->description, true);
+        if (
+            is_array($data) &&
+            isset($data['type']) &&
+            $data['type'] === static::SYSTEM_RULE_CHEAPEST_PRODUCT
+        ) {
+            return $data;
         }
-        return 0;
+        return null;
     }
 }

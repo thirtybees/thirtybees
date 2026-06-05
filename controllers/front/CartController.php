@@ -445,6 +445,7 @@ class CartControllerCore extends FrontController
     {
         $this->setTemplate(_PS_THEME_DIR_.'errors.tpl');
         if (!$this->ajax) {
+            $this->context->smarty->assign('successes', CartRule::getCheapestProductInCartNotifications($this->context));
             parent::initContent();
         }
     }
@@ -472,6 +473,7 @@ class CartControllerCore extends FrontController
         if (Tools::getIsset('summary')) {
             $result = [];
             $result['summary'] = $this->context->cart->getSummaryDetails(null, true);
+            $result['successes'] = CartRule::getCheapestProductInCartNotifications($this->context);
             $result['customizedDatas'] = Product::getAllCustomizedDatas($this->context->cart->id, null, true);
             $result['HOOK_SHOPPING_CART'] = Hook::displayHook('displayShoppingCartFooter', $result['summary']);
             $result['HOOK_SHOPPING_CART_EXTRA'] = Hook::displayHook('displayShoppingCart', $result['summary']);

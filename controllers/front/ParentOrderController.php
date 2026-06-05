@@ -377,6 +377,7 @@ class ParentOrderControllerCore extends FrontController
     {
         $summary = $this->context->cart->getSummaryDetails();
         $this->errors = array_merge($this->errors, $summary['errors']);
+        $this->context->smarty->assign('successes', CartRule::getCheapestProductInCartNotifications($this->context));
 
         $customizedDatas = Product::getAllCustomizedDatas($this->context->cart->id);
 
