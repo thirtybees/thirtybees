@@ -1073,8 +1073,62 @@ function hideOtherLanguage(id) {
   if (id_old_language != id) {
     changeEmployeeLanguage();
   }
+  
+  var y = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+  refreshVisibleTinyMCEEditors();
+
+  // restore after the resize passes
+  setTimeout(function () { window.scrollTo(0, y); }, 0);
+  setTimeout(function () { window.scrollTo(0, y); }, 180);
 
   updateCurrentText();
+}
+
+function refreshVisibleTinyMCEEditors() {
+  if (!window.tinymce || !tinymce.editors) return;
+
+  function isVisible(el) {
+    return !!(el && (el.offsetWidth || el.offsetHeight || el.getClientRects().length));
+  }
+
+  function resizeOnce() {
+    var needsSecondPass = false;
+
+    tinymce.editors.forEach(function (ed) {
+      if (!ed || ed.removed) return;
+
+      var c = ed.getContainer && ed.getContainer();
+      if (!c || !isVisible(c)) return;
+
+      // 1) autoresize
+      try { ed.execCommand('mceAutoResize'); } catch (e) {}
+
+      // 2) if still tiny, "kick" iframe height and autoresize again
+      try {
+        var ifr = ed.iframeElement || (c.querySelector ? c.querySelector('iframe') : null);
+        if (ifr) {
+          var h = parseInt(ifr.style.height, 10) || 0;
+
+          if (h && h < 120) {
+            ifr.style.height = '300px';
+            try { ed.execCommand('mceAutoResize'); } catch (e) {}
+            needsSecondPass = true; // layout may still be settling
+          }
+        }
+      } catch (e) {}
+    });
+
+    return needsSecondPass;
+  }
+
+  // First pass immediately
+  var needs = resizeOnce();
+
+  // Second pass only if at least one editor looked "stuck"
+  if (needs) {
+    setTimeout(resizeOnce, 150);
+  }
 }
 
 function updateAllLanguageFields(element) {
@@ -1115,7 +1169,7 @@ function ajaxStates(id_state_selected) {
   $.ajax({
     url: "index.php",
     cache: false,
-    data: "token=" + state_token + "&ajax=1&action=states&tab=AdminStates&no_empty=0&id_country=" + $('#id_country').val() + "&id_state=" + $('#id_state').val(),
+    data: "token=" + state_token + "&ajax=1&action=states&tab=AdminStates&no_empty=0&id_country=" + $('#id_country').val() + "&id_staete=" + $('#id_state').val(),
     success: function (html) {
       if (html == 'false') {
         $("#contains_states").fadeOut();
