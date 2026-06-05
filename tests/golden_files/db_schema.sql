@@ -740,7 +740,7 @@ CREATE TABLE `PREFIX_customer_message` (
   `id_customer_thread` int(11) DEFAULT NULL,
   `id_employee` int(11) unsigned DEFAULT NULL,
   `message` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `file_name` varchar(18) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `file_name` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `ip_address` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `user_agent` varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `date_add` datetime NOT NULL,
