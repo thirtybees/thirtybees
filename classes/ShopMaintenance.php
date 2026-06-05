@@ -58,7 +58,7 @@ class ShopMaintenanceCore
      * This method gets triggered by the 'getNotifications' Ajax request, so
      * every two minutes while somebody has back office open.
      *
-     * @throws PrestaShopException
+     * @throws Throwable
      */
     public static function run()
     {
@@ -208,6 +208,7 @@ class ShopMaintenanceCore
      * Automatically create a database backup if the automatic backup feature is enabled.
      *
      * @return bool True if backup was created, false otherwise.
+     * @throws Throwable
      */
     public static function autoDbBackup()
     {
@@ -242,7 +243,7 @@ class ShopMaintenanceCore
         } catch (Throwable $e) {
             static::logBackupFailure('Automatic backup failed: ' . $e->getMessage());
 
-            return false;
+            throw $e;
         } finally {
             static::releaseLock();
         }
