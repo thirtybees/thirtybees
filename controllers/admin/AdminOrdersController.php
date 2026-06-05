@@ -2079,91 +2079,160 @@ class AdminOrdersControllerCore extends AdminController
      */
     public function ajaxProcessSearchProducts()
     {
-        $this->context->customer = new Customer(Tools::getIntValue('id_customer'));
-        $currency = new Currency(Tools::getIntValue('id_currency'));
-        if ($products = Product::searchByName((int) $this->context->language->id, pSQL(Tools::getValue('product_search')))) {
-            $decimals = $currency->getDisplayPrecision();
-            foreach ($products as &$product) {
-                // Formatted price
-                $product['formatted_price'] = Tools::displayPrice(Tools::convertPrice($product['price_tax_incl'], $currency), $currency);
-                // Concret price
-                $product['price_tax_incl'] = Tools::ps_round(
-                    Tools::convertPrice($product['price_tax_incl'], $currency),
-                    $decimals
-                );
-                $product['price_tax_excl'] = Tools::ps_round(
-                    Tools::convertPrice($product['price_tax_excl'], $currency),
-                    $decimals
-                );
-                $productObj = new Product((int) $product['id_product'], false, (int) $this->context->language->id);
-                $combinations = [];
-                $attributes = $productObj->getAttributesGroups((int) $this->context->language->id);
+        $order = new Order(Tools::getIntValue('id_order'));
+        $shopId = Tools::getIntValue('id_shop');
+        if (!$shopId && Validate::isLoadedObject($order)) {
+            $shopId = (int) $order->id_shop;
+        }
 
-                // Tax rate for this customer
-                if (Tools::isSubmit('id_address')) {
-                    $product['tax_rate'] = $productObj->getTaxesRate(new Address(Tools::getIntValue('id_address')));
-                }
+        $currencyId = Tools::getIntValue('id_currency');
+        if (!$currencyId && Validate::isLoadedObject($order)) {
+            $currencyId = (int) $order->id_currency;
+        }
+        $currency = new Currency($currencyId ?: (int) $this->context->currency->id);
 
-                $product['warehouse_list'] = [];
+        $idCustomer = Tools::getIntValue('id_customer');
+        if (!$idCustomer && Validate::isLoadedObject($order)) {
+            $idCustomer = (int) $order->id_customer;
+        }
+        $this->context->customer = new Customer($idCustomer);
 
-                foreach ($attributes as $attribute) {
-                    if (!isset($combinations[$attribute['id_product_attribute']]['attributes'])) {
-                        $combinations[$attribute['id_product_attribute']]['attributes'] = '';
+        $idAddress = Tools::getIntValue('id_address');
+        if (!$idAddress && Validate::isLoadedObject($order)) {
+            $idAddress = $this->getOrderTaxAddressId($order);
+        }
+
+        $taxAddress = $idAddress ? new Address($idAddress) : null;
+        $pricingContext = $this->getShopPricingContext($shopId, $currency, $this->context->customer);
+
+        $previousShop = $this->context->shop;
+        $previousShopContext = Shop::getContext();
+        $previousShopContextId = Shop::getContextShopID();
+        $previousShopGroupContextId = Shop::getContextShopGroupID();
+
+        try {
+            if ($shopId) {
+                $this->context->shop = new Shop($shopId);
+                Shop::setContext(Shop::CONTEXT_SHOP, $shopId);
+            }
+
+            if ($products = Product::searchByName((int) $this->context->language->id, pSQL(Tools::getValue('product_search')))) {
+                $decimals = $currency->getDisplayPrecision();
+                foreach ($products as &$product) {
+                    $contextualPrices = $this->getProductContextualPricePair(
+                        (int) $product['id_product'],
+                        0,
+                        $idCustomer,
+                        $idAddress,
+                        null,
+                        $pricingContext
+                    );
+                    // Formatted price
+                    $product['formatted_price'] = Tools::displayPrice(Tools::convertPrice($contextualPrices['tax_incl'], $currency), $currency);
+                    // Concrete price
+                    $product['price_tax_incl'] = Tools::ps_round(
+                        Tools::convertPrice($contextualPrices['tax_incl'], $currency),
+                        $decimals
+                    );
+                    $product['price_tax_excl'] = Tools::ps_round(
+                        Tools::convertPrice($contextualPrices['tax_excl'], $currency),
+                        $decimals
+                    );
+                    $productObj = new Product((int) $product['id_product'], false, (int) $this->context->language->id, $shopId ?: null);
+                    $combinations = [];
+                    $attributes = $productObj->getAttributesGroups((int) $this->context->language->id);
+
+                    if ($taxAddress && Validate::isLoadedObject($taxAddress)) {
+                        $product['tax_rate'] = $productObj->getTaxesRate($taxAddress);
                     }
-                    $combinations[$attribute['id_product_attribute']]['attributes'] .= $attribute['attribute_name'].' - ';
-                    $combinations[$attribute['id_product_attribute']]['id_product_attribute'] = (int)$attribute['id_product_attribute'];
-                    $combinations[$attribute['id_product_attribute']]['default_on'] = (int)$attribute['default_on'];
-                    if (!isset($combinations[$attribute['id_product_attribute']]['price'])) {
-                        $priceTaxIncl = Product::getPriceStatic((int) $product['id_product'], true, $attribute['id_product_attribute']);
-                        $priceTaxExcl = Product::getPriceStatic((int) $product['id_product'], false, $attribute['id_product_attribute']);
-                        $combinations[$attribute['id_product_attribute']]['price_tax_incl'] = Tools::ps_round(
-                            Tools::convertPrice($priceTaxIncl, $currency),
-                            $decimals
+
+                    $product['warehouse_list'] = [];
+
+                    foreach ($attributes as $attribute) {
+                        if (!isset($combinations[$attribute['id_product_attribute']]['attributes'])) {
+                            $combinations[$attribute['id_product_attribute']]['attributes'] = '';
+                        }
+                        $combinations[$attribute['id_product_attribute']]['attributes'] .= $attribute['attribute_name'].' - ';
+                        $combinations[$attribute['id_product_attribute']]['id_product_attribute'] = (int) $attribute['id_product_attribute'];
+                        $combinations[$attribute['id_product_attribute']]['default_on'] = (int) $attribute['default_on'];
+                        if (!isset($combinations[$attribute['id_product_attribute']]['price'])) {
+                            $combinationPrices = $this->getProductContextualPricePair(
+                                (int) $product['id_product'],
+                                (int) $attribute['id_product_attribute'],
+                                $idCustomer,
+                                $idAddress,
+                                null,
+                                $pricingContext
+                            );
+                            $combinations[$attribute['id_product_attribute']]['price_tax_incl'] = Tools::ps_round(
+                                Tools::convertPrice($combinationPrices['tax_incl'], $currency),
+                                $decimals
+                            );
+                            $combinations[$attribute['id_product_attribute']]['price_tax_excl'] = Tools::ps_round(
+                                Tools::convertPrice($combinationPrices['tax_excl'], $currency),
+                                $decimals
+                            );
+                            $combinations[$attribute['id_product_attribute']]['formatted_price'] = Tools::displayPrice(
+                                Tools::convertPrice($combinationPrices['tax_excl'], $currency),
+                                $currency
+                            );
+                        }
+                        if (!isset($combinations[$attribute['id_product_attribute']]['qty_in_stock'])) {
+                            $combinations[$attribute['id_product_attribute']]['qty_in_stock'] = StockAvailable::getQuantityAvailableByProduct(
+                                (int) $product['id_product'],
+                                (int) $attribute['id_product_attribute'],
+                                $shopId
+                            );
+                        }
+
+                        if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && (int) $product['advanced_stock_management'] == 1) {
+                            $product['warehouse_list'][$attribute['id_product_attribute']] = Warehouse::getProductWarehouseList($product['id_product'], $attribute['id_product_attribute']);
+                        } else {
+                            $product['warehouse_list'][$attribute['id_product_attribute']] = [];
+                        }
+
+                        $product['stock'][$attribute['id_product_attribute']] = StockAvailable::getQuantityAvailableByProduct(
+                            (int) $product['id_product'],
+                            (int) $attribute['id_product_attribute'],
+                            $shopId
                         );
-                        $combinations[$attribute['id_product_attribute']]['price_tax_excl'] = Tools::ps_round(
-                            Tools::convertPrice($priceTaxExcl, $currency),
-                            $decimals
-                        );
-                        $combinations[$attribute['id_product_attribute']]['formatted_price'] = Tools::displayPrice(Tools::convertPrice($priceTaxExcl, $currency), $currency);
-                    }
-                    if (!isset($combinations[$attribute['id_product_attribute']]['qty_in_stock'])) {
-                        $combinations[$attribute['id_product_attribute']]['qty_in_stock'] = StockAvailable::getQuantityAvailableByProduct((int) $product['id_product'], $attribute['id_product_attribute'], (int) $this->context->shop->id);
                     }
 
                     if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && (int) $product['advanced_stock_management'] == 1) {
-                        $product['warehouse_list'][$attribute['id_product_attribute']] = Warehouse::getProductWarehouseList($product['id_product'], $attribute['id_product_attribute']);
+                        $product['warehouse_list'][0] = Warehouse::getProductWarehouseList($product['id_product']);
                     } else {
-                        $product['warehouse_list'][$attribute['id_product_attribute']] = [];
+                        $product['warehouse_list'][0] = [];
                     }
 
-                    $product['stock'][$attribute['id_product_attribute']] = Product::getRealQuantity($product['id_product'], $attribute['id_product_attribute']);
+                    $product['stock'][0] = StockAvailable::getQuantityAvailableByProduct((int) $product['id_product'], 0, $shopId);
+
+                    foreach ($combinations as &$combination) {
+                        $combination['attributes'] = rtrim($combination['attributes'], ' - ');
+                    }
+                    $product['combinations'] = $combinations;
+
+                    if ($product['customizable']) {
+                        $productInstance = new Product((int) $product['id_product'], false, (int) $this->context->language->id, $shopId ?: null);
+                        $product['customization_fields'] = $productInstance->getCustomizationFields($this->context->language->id);
+                    }
                 }
 
-                if (Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT') && (int) $product['advanced_stock_management'] == 1) {
-                    $product['warehouse_list'][0] = Warehouse::getProductWarehouseList($product['id_product']);
-                } else {
-                    $product['warehouse_list'][0] = [];
-                }
-
-                $product['stock'][0] = StockAvailable::getQuantityAvailableByProduct((int) $product['id_product'], 0, (int) $this->context->shop->id);
-
-                foreach ($combinations as &$combination) {
-                    $combination['attributes'] = rtrim($combination['attributes'], ' - ');
-                }
-                $product['combinations'] = $combinations;
-
-                if ($product['customizable']) {
-                    $productInstance = new Product((int) $product['id_product']);
-                    $product['customization_fields'] = $productInstance->getCustomizationFields($this->context->language->id);
-                }
+                $toReturn = [
+                    'products' => $products,
+                    'found'    => true,
+                ];
+            } else {
+                $toReturn = ['found' => false];
             }
-
-            $toReturn = [
-                'products' => $products,
-                'found'    => true,
-            ];
-        } else {
-            $toReturn = ['found' => false];
+        } finally {
+            $this->context->shop = $previousShop;
+            if ($previousShopContext === Shop::CONTEXT_GROUP) {
+                Shop::setContext(Shop::CONTEXT_GROUP, $previousShopGroupContextId);
+            } elseif ($previousShopContext === Shop::CONTEXT_SHOP) {
+                Shop::setContext(Shop::CONTEXT_SHOP, $previousShopContextId);
+            } else {
+                Shop::setContext(Shop::CONTEXT_ALL);
+            }
         }
 
         $this->content = json_encode($toReturn);
@@ -2235,6 +2304,7 @@ class AdminOrdersControllerCore extends AdminController
             );
         }
 
+        $existingOrderDetailIds = array_map('intval', array_keys($this->getProducts($order)));
         $oldCartRules = $this->context->cart->getCartRules();
 
         if ($order->hasBeenShipped()) {
@@ -2248,10 +2318,16 @@ class AdminOrdersControllerCore extends AdminController
             );
         }
 
-        $productInformations = $_POST['add_product'];
+        $productInformations = $_POST['add_product'] ?? [];
         $invoiceInformations = $_POST['add_invoice'] ?? [];
-        $product = new Product($productInformations['product_id'], false, $order->id_lang);
-        if (!Validate::isLoadedObject($product)) {
+        $productId = (int) ($productInformations['product_id'] ?? 0);
+        $productAttributeId = (int) ($productInformations['product_attribute_id'] ?? 0);
+        $productQuantity = max(1, (int) ($productInformations['product_quantity'] ?? 0));
+        $submittedProductPriceTaxIncl = Tools::parseNumber((string) ($productInformations['product_price_tax_incl'] ?? '0'));
+        $submittedProductPriceTaxExcl = Tools::parseNumber((string) ($productInformations['product_price_tax_excl'] ?? '0'));
+
+        $productObject = new Product($productId, false, $order->id_lang, (int) $order->id_shop);
+        if (!Validate::isLoadedObject($productObject)) {
             $this->ajaxDie(
                 json_encode(
                     [
@@ -2262,8 +2338,16 @@ class AdminOrdersControllerCore extends AdminController
             );
         }
 
-        if (isset($productInformations['product_attribute_id']) && $productInformations['product_attribute_id']) {
-            $combination = new Combination($productInformations['product_attribute_id']);
+        $taxAddress = new Address($this->getOrderTaxAddressId($order));
+        $productTaxRate = $productObject->getTaxesRate($taxAddress);
+        $pricingContext = $this->getShopPricingContext(
+            (int) $order->id_shop,
+            new Currency((int) $order->id_currency),
+            new Customer((int) $order->id_customer)
+        );
+
+        if ($productAttributeId) {
+            $combination = new Combination($productAttributeId);
             if (!Validate::isLoadedObject($combination)) {
                 $this->ajaxDie(
                     json_encode(
@@ -2298,28 +2382,34 @@ class AdminOrdersControllerCore extends AdminController
         $this->context->cart = $cart;
         $this->context->customer = new Customer($order->id_customer);
 
-        $initialProductPriceTaxIncl = Product::getPriceStatic(
-            $product->id,
-            true,
-            isset($combination) ? $combination->id : null,
-            _TB_PRICE_DATABASE_PRECISION_,
-            null,
-            false,
-            true,
-            1,
-            false,
-            $order->id_customer,
-            $cart->id,
-            $order->{Configuration::get('PS_TAX_ADDRESS_TYPE', null, null, $order->id_shop)}
+        $initialProductPrices = $this->getProductContextualPricePair(
+            (int) $productObject->id,
+            isset($combination) ? (int) $combination->id : 0,
+            (int) $order->id_customer,
+            $this->getOrderTaxAddressId($order),
+            (int) $cart->id,
+            $pricingContext
+        );
+
+        [
+            'tax_incl' => $submittedProductPriceTaxIncl,
+            'tax_excl' => $submittedProductPriceTaxExcl,
+        ] = $this->normalizeSubmittedProductPrices(
+            $order,
+            $submittedProductPriceTaxIncl,
+            $submittedProductPriceTaxExcl,
+            (float) $initialProductPrices['tax_incl'],
+            (float) $initialProductPrices['tax_excl'],
+            (float) $productTaxRate
         );
 
 
         // Add product to cart
         $updateQuantity = $cart->updateQty(
-            $productInformations['product_quantity'],
-            $product->id,
-            $productInformations['product_attribute_id'] ?? null,
-            isset($combination) ? $combination->id : null,
+            $productQuantity,
+            $productObject->id,
+            $productAttributeId,
+            false,
             'up',
             0,
             new Shop($cart->id_shop)
@@ -2327,14 +2417,14 @@ class AdminOrdersControllerCore extends AdminController
 
         if ($updateQuantity < 0) {
             // If product has attribute, minimal quantity is set with minimal quantity of attribute
-            $minimalQuantity = ($productInformations['product_attribute_id']) ? ProductAttribute::getAttributeMinimalQty($productInformations['product_attribute_id']) : $product->minimal_quantity;
+            $minimalQuantity = $productAttributeId ? ProductAttribute::getAttributeMinimalQty($productAttributeId) : $productObject->minimal_quantity;
             $this->ajaxDie(json_encode(['error' => sprintf(Tools::displayError('You must add %d minimum quantity', false), $minimalQuantity)]));
         } elseif (!$updateQuantity) {
             $this->ajaxDie(json_encode(['error' => Tools::displayError('You already have the maximum quantity available for this product.', false)]));
         }
 
         // Creating specific price if needed
-        if ((string) $productInformations['product_price_tax_incl'] !== (string) $initialProductPriceTaxIncl) {
+        if (Tools::ps_round($submittedProductPriceTaxIncl, _TB_PRICE_DATABASE_PRECISION_) !== Tools::ps_round($initialProductPrices['tax_incl'], _TB_PRICE_DATABASE_PRECISION_)) {
             $specificPrice = new SpecificPrice();
             $specificPrice->id_cart = $cart->id;
             $specificPrice->id_shop = 0;
@@ -2343,13 +2433,13 @@ class AdminOrdersControllerCore extends AdminController
             $specificPrice->id_country = 0;
             $specificPrice->id_group = 0;
             $specificPrice->id_customer = $order->id_customer;
-            $specificPrice->id_product = $product->id;
+            $specificPrice->id_product = $productObject->id;
             if (isset($combination)) {
                 $specificPrice->id_product_attribute = $combination->id;
             } else {
                 $specificPrice->id_product_attribute = 0;
             }
-            $specificPrice->price = Tools::parseNumber($productInformations['product_price_tax_excl']);
+            $specificPrice->price = $submittedProductPriceTaxExcl;
             $specificPrice->from_quantity = 1;
             $specificPrice->reduction = 0;
             $specificPrice->reduction_type = 'amount';
@@ -2522,8 +2612,18 @@ class AdminOrdersControllerCore extends AdminController
 
         $products = $this->getProducts($order);
 
-        // Get the last product
-        $product = end($products);
+        $product = $this->findAddedOrderProduct($products, $existingOrderDetailIds, (int) $productObject->id, $productAttributeId);
+        if (!$product) {
+            $this->ajaxDie(
+                json_encode(
+                    [
+                        'result' => false,
+                        'error'  => Tools::displayError('The newly added order detail could not be loaded.'),
+                    ]
+                )
+            );
+        }
+
         $product['current_stock'] = StockAvailable::getQuantityAvailableByProduct($product['product_id'], $product['product_attribute_id'], $product['id_shop']);
         $resume = OrderSlip::getProductSlipResume((int) $product['id_order_detail']);
         $product['customized_product_quantity'] = $this->getCustomizedProductQuantity($product);
@@ -2683,18 +2783,8 @@ class AdminOrdersControllerCore extends AdminController
             'result'            => true,
             'product'           => $product,
             'tax_rate'          => $product->getTaxesRate($address),
-            'price_tax_incl'    => Product::getPriceStatic(
-                $product->id,
-                true,
-                $orderDetail->product_attribute_id,
-                $decimals
-            ),
-            'price_tax_excl'    => Product::getPriceStatic(
-                $product->id,
-                false,
-                $orderDetail->product_attribute_id,
-                $decimals
-            ),
+            'price_tax_incl'    => Tools::ps_round((float) $orderDetail->unit_price_tax_incl, $decimals),
+            'price_tax_excl'    => Tools::ps_round((float) $orderDetail->unit_price_tax_excl, $decimals),
             'reduction_percent' => $orderDetail->reduction_percent,
         ]));
     }
@@ -2764,6 +2854,16 @@ class AdminOrdersControllerCore extends AdminController
 
         $productPriceTaxIncl = Tools::getNumberValue('product_price_tax_incl', _TB_PRICE_DATABASE_PRECISION_);
         $productPriceTaxExcl = Tools::getNumberValue('product_price_tax_excl', _TB_PRICE_DATABASE_PRECISION_);
+        [
+            'tax_incl' => $productPriceTaxIncl,
+            'tax_excl' => $productPriceTaxExcl,
+        ] = $this->normalizeSubmittedProductPrices(
+            $order,
+            $productPriceTaxIncl,
+            $productPriceTaxExcl,
+            (float) $orderDetail->unit_price_tax_incl,
+            (float) $orderDetail->unit_price_tax_excl
+        );
         $totalProductsTaxIncl = $productPriceTaxIncl * $productQuantity;
         $totalProductsTaxExcl = $productPriceTaxExcl * $productQuantity;
 
@@ -3381,6 +3481,185 @@ class AdminOrdersControllerCore extends AdminController
             }
         }
         return true;
+    }
+
+    /**
+     * @param Order $order
+     *
+     * @return int
+     */
+    protected function getOrderTaxAddressId(Order $order): int
+    {
+        return (int) $order->{Configuration::get('PS_TAX_ADDRESS_TYPE', null, null, $order->id_shop)};
+    }
+
+    /**
+     * @param int $shopId
+     *
+     * @return Context
+     *
+     * @throws PrestaShopException
+     */
+    protected function getShopPricingContext(int $shopId, ?Currency $currency = null, ?Customer $customer = null): Context
+    {
+        $context = clone $this->context;
+        if ($shopId && (! $context->shop || (int) $context->shop->id !== $shopId)) {
+            $context->shop = new Shop($shopId);
+        }
+        if ($currency && Validate::isLoadedObject($currency)) {
+            $context->currency = $currency;
+        }
+        if ($customer && Validate::isLoadedObject($customer)) {
+            $context->customer = $customer;
+        }
+
+        return $context;
+    }
+
+    /**
+     * @param int $productId
+     * @param int $productAttributeId
+     * @param int $customerId
+     * @param int $addressId
+     * @param int|null $cartId
+     * @param Context|null $context
+     *
+     * @return float[]
+     */
+    protected function getProductContextualPricePair(
+        int $productId,
+        int $productAttributeId,
+        int $customerId,
+        int $addressId,
+        ?int $cartId = null,
+        ?Context $context = null
+    ): array {
+        $productAttributeId = $productAttributeId ?: null;
+        $customerId = $customerId ?: null;
+        $addressId = $addressId ?: null;
+        $cartId = $cartId ?: null;
+        $specificPrice = null;
+
+        return [
+            'tax_incl' => Product::getPriceStatic(
+                $productId,
+                true,
+                $productAttributeId,
+                _TB_PRICE_DATABASE_PRECISION_,
+                null,
+                false,
+                true,
+                1,
+                false,
+                $customerId,
+                $cartId,
+                $addressId,
+                $specificPrice,
+                true,
+                true,
+                $context
+            ),
+            'tax_excl' => Product::getPriceStatic(
+                $productId,
+                false,
+                $productAttributeId,
+                _TB_PRICE_DATABASE_PRECISION_,
+                null,
+                false,
+                true,
+                1,
+                false,
+                $customerId,
+                $cartId,
+                $addressId,
+                $specificPrice,
+                true,
+                true,
+                $context
+            ),
+        ];
+    }
+
+    /**
+     * @param array $products
+     * @param int[] $existingOrderDetailIds
+     * @param int $productId
+     * @param int $productAttributeId
+     *
+     * @return array|null
+     */
+    protected function findAddedOrderProduct(
+        array $products,
+        array $existingOrderDetailIds,
+        int $productId,
+        int $productAttributeId
+    ): ?array {
+        $currentOrderDetailIds = array_map('intval', array_keys($products));
+        $addedOrderDetailIds = array_values(array_diff($currentOrderDetailIds, $existingOrderDetailIds));
+        if ($addedOrderDetailIds) {
+            rsort($addedOrderDetailIds, SORT_NUMERIC);
+            $addedOrderDetailId = (int) reset($addedOrderDetailIds);
+            if (isset($products[$addedOrderDetailId])) {
+                return $products[$addedOrderDetailId];
+            }
+        }
+
+        foreach (array_reverse($products, true) as $orderProduct) {
+            if ((int) $orderProduct['product_id'] === $productId
+                && (int) $orderProduct['product_attribute_id'] === $productAttributeId
+            ) {
+                return $orderProduct;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Normalize submitted product prices so the visible price field is the source of truth.
+     *
+     * @param Order $order
+     * @param float $submittedPriceTaxIncl
+     * @param float $submittedPriceTaxExcl
+     * @param float $referencePriceTaxIncl
+     * @param float $referencePriceTaxExcl
+     *
+     * @return float[]
+     */
+    protected function normalizeSubmittedProductPrices(
+        Order $order,
+        float $submittedPriceTaxIncl,
+        float $submittedPriceTaxExcl,
+        float $referencePriceTaxIncl,
+        float $referencePriceTaxExcl,
+        ?float $referenceTaxRate = null
+    ): array {
+        $priceRatio = 1.0;
+        if ($referencePriceTaxExcl > 0.0 && $referencePriceTaxIncl >= 0.0) {
+            $priceRatio = $referencePriceTaxIncl / $referencePriceTaxExcl;
+        }
+        if ($referenceTaxRate !== null) {
+            $taxBasedRatio = 1 + ($referenceTaxRate / 100);
+            if ($taxBasedRatio > 1.0 && $priceRatio <= 1.00001) {
+                $priceRatio = $taxBasedRatio;
+            }
+        }
+
+        if ($order->getTaxCalculationMethod() == PS_TAX_EXC) {
+            $submittedPriceTaxIncl = Tools::ps_round(
+                $submittedPriceTaxExcl * $priceRatio,
+                _TB_PRICE_DATABASE_PRECISION_
+            );
+        } else {
+            $submittedPriceTaxExcl = $priceRatio > 0.0
+                ? Tools::ps_round($submittedPriceTaxIncl / $priceRatio, _TB_PRICE_DATABASE_PRECISION_)
+                : 0.0;
+        }
+
+        return [
+            'tax_incl' => $submittedPriceTaxIncl,
+            'tax_excl' => $submittedPriceTaxExcl,
+        ];
     }
 
     /**
