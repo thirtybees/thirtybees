@@ -25,6 +25,11 @@ class AdminAddonsCatalogControllerCore extends AdminController
     const ADDONS_URL = '/catalog/catalog.json';
 
     /**
+     * @var string[]|null
+     */
+    private $modulesAvailable = null;
+
+    /**
      * AdminAddonsCatalogControllerCore constructor.
      *
      * @throws PrestaShopException
@@ -42,10 +47,10 @@ class AdminAddonsCatalogControllerCore extends AdminController
     public function initContent()
     {
         $this->context->smarty->assign([
-            'iso_lang'        => $this->context->language->iso_code,
-            'iso_currency'    => $this->context->currency->iso_code,
-            'iso_country'     => $this->context->country->iso_code,
-            'addons_content'  => $this->getCatalog(),
+            'iso_lang' => $this->context->language->iso_code,
+            'iso_currency' => $this->context->currency->iso_code,
+            'iso_country' => $this->context->country->iso_code,
+            'addons_content' => $this->getCatalog(),
         ]);
 
         parent::initContent();
@@ -60,13 +65,89 @@ class AdminAddonsCatalogControllerCore extends AdminController
     protected function getCatalog()
     {
         $content = $this->downloadCatalog();
-        if ($content) {
-            $parsed = json_decode($content, true);
-            if (is_array($parsed)) {
-                return $parsed;
+        if (!$content) {
+            return [];
+        }
+
+        $parsed = json_decode($content, true);
+        if (!is_array($parsed) || !array_key_exists('content', $parsed)) {
+            return [];
+        }
+
+        $sections = array_map([$this, 'processSection'], $parsed['content']);
+        return [
+            'ad_top' => $parsed['ad_top'],
+            'content' => $sections
+        ];
+    }
+
+    /**
+     * @param array $section
+     * @return array
+     */
+    protected function processSection(array $section): array
+    {
+        if (isset($section['modules']) && is_array($section['modules'])) {
+            $section['modules'] = array_map([$this, 'processModule'], $section['modules']);
+        }
+        return $section;
+    }
+
+    /**
+     * @param array $module
+     * @return array
+     * @throws PrestaShopException
+     */
+    protected function processModule(array $module): array
+    {
+        $button = [
+            'label' => $this->l('Learn more'),
+            'url' => $module['url']
+        ];
+        if (isset($module['module'])) {
+            $moduleName = (string)$module['module'];
+            $availableModules = $this->getAvailableModules();
+            if (isset($availableModules[$moduleName])) {
+                $installed = $availableModules[$moduleName];
+                if ($installed) {
+                    $button = [
+                        'label' => $this->l('Configure'),
+                        'url' => $this->context->link->getAdminLink('AdminModules', true, [
+                            'module_name' => $moduleName,
+                            'configure' => $moduleName,
+                        ]),
+                    ];
+                } else {
+                    $button = [
+                        'label' => $this->l('Install'),
+                        'url' => $this->context->link->getAdminLink('AdminModules', true, [
+                            'module_name' => $moduleName,
+                            'anchor' => ucfirst($moduleName)
+                        ]),
+                    ];
+                }
             }
         }
-        return [];
+        $module['button'] = $button;
+        return $module;
+    }
+
+    /**
+     * @return string[]
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function getAvailableModules(): array
+    {
+        if (is_null($this->modulesAvailable)) {
+            $this->modulesAvailable = [];
+            foreach (Module::getModulesOnDisk(true) as $moduleInfo) {
+                if ($moduleInfo->canInstall) {
+                    $this->modulesAvailable[$moduleInfo->name] = (bool)$moduleInfo->installed;
+                }
+            }
+        }
+        return $this->modulesAvailable;
     }
 
     /**
@@ -78,10 +159,10 @@ class AdminAddonsCatalogControllerCore extends AdminController
     protected function downloadCatalog()
     {
         $guzzle = new Client([
-            'base_uri'    => Configuration::getApiServer(),
+            'base_uri' => Configuration::getApiServer(),
             'http_errors' => true,
-            'verify'      => Configuration::getSslTrustStore(),
-            'timeout'     => 20,
+            'verify' => Configuration::getSslTrustStore(),
+            'timeout' => 20,
         ]);
 
         try {

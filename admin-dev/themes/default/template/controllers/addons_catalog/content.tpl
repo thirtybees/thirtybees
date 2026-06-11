@@ -551,8 +551,8 @@
                                 {/if}
                             </div>
                             <div class="addons-module-action pull-right">
-                                <a class="btn btn-primary" href="{$item.url}" target="_blank" rel="noopener" title="{$item.name}">
-                                    Learn More
+                                <a class="btn btn-primary" href="{$item.button.url}" rel="noopener" title="{$item.button.label}">
+                                    {$item.button.label}
                                 </a>
                             </div>
                         </div>
