@@ -119,6 +119,62 @@ class StoreCreditCore extends ObjectModel
     }
 
     /**
+     * Remaining (unspent) amount on this credit.
+     *
+     * @return float
+     */
+    public function getRemainingAmount(): float
+    {
+        return max(0.0, (float)$this->amount - (float)$this->amount_used);
+    }
+
+    /**
+     * Whether the credit is within its validity window. Empty bounds
+     * (normalized to null in the constructor) mean "no restriction".
+     *
+     * @return bool
+     */
+    public function isCurrentlyValid(): bool
+    {
+        $now = date('Y-m-d H:i:s');
+        if ($this->date_from && $this->date_from > $now) {
+            return false;
+        }
+        if ($this->date_to && $this->date_to < $now) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Bind this credit to a customer account. Only unowned credits (gift
+     * cards waiting to be redeemed by whoever received the code) or credits
+     * already owned by this customer can be claimed — entering a code must
+     * never move credit away from another customer's account.
+     *
+     * @param int $idCustomer
+     *
+     * @return bool true when the credit is (now) owned by $idCustomer
+     *
+     * @throws PrestaShopException
+     */
+    public function claimForCustomer(int $idCustomer): bool
+    {
+        if ($idCustomer <= 0) {
+            return false;
+        }
+        $owner = (int)$this->id_customer;
+        if ($owner === $idCustomer) {
+            return true;
+        }
+        if ($owner !== 0) {
+            return false;
+        }
+        $this->id_customer = $idCustomer;
+        return (bool)$this->update();
+    }
+
+    /**
      * @param string $code
      *
      * @return int

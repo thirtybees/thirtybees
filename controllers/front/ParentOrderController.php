@@ -159,17 +159,26 @@ class ParentOrderControllerCore extends FrontController
                                 Tools::redirect('index.php?controller=order&addingCartRule=1');
                             }
                         } elseif (($storeCredit = StoreCredit::getByCode($code))) {
-                            if ($customerId) {
-                                $storeCredit->id_customer = $customerId;
-                                $storeCredit->update();
+                            if (!$customerId) {
+                                $this->errors[] = Tools::displayError('You need to sign in before you can redeem store credit vouchers');
+                            } elseif ((int)$storeCredit->id_customer && (int)$storeCredit->id_customer !== $customerId) {
+                                // Codes are bearer secrets: once a credit is bound to an
+                                // account, (re)entering its code must never move it to
+                                // another customer's account.
+                                $this->errors[] = Tools::displayError('This code has already been redeemed.');
+                            } elseif (!$storeCredit->isCurrentlyValid()) {
+                                $this->errors[] = Tools::displayError('This code is no longer valid.');
+                            } elseif ($storeCredit->getRemainingAmount() <= 0) {
+                                $this->errors[] = Tools::displayError('This code has no remaining balance.');
+                            } elseif (!$storeCredit->claimForCustomer($customerId)) {
+                                $this->errors[] = Tools::displayError('This code could not be redeemed. Please contact customer service.');
+                            } else {
                                 $cart = $this->context->cart;
                                 if (Validate::isLoadedObject($cart) && !$cart->use_store_credit) {
                                     $cart->use_store_credit = true;
                                     $cart->update();
                                 }
                                 $code = '';
-                            } else {
-                                $this->errors[] = Tools::displayError('You need to sign in before your can redeem store credit vouchers');
                             }
                         } else {
                             $this->errors[] = Tools::displayError('This voucher does not exists.');
@@ -851,30 +860,4 @@ class ParentOrderControllerCore extends FrontController
         return CartRule::isFeatureActive() || StoreCredit::isFeatureActive();
     }
 
-    /**
-     * @return string
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    protected function getDisplayPaymentOptions(): string
-    {
-        $modulesList = Hook::getHookModuleExecList('actionProcessPaymentOptions');
-        if ($modulesList) {
-            $output = '';
-            $responses = Hook::getResponses('displayPayment');
-            foreach ($modulesList as $module) {
-                $moduleId = (int)$module['id_module'];
-                $newResponses = Hook::getResponse('actionProcessPaymentOptions', $moduleId, ['displayPayment' => $responses]);
-                if (is_array($newResponses)) {
-                    $responses = $newResponses;
-                }
-            }
-            if ($responses) {
-                $output = implode("\n", $responses);
-            }
-            return $output;
-        } else {
-            return Hook::displayHook('displayPayment') ;
-        }
-    }
 }
