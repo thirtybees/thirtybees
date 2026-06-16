@@ -43,6 +43,7 @@ class AttributeGroupCore extends ObjectModel
         'multilang' => true,
         'fields'    => [
             'is_color_group' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+            'affects_product_view' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
             'group_type'     => ['type' => self::TYPE_STRING, 'required' => true, 'values' => ['select', 'radio', 'color'], 'dbDefault' => 'select'],
             'position'       => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'dbDefault' => '0'],
 
@@ -60,6 +61,8 @@ class AttributeGroupCore extends ObjectModel
     public $name;
     /** @var bool $is_color_group */
     public $is_color_group;
+    /** @var bool $affects_product_view */
+    public $affects_product_view;
     /** @var int $position */
     public $position;
     /** @var string $group_type */

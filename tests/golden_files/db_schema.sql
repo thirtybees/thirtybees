@@ -92,6 +92,7 @@ CREATE TABLE `PREFIX_attribute` (
 CREATE TABLE `PREFIX_attribute_group` (
   `id_attribute_group` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `is_color_group` tinyint(1) NOT NULL DEFAULT '0',
+  `affects_product_view` tinyint(1) NOT NULL DEFAULT '0',
   `group_type` enum('select','radio','color') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'select',
   `position` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_attribute_group`)
