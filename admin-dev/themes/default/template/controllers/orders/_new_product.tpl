@@ -70,10 +70,10 @@
 	<td style="display:none;" class="productQuantity">
 		<input type="number" class="form-control fixed-width-sm" name="add_product[product_quantity]" id="add_product_product_quantity" value="1" disabled="disabled" />
 	</td>
-	{if ($order->hasBeenPaid())}<td style="display:none;" class="productQuantity"></td>{/if}
+	<td style="display:none;" class="productQuantity"></td>
 	{if $display_warehouse}<td></td>{/if}
-	{if ($order->hasBeenDelivered())}<td style="display:none;" class="productQuantity"></td>{/if}
-	<td style="display:none;" class="productQuantity" id="add_product_product_stock">0</td>
+	{if ($order->hasBeenDelivered() || $order->hasProductReturned())}<td style="display:none;" class="productQuantity"></td>{/if}
+	{if $stock_management}<td style="display:none;" class="productQuantity product_stock text-center" id="add_product_product_stock">0</td>{/if}
 	<td style="display:none;" id="add_product_product_total">{displayPrice price=0 currency=$currency->id}</td>
 	<td style="display:none;" colspan="2">
 		{if $invoices}
