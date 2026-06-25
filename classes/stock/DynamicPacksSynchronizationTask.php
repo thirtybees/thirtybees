@@ -19,13 +19,16 @@
 
 namespace Thirtybees\Core\Stock\Synchronization;
 
-use Pack;
+use Configuration;
 use Db;
 use DbQuery;
+use Pack;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use StockAvailable;
 use Context;
+use Thirtybees\Core\DependencyInjection\ServiceLocator;
+use Thirtybees\Core\Error\ErrorUtils;
 use Thirtybees\Core\InitializationCallback;
 use Thirtybees\Core\WorkQueue\ScheduledTask;
 use Thirtybees\Core\WorkQueue\WorkQueueContext;
@@ -39,17 +42,23 @@ use Thirtybees\Core\WorkQueue\WorkQueueTaskCallable;
  */
 class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, InitializationCallback
 {
+    const PARAMETER_FAST_UPDATE = 'fastUpdate';
+    const PARAMETER_PRODUCT_IDS = 'productIds';
+
     /**
      * Creates work queue task to synchronize packs
      *
      * @param int[] $productIds
      * @return WorkQueueTask
+     * @throws PrestaShopException
      */
     public static function createTask($productIds = null)
     {
-        $parameters = [];
+        $parameters = [
+            static::PARAMETER_FAST_UPDATE => (bool)Configuration::getGlobalValue('TB_DYNAMIC_PACKS_SYNC_TASK_FAST_UPDATE')
+        ];
         if (! is_null($productIds)) {
-            $parameters['productIds'] = array_filter(array_map('intval', $productIds));
+            $parameters[static::PARAMETER_PRODUCT_IDS] = array_filter(array_map('intval', $productIds));
         }
         return WorkQueueTask::createTask(
             static::getTaskName(),
@@ -73,9 +82,10 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
     public function execute(WorkQueueContext $context, array $parameters)
     {
         $conn = Db::getInstance();
+        $fastUpdate = (bool)($parameters[static::PARAMETER_FAST_UPDATE] ?? false);
 
-        if (isset($parameters['productIds'])) {
-            $productIds = array_filter(array_map('intval', $parameters['productIds']));
+        if (isset($parameters[static::PARAMETER_PRODUCT_IDS])) {
+            $productIds = array_filter(array_map('intval', $parameters[static::PARAMETER_PRODUCT_IDS]));
             $productIdsSql = (new DbQuery())
                 ->select('DISTINCT id_product')
                 ->from('product_shop')
@@ -137,21 +147,13 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
 
             if (isset($currentQuantities[$key])) {
                 if ($currentQuantities[$key]['quantity'] !== $quantity) {
-                    $stockAvailable = new StockAvailable($currentQuantities[$key]['id']);
-                    $stockAvailable->quantity = $quantity;
-                    $stockAvailable->update();
+                    $stockAvailableId = (int)$currentQuantities[$key]['id'];
+                    $this->updateStockAvailableQuantity($stockAvailableId, $quantity, $fastUpdate);
                     $cnt++;
                 }
                 unset($currentQuantities[$key]);
             } else {
-                $stockAvailable = new StockAvailable();
-                $stockAvailable->out_of_stock = StockAvailable::outOfStock($productId, $shopId);
-                $stockAvailable->id_product = $productId;
-                $stockAvailable->id_product_attribute = $productAttributeId;
-                $stockAvailable->quantity = $quantity;
-                $stockAvailable->id_shop = $shopId;
-                $stockAvailable->id_shop_group = $shopGroupId;
-                $stockAvailable->add();
+                $this->createStockAvailableRecord($productId, $productAttributeId, $shopId, $shopGroupId, $quantity);
                 $cnt++;
             }
         }
@@ -193,5 +195,52 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
     public static function getTaskName()
     {
         return preg_replace("/Core$/", "", static::class);
+    }
+
+    /**
+     * @param int $productId
+     * @param int $productAttributeId
+     * @param int $shopId
+     * @param int $shopGroupId
+     * @param int $quantity
+     */
+    public function createStockAvailableRecord(int $productId, int $productAttributeId, int $shopId, int $shopGroupId, int $quantity)
+    {
+        try {
+            $stockAvailable = new StockAvailable();
+            $stockAvailable->out_of_stock = StockAvailable::outOfStock($productId, $shopId);
+            $stockAvailable->depends_on_stock = false;
+            $stockAvailable->id_product = $productId;
+            $stockAvailable->id_product_attribute = $productAttributeId;
+            $stockAvailable->quantity = $quantity;
+            $stockAvailable->id_shop = $shopId;
+            $stockAvailable->id_shop_group = $shopGroupId;
+            $stockAvailable->add();
+        } catch (PrestaShopException $e) {
+            $errorHandler = ServiceLocator::getInstance()->getErrorHandler();
+            $errorDescription = ErrorUtils::describeException($e);
+            $errorHandler->logFatalError($errorDescription);
+        }
+    }
+
+    /**
+     * @param int $stockAvailableId
+     * @param int $quantity
+     * @param bool $fastUpdate
+     * @return void
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public function updateStockAvailableQuantity(int $stockAvailableId, int $quantity, bool $fastUpdate): void
+    {
+        if ($fastUpdate) {
+            $conn = Db::getInstance();
+            $conn->update('stock_available', [ 'quantity' => $quantity ], 'id_stock_available = ' . $stockAvailableId);
+        } else {
+            $stockAvailable = new StockAvailable($stockAvailableId);
+            $stockAvailable->quantity = $quantity;
+            $stockAvailable->depends_on_stock = false;
+            $stockAvailable->update();
+        }
     }
 }
