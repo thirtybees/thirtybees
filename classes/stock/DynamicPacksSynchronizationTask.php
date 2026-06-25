@@ -164,7 +164,7 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
                 ->groupBy('sa.id_shop_group')
                 ->groupBy('p.id_product_pack')
                 ->groupBy('pa.id_product_attribute');
-            $expectedQuantities = $conn->getArray($dynamicStockSql);
+            $this->mergeExpectedQuantities($expectedQuantities, $conn->getArray($dynamicStockSql));
         }
         if ($productPacks) {
             $dynamicStockSql = (new DbQuery())
@@ -181,10 +181,12 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
                 ->groupBy('sa.id_shop_group')
                 ->groupBy('p.id_product_pack')
                 ->groupBy('COALESCE(pa.id_product_attribute, 0)');
-            $expectedQuantities = array_merge($expectedQuantities, $conn->getArray($dynamicStockSql));
+            $this->mergeExpectedQuantities($expectedQuantities, $conn->getArray($dynamicStockSql));
         }
 
-        $cnt = 0;
+        $updated = 0;
+        $created = 0;
+        $ignored = 0;
         // update stock
         foreach ($expectedQuantities as $row) {
             $productId = (int)$row['id_product'];
@@ -198,12 +200,14 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
                 if ($currentQuantities[$key]['quantity'] !== $quantity) {
                     $stockAvailableId = (int)$currentQuantities[$key]['id'];
                     $this->updateStockAvailableQuantity($stockAvailableId, $quantity, $fastUpdate);
-                    $cnt++;
+                    $updated++;
+                } else {
+                    $ignored++;
                 }
                 unset($currentQuantities[$key]);
             } else {
                 $this->createStockAvailableRecord($productId, $productAttributeId, $shopId, $shopGroupId, $quantity);
-                $cnt++;
+                $created++;
             }
         }
 
@@ -213,7 +217,11 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
             $conn->delete('stock_available', "id_stock_available IN ($ids) AND id_product_attribute != 0");
         }
 
-        return $cnt;
+        return json_encode([
+            'created' => $created,
+            'updated' => $updated,
+            'ignored' => $ignored,
+        ]);
     }
 
     /**
@@ -292,4 +300,24 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
             $stockAvailable->update();
         }
     }
+
+    /**
+     * @param array $expectedQuantities
+     * @param array $data
+     */
+    private function mergeExpectedQuantities(array &$expectedQuantities, array $data)
+    {
+        foreach ($data as $row) {
+            $productId = (int)$row['id_product'];
+            $productAttributeId = (int)$row['id_product_attribute'];
+            $shopId = (int)$row['id_shop'];
+            $shopGroupId = (int)$row['id_shop_group'];
+            $key = "$shopId|$shopGroupId|$productId|$productAttributeId";
+            if (! isset($expectedQuantities[$key])) {
+                $expectedQuantities[$key] = $row;
+            }
+        }
+    }
+
+
 }
