@@ -308,7 +308,12 @@ class WebserviceRequestCore
     }
 
     /**
+     * Returns all webservice resources, including resources registered by
+     * modules through the 'addWebserviceResources' hook.
+     *
      * @return array
+     *
+     * @throws PrestaShopException
      */
     public static function getResources()
     {
@@ -383,6 +388,22 @@ class WebserviceRequestCore
             'product_customization_fields'   => ['description' => 'Customization Field', 'class' => 'CustomizationField'],
             'customizations'                 => ['description' => 'Customization values', 'class' => 'Customization'],
         ];
+
+        // Executing the hook also loads the hooked modules, so their class
+        // autoloaders are available when the resource class is instantiated
+        // later in the request. $checkExceptions is disabled: the resource
+        // list must not vary per employee module permission or controller,
+        // or saving a webservice key would silently drop module resource
+        // permissions.
+        $moduleResources = Hook::exec('addWebserviceResources', ['resources' => $resources], null, true, false);
+        if (is_array($moduleResources)) {
+            foreach ($moduleResources as $additionalResources) {
+                if (is_array($additionalResources)) {
+                    $resources = array_merge($resources, $additionalResources);
+                }
+            }
+        }
+
         ksort($resources);
 
         return $resources;

@@ -337,5 +337,8 @@
     <hook id="actionRegisterAutoloader" live_edit="0">
       <name>actionRegisterAutoloader</name><title>Register autoloader</title><description>This hook is called to make sure library modules can register their libraries</description>
     </hook>
+    <hook id="addWebserviceResources" live_edit="0">
+      <name>addWebserviceResources</name><title>Add webservice resources</title><description>This hook allows modules to register additional webservice (API) resources (PrestaShop 1.6 compatible)</description>
+    </hook>
   </entities>
 </entity_hook>
