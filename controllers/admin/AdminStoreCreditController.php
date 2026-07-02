@@ -203,6 +203,75 @@ class AdminStoreCreditControllerCore extends AdminController
     }
 
     /**
+     * Append the read-only spend history when editing an existing credit, so
+     * support can answer "where did this balance go?" from the credit side.
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    public function renderForm()
+    {
+        $credit = $this->loadObject(true);
+        if (Validate::isLoadedObject($credit)) {
+            $this->fields_form['input'][] = [
+                'type' => 'html',
+                'name' => 'spend_history',
+                'html_content' => $this->renderSpendHistory((int) $credit->id),
+            ];
+        }
+
+        return parent::renderForm();
+    }
+
+    /**
+     * @param int $idStoreCredit
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     */
+    protected function renderSpendHistory(int $idStoreCredit)
+    {
+        $spends = StoreCreditSpend::getSpendsForCredit($idStoreCredit);
+
+        $html = '<div class="form-group"><label>' . $this->l('Spend history') . '</label>';
+        if (!$spends) {
+            return $html . '<div class="alert alert-info">'
+                . $this->l('This credit has not been spent on any order yet.')
+                . '</div></div>';
+        }
+
+        $currency = Currency::getCurrencyInstance((int) Configuration::get('PS_CURRENCY_DEFAULT'));
+        $rows = '';
+        foreach ($spends as $spend) {
+            $orderCell = htmlspecialchars((string) $spend['reference']);
+            if ((int) $spend['id_order']) {
+                $orderUrl = $this->context->link->getAdminLink('AdminOrders')
+                    . '&id_order=' . (int) $spend['id_order'] . '&vieworder';
+                $orderCell = '<a href="' . htmlspecialchars($orderUrl) . '">' . $orderCell . '</a>';
+            }
+            $statusCell = $spend['date_reverted']
+                ? '<span class="label label-warning">' . $this->l('Reverted') . ' ' . htmlspecialchars((string) $spend['date_reverted']) . '</span>'
+                : '<span class="label label-success">' . $this->l('Spent') . '</span>';
+            $rows .= '<tr>'
+                . '<td>' . htmlspecialchars((string) $spend['date_add']) . '</td>'
+                . '<td>' . $orderCell . '</td>'
+                . '<td class="text-right">' . Tools::displayPrice((float) $spend['amount'], $currency) . '</td>'
+                . '<td>' . $statusCell . '</td>'
+                . '</tr>';
+        }
+
+        return $html
+            . '<table class="table" style="max-width:680px;"><thead><tr>'
+            . '<th>' . $this->l('Date') . '</th>'
+            . '<th>' . $this->l('Order') . '</th>'
+            . '<th class="text-right">' . $this->l('Amount') . '</th>'
+            . '<th>' . $this->l('Status') . '</th>'
+            . '</tr></thead><tbody>' . $rows . '</tbody></table></div>';
+    }
+
+    /**
      * @throws PrestaShopException
      */
     public function initToolbar()

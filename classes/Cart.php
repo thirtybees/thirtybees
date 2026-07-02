@@ -1115,10 +1115,20 @@ class CartCore extends ObjectModel
             return $orderTotalDiscount;
         }
 
-        if ($orderTotal > 0 && $this->use_store_credit && (int)$this->id_customer) {
+        // Store credits carry no currency, so they are only applied to carts
+        // in the shop default currency; a JPY cart would otherwise drain a
+        // EUR-granted balance one-to-one.
+        if ($orderTotal > 0 && $this->use_store_credit && (int)$this->id_customer
+            && (int)$this->id_currency === (int)Configuration::get('PS_CURRENCY_DEFAULT')) {
             if ($type == static::BOTH || $type == static::ONLY_STORE_CREDIT) {
                 $creditAvailable = StoreCredit::getByCustomerId((int)$this->id_shop, (int)$this->id_customer);
-                $creditUsed = Tools::roundPrice(max(0.0, min($orderTotal, $creditAvailable)));
+                // FLOOR to the display precision. The credit balance can hold
+                // sub-precision dust (6-decimal column); rounding UP would
+                // promise more than the balance covers and make the order-time
+                // debit fail deterministically. Flooring leaves the dust on
+                // the credit instead of blocking the checkout.
+                $factor = pow(10, (int) $displayPrecision);
+                $creditUsed = floor(max(0.0, min($orderTotal, $creditAvailable)) * $factor) / $factor;
                 if ($type == static::BOTH) {
                     $orderTotal -= $creditUsed;
                 } else {

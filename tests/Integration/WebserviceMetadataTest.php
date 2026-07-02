@@ -86,6 +86,8 @@ class WebserviceMetadataTest extends Unit
         Risk::class,
         Scene::class,
         StockMvt::class, // exposed as StockMvtWs
+        StoreCredit::class,
+        StoreCreditSpend::class,
         Tab::class,
         Theme::class,
         UrlRewrite::class,

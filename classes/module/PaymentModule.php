@@ -555,6 +555,26 @@ abstract class PaymentModuleCore extends Module
                     $order->total_paid_tax_excl = (float) (float) $this->context->cart->getOrderTotal(false, Cart::BOTH, $productList, $idCarrier);
                     $order->total_paid_tax_incl = (float) (float) $this->context->cart->getOrderTotal(true, Cart::BOTH, $productList, $idCarrier);
                     $order->total_paid = $order->total_paid_tax_incl;
+
+                    // Store credit: the BOTH totals above are NET (the credit
+                    // was subtracted so the gateway only charges the rest).
+                    // The ORDER must carry the GROSS totals, with the credit
+                    // recorded as a payment next to the gateway's, otherwise
+                    // the payments would sum above the order total on every
+                    // credit order. The applied amount is the per-package
+                    // with/without difference, so it mirrors exactly what the
+                    // totals deducted.
+                    $storeCreditApplied = 0.0;
+                    if ($this->context->cart->use_store_credit && (int) $this->context->cart->id_customer) {
+                        $grossTaxIncl = (float) $this->context->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_STORE_CREDIT, $productList, $idCarrier);
+                        $storeCreditApplied = Tools::roundPrice($grossTaxIncl - $order->total_paid_tax_incl);
+                        if ($storeCreditApplied > 0) {
+                            $order->total_paid_tax_excl = (float) $this->context->cart->getOrderTotal(false, Cart::BOTH_WITHOUT_STORE_CREDIT, $productList, $idCarrier);
+                            $order->total_paid_tax_incl = $grossTaxIncl;
+                            $order->total_paid = $grossTaxIncl;
+                        }
+                    }
+
                     $order->round_mode = Configuration::get('PS_PRICE_ROUND_MODE');
                     $order->round_type = (int) Configuration::get('PS_ROUND_TYPE');
 
@@ -597,7 +617,8 @@ abstract class PaymentModuleCore extends Module
                         'order' => $order,
                         'productList' => $productList,
                         'outOfStock' => $outOfStock,
-                        'carrierName' => $carrier ? $carrier->getName() : Tools::displayError('No carrier')
+                        'carrierName' => $carrier ? $carrier->getName() : Tools::displayError('No carrier'),
+                        'storeCreditApplied' => $storeCreditApplied,
                     ];
                 }
             }
@@ -612,17 +633,53 @@ abstract class PaymentModuleCore extends Module
                 throw new PrestaShopException('The order address country is not active.');
             }
 
-            // Register Payment only if the order status validate the order
-            if ($orderStatus->logable) {
-                // $order is the last order loop in the foreach
-                // The method addOrderPayment of the class Order make a create a paymentOrder
-                // linked to the order reference and not to the order id
-                $transactionId = $extraVars['transaction_id'] ?? null;
+            // Book the store credit and register the payments. Everything in
+            // this block is guarded: once credit has been debited, any later
+            // failure restores it before the exception continues, so a failed
+            // validation can never strand the customer's balance against a
+            // half-created order.
+            $storeCreditSpends = [];
+            try {
+                foreach ($orders as $orderEntry) {
+                    if (empty($orderEntry['storeCreditApplied'])) {
+                        continue;
+                    }
+                    /** @var Order $creditOrder */
+                    $creditOrder = $orderEntry['order'];
 
-                if (!isset($order) || !Validate::isLoadedObject($order) || !$order->addOrderPayment($amountPaid, null, $transactionId)) {
-                    Logger::addLog('PaymentModule::validateOrder - Cannot save Order Payment', 3, null, 'Cart', (int) $idCart, true);
-                    throw new PrestaShopException('Can\'t save Order Payment');
+                    // Debit the customer's credits (race safe, expiring
+                    // first), one spend row per credit touched, and surface
+                    // the amount as a regular order payment next to the
+                    // gateway's so the order and its documents reconcile.
+                    $spends = StoreCredit::spendForOrder($creditOrder, (float) $orderEntry['storeCreditApplied']);
+                    $storeCreditSpends = array_merge($storeCreditSpends, $spends);
+
+                    $transactionIdSize = (int) OrderPayment::$definition['fields']['transaction_id']['size'];
+                    $spentCodes = mb_substr(implode(', ', array_filter(array_column($spends, 'code'))), 0, $transactionIdSize);
+                    if (!$creditOrder->addOrderPayment((float) $orderEntry['storeCreditApplied'], StoreCredit::ORDER_PAYMENT_METHOD, $spentCodes)) {
+                        Logger::addLog('PaymentModule::validateOrder - Cannot save store-credit Order Payment', 3, null, 'Cart', (int) $idCart, true);
+                        throw new PrestaShopException('Can\'t save store credit Order Payment');
+                    }
                 }
+
+                // Register Payment only if the order status validate the order
+                if ($orderStatus->logable) {
+                    // $order is the last order loop in the foreach
+                    // The method addOrderPayment of the class Order make a create a paymentOrder
+                    // linked to the order reference and not to the order id
+                    $transactionId = $extraVars['transaction_id'] ?? null;
+
+                    if (!isset($order) || !Validate::isLoadedObject($order) || !$order->addOrderPayment($amountPaid, null, $transactionId)) {
+                        Logger::addLog('PaymentModule::validateOrder - Cannot save Order Payment', 3, null, 'Cart', (int) $idCart, true);
+                        throw new PrestaShopException('Can\'t save Order Payment');
+                    }
+                }
+            } catch (Throwable $e) {
+                if ($storeCreditSpends) {
+                    StoreCredit::revertSpends($storeCreditSpends);
+                    Logger::addLog('PaymentModule::validateOrder - order validation failed after store credit was booked; the credit has been restored', 3, null, 'Cart', (int) $idCart, true);
+                }
+                throw $e;
             }
 
             // Next !
