@@ -136,7 +136,7 @@ class ParentOrderControllerCore extends FrontController
                         $this->errors[] = Tools::displayError('The voucher code is invalid.');
                     } else {
                         if ($customerId && ($code === static::STORE_CREDIT_CODE)) {
-                            $credit = StoreCredit::getByCustomerId($customerId, $this->context->shop->id);
+                            $credit = StoreCredit::getByCustomerId((int) $this->context->shop->id, $customerId);
                             if ($credit <= 0.0) {
                                 $this->errors[] = Tools::displayError('You don\'t have store credit.');
                             } else {
@@ -482,7 +482,7 @@ class ParentOrderControllerCore extends FrontController
 
 
         if ($customerId && !$this->context->cart->use_store_credit) {
-            $credit = StoreCredit::getByCustomerId($customerId, $this->context->shop->id);
+            $credit = StoreCredit::getByCustomerId((int) $this->context->shop->id, $customerId);
             if ($credit > 0.0) {
                 $availableCartRules[] = [
                     'id_cart_rule' => -1,
