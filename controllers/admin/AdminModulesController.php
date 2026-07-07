@@ -382,10 +382,11 @@ class AdminModulesControllerCore extends AdminController
 
             // Assign warnings
             if ($module->active && !empty($module->warning) && !$this->ajax) {
-                $href = $this->context->link->getAdminLink('AdminModules', true).'&module_name='.$module->name.'&tab_module='.$module->tab.'&configure='.$module->name;
-                $this->context->smarty->assign('text', sprintf($this->l('%1$s: %2$s'), $module->displayName, $module->warning));
-                $this->context->smarty->assign('module_link', $href);
-                $this->displayWarning($this->context->smarty->fetch('controllers/modules/warning_module.tpl'));
+                $this->displayModuleWarning($module, $module->warning);
+            }
+
+            if ($module->active && $module->deprecation) {
+                $this->displayModuleWarning($module, $module->deprecation);
             }
 
             // AutoComplete array
@@ -511,10 +512,8 @@ class AdminModulesControllerCore extends AdminController
     public function initModulesList(&$modules)
     {
         foreach ($modules as $k => $module) {
-            // Check add permissions, if add permissions not set, addons modules and uninstalled modules will not be displayed
-            if (!$this->hasAddPermission() && (!isset($module->id) || $module->id < 1)) {
-                unset($modules[$k]);
-            } elseif ($module->id && !Module::getPermissionStatic($module->id, 'view') && !Module::getPermissionStatic($module->id, 'configure')) {
+
+            if (! $this->shouldDisplayModule($module)) {
                 unset($modules[$k]);
             } else {
                 // Init serial and modules author list
@@ -747,6 +746,20 @@ class AdminModulesControllerCore extends AdminController
     {
         Tools::displayAsDeprecated();
         exit;
+    }
+
+    /**
+     * @param stdClass $module
+     * @param string $text
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
+    public function displayModuleWarning($module, string $text)
+    {
+        $href = $this->context->link->getAdminLink('AdminModules', true) . '&module_name=' . $module->name . '&tab_module=' . $module->tab . '&configure=' . $module->name;
+        $this->context->smarty->assign('text', sprintf($this->l('%1$s: %2$s'), $module->displayName, $text));
+        $this->context->smarty->assign('module_link', $href);
+        $this->displayWarning($this->context->smarty->fetch('controllers/modules/warning_module.tpl'));
     }
 
     /**
@@ -1762,5 +1775,35 @@ class AdminModulesControllerCore extends AdminController
             }
         }
         return false;
+    }
+
+    /**
+     * @param stdClass $module
+     * @return bool
+     * @throws PrestaShopException
+     */
+    protected function shouldDisplayModule($module): bool
+    {
+        $moduleId = (int)($module->id ?? 0);
+        $isInstalled = $moduleId > 0;
+
+        if ($isInstalled) {
+            // hide installed module if we don't have view and configure permissions
+            if (!Module::getPermissionStatic($moduleId, 'view') && !Module::getPermissionStatic($moduleId, 'configure')) {
+                return false;
+            }
+        } else {
+            // hide not installed module if we don't have add permission
+            if (!$this->hasAddPermission()) {
+                return false;
+            }
+
+            // hide deprecated not installed api modules
+            $deprecation = $module->deprecation ?? null;
+            if ($deprecation && !Module::moduleExistsOnFilesystem($module->name)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

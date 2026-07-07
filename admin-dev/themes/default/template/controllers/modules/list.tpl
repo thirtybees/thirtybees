@@ -90,6 +90,9 @@
 									{$module->description}
 								{/if}
 							</p>
+							{if isset($module->deprecation) && $module->deprecation}
+								<div class="alert alert-warning">{$module->deprecation}</div>
+							{/if}
 							{if isset($module->message) && (empty($module->name) !== false)}
 								<div class="alert alert-success">
 									<button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -118,7 +121,7 @@
 										{/if}
 									{else}
 										{if $module->canInstall}
-											 <a class="btn btn-success" href="{$module->options.install_url|escape:'html':'UTF-8'}">
+											 <a class="btn btn-success" href="{$module->options.install_url|escape:'html':'UTF-8'}" {if $module->deprecation}onclick="return confirm('{l s='This module is deprecated. Do you really want to install it?'}')"{/if}>
 												 <i class="icon-plus-sign-alt"></i>&nbsp;{l s='Install'}
 											 </a>
 										{elseif $module->premium}

@@ -828,6 +828,7 @@ abstract class ModuleCore
                         'author' => stripslashes(Translate::getModuleTranslation((string) $xmlModule->name, Module::configXmlStringFormat($xmlModule->author), (string) $xmlModule->name)),
                         'author_uri' => (isset($xmlModule->author_uri) && $xmlModule->author_uri) ? stripslashes($xmlModule->author_uri) : false,
                         'canInstall' => true,
+                        'deprecation' => null,
                     ];
 
                     foreach ($xmlModule as $k => $v) {
@@ -910,6 +911,7 @@ abstract class ModuleCore
                         'premium'                => false,
                         'onclick_option'         => method_exists($module, 'onclickOption'),
                         'canInstall'             => true,
+                        'deprecation'            => null,
                     ];
 
 
@@ -963,6 +965,8 @@ abstract class ModuleCore
 
             foreach ($modules as $name => $module) {
 
+                $deprecation = $module['deprecation'] ?? null;
+
                 if (isset($modulesNameToCursor[mb_strtolower(strval($name))])) {
                     $moduleFromList = $modulesNameToCursor[mb_strtolower(strval($name))];
                     $moduleFromList->premium = $module['premium'] ?? false;
@@ -981,6 +985,8 @@ abstract class ModuleCore
                     ) {
                         $moduleFromList->version_addons = $module['version'];
                     }
+
+                    $moduleFromList->deprecation = $deprecation;
 
                     $modulesNameToCursor[mb_strtolower(strval($name))] = $moduleFromList;
                     continue;
@@ -1006,7 +1012,8 @@ abstract class ModuleCore
                     'active'              => 0,
                     'premium'             => $module['premium'] ?? false,
                     'canInstall'          => (bool)$module['binary'],
-                    'url'                 => $module['url'] ?? ''
+                    'url'                 => $module['url'] ?? '',
+                    'deprecation'         => $deprecation,
                 ];
 
                 if (isset($module['img'])) {
