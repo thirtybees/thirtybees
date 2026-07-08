@@ -79,8 +79,10 @@ class OrderConfirmationControllerCore extends FrontController
         $this->secure_key = Tools::getValue('key', false);
         $order = new Order((int) ($this->id_order));
         if ($isGuest) {
-            $customer = new Customer((int) $order->id_customer);
-            $redirectLink .= '&id_order='.$order->reference.'&email='.urlencode($customer->email);
+            if ($order->secure_key === $this->secure_key) {
+                $customer = new Customer((int)$order->id_customer);
+                $redirectLink .= '&id_order=' . $order->reference . '&email=' . urlencode($customer->email);
+            }
         }
         if (!$this->id_order || !$this->id_module || empty($this->secure_key)) {
             Tools::redirect($redirectLink.(Tools::isSubmit('slowvalidation') ? '&slowvalidation' : ''));
