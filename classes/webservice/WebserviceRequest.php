@@ -308,7 +308,12 @@ class WebserviceRequestCore
     }
 
     /**
+     * Returns all webservice resources, including resources registered by
+     * modules through the 'addWebserviceResources' hook.
+     *
      * @return array
+     *
+     * @throws PrestaShopException
      */
     public static function getResources()
     {
@@ -385,6 +390,14 @@ class WebserviceRequestCore
             'store_credits'                  => ['description' => 'Store credits', 'class' => StoreCredit::class],
             'store_credit_spends'            => ['description' => 'Store credits usage', 'class' => StoreCreditSpend::class],
         ];
+
+        $moduleResources = Hook::getResponses('actionGetWebserviceResources', ['resources' => $resources]);
+        foreach ($moduleResources as $additionalResources) {
+            if (is_array($additionalResources)) {
+                $resources = array_merge($resources, $additionalResources);
+            }
+        }
+
         ksort($resources);
 
         return $resources;

@@ -337,5 +337,8 @@
     <hook id="actionRegisterAutoloader" live_edit="0">
       <name>actionRegisterAutoloader</name><title>Register autoloader</title><description>This hook is called to make sure library modules can register their libraries</description>
     </hook>
+    <hook id="actionGetWebserviceResources" live_edit="0">
+      <name>actionGetWebserviceResources</name><title>Add webservice resources</title><description>This hook allows modules to register additional webservice resources</description>
+    </hook>
   </entities>
 </entity_hook>
