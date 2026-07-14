@@ -92,7 +92,7 @@ class StoreCreditCore extends ObjectModel
         'primary'   => 'id_store_credit',
         'fields'    => [
             'id_customer'  => ['type' => self::TYPE_INT,    'validate' => 'isUnsignedId'],
-            'code'         => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 254, 'unique' => true],
+            'code'         => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => 150, 'unique' => true],
             'name'         => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => 254],
             'description'  => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
             'date_from'    => ['type' => self::TYPE_DATE,   'validate' => 'isDate', 'dbDefault' => '0000-00-00 00:00:00'],

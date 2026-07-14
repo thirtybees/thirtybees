@@ -2489,7 +2489,7 @@ CREATE TABLE `PREFIX_store` (
 CREATE TABLE `PREFIX_store_credit` (
   `id_store_credit` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_customer` int(11) unsigned DEFAULT NULL,
-  `code` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `code` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `date_from` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
