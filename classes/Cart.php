@@ -3407,6 +3407,9 @@ class CartCore extends ObjectModel
      */
     public function deleteProduct($idProduct, $idProductAttribute = null, $idCustomization = null, $idAddressDelivery = 0, $autoAddCartRule = true)
     {
+        if (! Validate::isLoadedObject($this)) {
+            return false;
+        }
         if (isset(static::$_nbProducts[$this->id])) {
             unset(static::$_nbProducts[$this->id]);
         }

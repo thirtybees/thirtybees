@@ -282,11 +282,19 @@ class CartControllerCore extends FrontController
      */
     protected function processDeleteProductInCart()
     {
+        $cart = $this->context->cart;
+        if (! Validate::isLoadedObject($cart)) {
+            $this->ajaxDie(json_encode([
+                'hasError' => true,
+                'errors'   => [Tools::displayError('Can\'t delete product from empty cart', !Tools::getValue('ajax'))],
+            ]));
+        }
+
         $customizationProduct = Db::readOnly()->getArray(
             (new DbQuery())
                 ->select('*')
                 ->from('customization')
-                ->where('`id_cart` = '.(int) $this->context->cart->id)
+                ->where('`id_cart` = '.(int) $cart->id)
                 ->where('`id_product` = '.(int) $this->id_product)
                 ->where('`id_customization` = '.(int) $this->customization_id)
         );
@@ -305,22 +313,18 @@ class CartControllerCore extends FrontController
             }
 
             if ($totalQuantity < $minimalQuantity) {
-                $this->ajaxDie(
-                    json_encode(
-                        [
-                            'hasError' => true,
-                            'errors'   => [sprintf(Tools::displayError('You must add %d minimum quantity', !Tools::getValue('ajax')), $minimalQuantity)],
-                        ]
-                    )
-                );
+                $this->ajaxDie(json_encode([
+                    'hasError' => true,
+                    'errors'   => [sprintf(Tools::displayError('You must add %d minimum quantity', !Tools::getValue('ajax')), $minimalQuantity)],
+                ]));
             }
         }
 
-        if ($this->context->cart->deleteProduct($this->id_product, $this->id_product_attribute, $this->customization_id, $this->id_address_delivery)) {
+        if ($cart->deleteProduct($this->id_product, $this->id_product_attribute, $this->customization_id, $this->id_address_delivery)) {
             Hook::triggerEvent(
                 'actionAfterDeleteProductInCart',
                 [
-                    'id_cart'              => (int) $this->context->cart->id,
+                    'id_cart'              => (int) $cart->id,
                     'id_product'           => (int) $this->id_product,
                     'id_product_attribute' => (int) $this->id_product_attribute,
                     'customization_id'     => (int) $this->customization_id,
@@ -328,11 +332,11 @@ class CartControllerCore extends FrontController
                 ]
             );
 
-            if (!Cart::getNbProducts((int) $this->context->cart->id)) {
-                $this->context->cart->setDeliveryOption(null);
-                $this->context->cart->gift = 0;
-                $this->context->cart->gift_message = '';
-                $this->context->cart->update();
+            if (!Cart::getNbProducts((int) $cart->id)) {
+                $cart->setDeliveryOption(null);
+                $cart->gift = 0;
+                $cart->gift_message = '';
+                $cart->update();
             }
         }
         $removed = CartRule::autoRemoveFromCart();
