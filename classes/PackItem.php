@@ -150,13 +150,20 @@ class PackItemCore
     }
 
     /**
+     * @param int $packCombinationId
+     *
      * @return bool
      * @throws PrestaShopException
      */
-    public function canBeOrdered(): bool
+    public function canBeOrdered(int $packCombinationId = Pack::PRODUCT_LEVEL_PACK): bool
     {
+        $itemCombinationId = $this->resolveCombinationId($packCombinationId);
+        if (is_null($itemCombinationId)) {
+            return false;
+        }
+
         // enough quantity in stock
-        $quantityAvailable = Product::getQuantity($this->productId, $this->combinationId);
+        $quantityAvailable = Product::getQuantity($this->productId, $itemCombinationId);
         if ($quantityAvailable >= $this->quantity) {
             return true;
         }
@@ -308,6 +315,35 @@ class PackItemCore
     public function hasResolvedCombination(): bool
     {
         return ($this->combinationId && $this->combinationId !== Pack::VIRTUAL_PRODUCT_ATTRIBUTE);
+    }
+
+    /**
+     * Resolve the item combination represented by a virtual pack attribute.
+     *
+     * @param int $packCombinationId
+     *
+     * @return int|null
+     * @throws PrestaShopException
+     */
+    public function resolveCombinationId(int $packCombinationId): ?int
+    {
+        if ($this->combinationId !== Pack::VIRTUAL_PRODUCT_ATTRIBUTE) {
+            return $this->combinationId;
+        }
+
+        $attributeGroupId = AttributeGroup::getAttributeGroupIdForCombinationProduct($this->productId);
+        if ($attributeGroupId && $packCombinationId) {
+            $combination = new Combination($packCombinationId);
+            $attributes = $combination->getAttributes();
+            if (isset($attributes[$attributeGroupId])) {
+                $attribute = new ProductAttribute((int)$attributes[$attributeGroupId]);
+                if (Validate::isLoadedObject($attribute) && $attribute->id_product_attribute_ref) {
+                    return (int)$attribute->id_product_attribute_ref;
+                }
+            }
+        }
+
+        return null;
     }
 
 }

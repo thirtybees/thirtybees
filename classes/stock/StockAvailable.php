@@ -640,7 +640,7 @@ class StockAvailableCore extends ObjectModel
                     foreach ($packs as $pack) {
                         if ($pack->isDynamicPack()) {
                             // dynamic pack, synchronize
-                            $dynamicPacks[] = $pack->getProductId();
+                            $dynamicPacks[$pack->getProductId()] = $pack->getProductId();
                         } else {
                             if ($pack->getPackStockType() === Pack::STOCK_TYPE_DECREMENT_PACK_AND_PRODUCTS) {
                                 // pack with 'Decrement both' settings, adjust quantity only when item quantity decreased
@@ -657,6 +657,10 @@ class StockAvailableCore extends ObjectModel
                                 }
                             }
                         }
+                    }
+
+                    if ($idProductAttribute) {
+                        static::addDynamicPacksContainingVirtualItem($dynamicPacks, $productId);
                     }
 
                     if ($dynamicPacks) {
@@ -687,7 +691,11 @@ class StockAvailableCore extends ObjectModel
             // update pack items quantities, if necessary
             if ($pack->isDynamicPack() || $pack->shouldAdjustItemsQuantities()) {
                 foreach ($pack->getPackItems() as $item) {
-                    $productStockAvailable = static::getStockAvailable($item->getProductId(), $item->getCombinationId(), $idShop);
+                    $itemCombinationId = $item->resolveCombinationId((int)$stockAvailable->id_product_attribute);
+                    if (is_null($itemCombinationId)) {
+                        continue;
+                    }
+                    $productStockAvailable = static::getStockAvailable($item->getProductId(), $itemCombinationId, $idShop);
                     $productStockAvailable->quantity = $productStockAvailable->quantity + ($deltaQuantity * $item->getQuantity());
                     $productStockAvailable->update();
                 }
@@ -701,6 +709,28 @@ class StockAvailableCore extends ObjectModel
                     $stockAvailable->quantity = $stockAvailable->quantity + $deltaQuantity;
                     $stockAvailable->update();
                 }
+            }
+        }
+    }
+
+    /**
+     * Add dynamic packs that use a virtual combination of the supplied product.
+     *
+     * @param int[] $dynamicPacks
+     * @param int $productId
+     *
+     * @return void
+     * @throws PrestaShopException
+     */
+    protected static function addDynamicPacksContainingVirtualItem(array &$dynamicPacks, int $productId): void
+    {
+        $packs = Pack::getPacksContaining($productId, Pack::ANY_COMBINATION);
+        foreach ($packs as $pack) {
+            if (
+                $pack->findItem($productId, Pack::VIRTUAL_PRODUCT_ATTRIBUTE) &&
+                $pack->isDynamicPack()
+            ) {
+                $dynamicPacks[$pack->getProductId()] = $pack->getProductId();
             }
         }
     }
@@ -750,8 +780,11 @@ class StockAvailableCore extends ObjectModel
                 $dynamicPacks = [];
                 foreach ($packs as $pack) {
                     if ($pack->isDynamicPack()) {
-                        $dynamicPacks[] = $pack->getProductId();
+                        $dynamicPacks[$pack->getProductId()] = $pack->getProductId();
                     }
+                }
+                if ((int)$idProductAttribute) {
+                    static::addDynamicPacksContainingVirtualItem($dynamicPacks, (int)$idProduct);
                 }
                 if ($dynamicPacks) {
                     StockAvailable::synchronizeDynamicPacks($dynamicPacks);

@@ -22,6 +22,7 @@ namespace Thirtybees\Core\Stock\Synchronization;
 use Configuration;
 use Db;
 use DbQuery;
+use Pack;
 use PrestaShopDatabaseException;
 use PrestaShopException;
 use StockAvailable;
@@ -149,7 +150,14 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
 
         // calculate dynamic stocks
         $expectedQuantities = [];
+        $virtualProductAttribute = (int)Pack::VIRTUAL_PRODUCT_ATTRIBUTE;
+        $resolvedItemCombination = "IF(
+            p.id_product_attribute_item = $virtualProductAttribute AND ag.id_attribute_group IS NOT NULL,
+            a.id_product_attribute_ref,
+            p.id_product_attribute_item
+        )";
         if ($combinationPacks) {
+            $combinationPackIds = implode(',', $combinationPacks);
             $dynamicStockSql = (new DbQuery())
                 ->select('sa.id_shop')
                 ->select('sa.id_shop_group')
@@ -157,9 +165,12 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
                 ->select('pa.id_product_attribute AS id_product_attribute')
                 ->select('MIN(FLOOR(sa.quantity / p.quantity)) AS quantity')
                 ->from('pack', 'p')
-                ->leftJoin('product_attribute', 'pa', '(pa.id_product = p.id_product_pack AND pa.id_product_attribute = p.id_product_attribute_pack)')
-                ->innerJoin('stock_available', 'sa', '(sa.id_product = p.id_product_item AND sa.id_product_attribute = p.id_product_attribute_item)')
-                ->where("p.id_product_pack IN ($productIds)")
+                ->innerJoin('product_attribute', 'pa', '(pa.id_product = p.id_product_pack AND pa.id_product_attribute = p.id_product_attribute_pack)')
+                ->leftJoin('product_attribute_combination', 'pac', "(pac.id_product_attribute = pa.id_product_attribute AND p.id_product_attribute_item = $virtualProductAttribute)")
+                ->leftJoin('attribute', 'a', '(a.id_attribute = pac.id_attribute AND a.id_product_attribute_ref IS NOT NULL)')
+                ->leftJoin('attribute_group', 'ag', '(ag.id_attribute_group = a.id_attribute_group AND ag.id_product_ref = p.id_product_item)')
+                ->innerJoin('stock_available', 'sa', "(sa.id_product = p.id_product_item AND sa.id_product_attribute = $resolvedItemCombination)")
+                ->where("p.id_product_pack IN ($combinationPackIds)")
                 ->groupBy('sa.id_shop')
                 ->groupBy('sa.id_shop_group')
                 ->groupBy('p.id_product_pack')
@@ -167,6 +178,7 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
             $this->mergeExpectedQuantities($expectedQuantities, $conn->getArray($dynamicStockSql));
         }
         if ($productPacks) {
+            $productPackIds = implode(',', $productPacks);
             $dynamicStockSql = (new DbQuery())
                 ->select('sa.id_shop')
                 ->select('sa.id_shop_group')
@@ -175,8 +187,11 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
                 ->select('MIN(FLOOR(sa.quantity / p.quantity)) AS quantity')
                 ->from('pack', 'p')
                 ->leftJoin('product_attribute', 'pa', '(pa.id_product = p.id_product_pack)')
-                ->innerJoin('stock_available', 'sa', '(sa.id_product = p.id_product_item AND sa.id_product_attribute = p.id_product_attribute_item)')
-                ->where("p.id_product_pack IN ($productIds)")
+                ->leftJoin('product_attribute_combination', 'pac', "(pac.id_product_attribute = pa.id_product_attribute AND p.id_product_attribute_item = $virtualProductAttribute)")
+                ->leftJoin('attribute', 'a', '(a.id_attribute = pac.id_attribute AND a.id_product_attribute_ref IS NOT NULL)')
+                ->leftJoin('attribute_group', 'ag', '(ag.id_attribute_group = a.id_attribute_group AND ag.id_product_ref = p.id_product_item)')
+                ->innerJoin('stock_available', 'sa', "(sa.id_product = p.id_product_item AND sa.id_product_attribute = $resolvedItemCombination)")
+                ->where("p.id_product_pack IN ($productPackIds)")
                 ->groupBy('sa.id_shop')
                 ->groupBy('sa.id_shop_group')
                 ->groupBy('p.id_product_pack')
