@@ -276,17 +276,22 @@ class PackCore
 
 
     /**
+     * @param int|null $combinationId
+     *
      * @return bool
      *
      * @throws PrestaShopException
      */
-    public function canBeOrdered(): bool
+    public function canBeOrdered(?int $combinationId = null): bool
     {
         if (! $this->hasItems()) {
             return false;
         }
+        if (is_null($combinationId)) {
+            $combinationId = $this->combinationId;
+        }
         foreach ($this->getPackItems() as $item) {
-            if (! $item->canBeOrdered()) {
+            if (! $item->canBeOrdered($combinationId)) {
                 return false;
             }
         }

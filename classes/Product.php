@@ -2138,7 +2138,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             $row['pack'] = true;
             $row['packItems'] = $pack->getItemsInformations($idLang, false);
             $row['nopackprice'] = $pack->getPrice($withTax);
-            if (! $pack->canBeOrdered()) {
+            if (! $pack->canBeOrdered((int)$idProductAttribute)) {
                 $row['quantity'] = 0;
             }
         } else {
@@ -2217,7 +2217,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
     {
         if ($cacheIsPack || is_null($cacheIsPack)) {
             $pack = Pack::getPack((int)$idProduct, (int)$idProductAttribute);
-            if ($pack && !$pack->canBeOrdered()) {
+            if ($pack && !$pack->canBeOrdered((int)$idProductAttribute)) {
                 return 0;
             }
         }
@@ -6264,7 +6264,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         }
 
         $pack = Pack::getPack($productId, $idProductAttribute);
-        if ($pack && !$pack->canBeOrdered()) {
+        if ($pack && !$pack->canBeOrdered($idProductAttribute)) {
             return false;
         }
 

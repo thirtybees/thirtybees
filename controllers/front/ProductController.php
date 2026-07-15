@@ -228,8 +228,9 @@ class ProductControllerCore extends FrontController
         parent::initContent();
 
         if (!$this->errors) {
-            $pack = Pack::getPack((int)$this->product->id, (int)$this->product->getSelectedCombinationId());
-            if ($pack && !$pack->canBeOrdered()) {
+            $combinationId = (int)$this->product->getSelectedCombinationId();
+            $pack = Pack::getPack((int)$this->product->id, $combinationId);
+            if ($pack && !$pack->canBeOrdered($combinationId)) {
                 $this->product->quantity = 0;
             }
 

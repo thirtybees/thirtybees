@@ -1071,21 +1071,7 @@ class OrderDetailCore extends ObjectModel
      */
     protected function resolvePackItemAttribute(int $itemProductId, int $itemAttributeId, int $productCombinationId)
     {
-        if ($itemAttributeId !== Pack::VIRTUAL_PRODUCT_ATTRIBUTE) {
-            return $itemAttributeId;
-        }
-        $attributeGroupId = AttributeGroup::getAttributeGroupIdForCombinationProduct($itemProductId);
-        if ($attributeGroupId) {
-            $combination = new Combination($productCombinationId);
-            $attributes = $combination->getAttributes();
-            if (isset($attributes[$attributeGroupId])) {
-                $attributeId = (int)$attributes[$attributeGroupId];
-                $productAttribute = new ProductAttribute($attributeId);
-                if (Validate::isLoadedObject($productAttribute) && $productAttribute->id_product_attribute_ref) {
-                    return (int)$productAttribute->id_product_attribute_ref;
-                }
-            }
-        }
-        return null;
+        $item = new PackItem($itemProductId, $itemAttributeId, 1);
+        return $item->resolveCombinationId($productCombinationId);
     }
 }
