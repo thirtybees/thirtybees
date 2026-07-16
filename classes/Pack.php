@@ -171,6 +171,9 @@ class PackCore
         $cacheKey = 'Pack_' . $this->productId;
         Cache::clean($cacheKey);
         Db::getInstance()->update('product', ['cache_is_pack' => 1], 'id_product = ' . $this->productId);
+        if ($res && $this->isDynamicPack()) {
+            StockAvailable::synchronizeDynamicPack($this->productId);
+        }
         return $res;
     }
 

@@ -145,10 +145,19 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
             $currentQuantities[$key] = [
                 'id' => (int)$row['id_stock_available'],
                 'quantity' => (int)$row['quantity'],
+                'out_of_stock' => (int)$row['out_of_stock'],
             ];
         }
 
         // calculate dynamic stocks
+        // One denied item denies the pack; otherwise, one item using the system
+        // default makes the pack use the same default.
+        // The pack explicitly allows back-orders only when every item does.
+        $outOfStockAggregation = 'CASE
+            WHEN MIN(sa.out_of_stock) = 0 THEN 0
+            WHEN MAX(sa.out_of_stock) = 2 THEN 2
+            ELSE 1
+        END AS out_of_stock';
         $expectedQuantities = [];
         $virtualProductAttribute = (int)Pack::VIRTUAL_PRODUCT_ATTRIBUTE;
         $resolvedItemCombination = "IF(
@@ -164,6 +173,7 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
                 ->select('p.id_product_pack AS id_product')
                 ->select('pa.id_product_attribute AS id_product_attribute')
                 ->select('MIN(FLOOR(sa.quantity / p.quantity)) AS quantity')
+                ->select($outOfStockAggregation)
                 ->from('pack', 'p')
                 ->innerJoin('product_attribute', 'pa', '(pa.id_product = p.id_product_pack AND pa.id_product_attribute = p.id_product_attribute_pack)')
                 ->leftJoin('product_attribute_combination', 'pac', "(pac.id_product_attribute = pa.id_product_attribute AND p.id_product_attribute_item = $virtualProductAttribute)")
@@ -185,6 +195,7 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
                 ->select('p.id_product_pack AS id_product')
                 ->select('COALESCE(pa.id_product_attribute, 0) AS id_product_attribute')
                 ->select('MIN(FLOOR(sa.quantity / p.quantity)) AS quantity')
+                ->select($outOfStockAggregation)
                 ->from('pack', 'p')
                 ->leftJoin('product_attribute', 'pa', '(pa.id_product = p.id_product_pack)')
                 ->leftJoin('product_attribute_combination', 'pac', "(pac.id_product_attribute = pa.id_product_attribute AND p.id_product_attribute_item = $virtualProductAttribute)")
@@ -199,6 +210,46 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
             $this->mergeExpectedQuantities($expectedQuantities, $conn->getArray($dynamicStockSql));
         }
 
+        // OOS is a product-level setting. Virtual pack items produce one row per
+        // resolved pack combination, so normalize these rows to one policy for
+        // the entire pack and shop.
+        $outOfStockPolicies = [];
+        foreach ($expectedQuantities as $row) {
+            $productId = (int)$row['id_product'];
+            $shopId = (int)$row['id_shop'];
+            $shopGroupId = (int)$row['id_shop_group'];
+            $key = "$shopId|$shopGroupId|$productId";
+            $outOfStock = (int)$row['out_of_stock'];
+            if (! isset($outOfStockPolicies[$key])) {
+                $outOfStockPolicies[$key] = [
+                    'id_product' => $productId,
+                    'id_shop' => $shopId,
+                    'id_shop_group' => $shopGroupId,
+                    'out_of_stock' => $outOfStock,
+                ];
+            } elseif (
+                $outOfStockPolicies[$key]['out_of_stock'] === StockAvailable::OUT_OF_STOCK_DENY ||
+                $outOfStock === StockAvailable::OUT_OF_STOCK_DENY
+            ) {
+                $outOfStockPolicies[$key]['out_of_stock'] = StockAvailable::OUT_OF_STOCK_DENY;
+            } elseif (
+                $outOfStockPolicies[$key]['out_of_stock'] === StockAvailable::OUT_OF_STOCK_SYSTEM_DEFAULT ||
+                $outOfStock === StockAvailable::OUT_OF_STOCK_SYSTEM_DEFAULT
+            ) {
+                $outOfStockPolicies[$key]['out_of_stock'] = StockAvailable::OUT_OF_STOCK_SYSTEM_DEFAULT;
+            } else {
+                $outOfStockPolicies[$key]['out_of_stock'] = StockAvailable::OUT_OF_STOCK_ALLOW;
+            }
+        }
+        foreach ($expectedQuantities as &$row) {
+            $productId = (int)$row['id_product'];
+            $shopId = (int)$row['id_shop'];
+            $shopGroupId = (int)$row['id_shop_group'];
+            $key = "$shopId|$shopGroupId|$productId";
+            $row['out_of_stock'] = $outOfStockPolicies[$key]['out_of_stock'];
+        }
+        unset($row);
+
         $updated = 0;
         $created = 0;
         $ignored = 0;
@@ -210,18 +261,22 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
             $shopGroupId = (int)$row['id_shop_group'];
             $key = "$shopId|$shopGroupId|$productId|$productAttributeId";
             $quantity = (int)$row['quantity'];
+            $outOfStock = (int)$row['out_of_stock'];
 
             if (isset($currentQuantities[$key])) {
-                if ($currentQuantities[$key]['quantity'] !== $quantity) {
+                if (
+                    $currentQuantities[$key]['quantity'] !== $quantity ||
+                    $currentQuantities[$key]['out_of_stock'] !== $outOfStock
+                ) {
                     $stockAvailableId = (int)$currentQuantities[$key]['id'];
-                    $this->updateStockAvailableQuantity($stockAvailableId, $quantity, $fastUpdate);
+                    $this->updateStockAvailableQuantity($stockAvailableId, $quantity, $outOfStock, $fastUpdate);
                     $updated++;
                 } else {
                     $ignored++;
                 }
                 unset($currentQuantities[$key]);
             } else {
-                $this->createStockAvailableRecord($productId, $productAttributeId, $shopId, $shopGroupId, $quantity);
+                $this->createStockAvailableRecord($productId, $productAttributeId, $shopId, $shopGroupId, $quantity, $outOfStock);
                 $created++;
             }
         }
@@ -230,6 +285,22 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
         if ($currentQuantities) {
             $ids = implode(',', array_column($currentQuantities, 'id'));
             $conn->delete('stock_available', "id_stock_available IN ($ids) AND id_product_attribute != 0");
+        }
+
+        // Product and BO/FO availability checks read the product-level stock
+        // row. Apply the policy to every row of this dynamic pack so the
+        // product-level and combination-level values stay consistent.
+        foreach ($outOfStockPolicies as $policy) {
+            if ($conn->update(
+                'stock_available',
+                ['out_of_stock' => (int)$policy['out_of_stock']],
+                'id_product = '.(int)$policy['id_product'].
+                ' AND id_shop = '.(int)$policy['id_shop'].
+                ' AND id_shop_group = '.(int)$policy['id_shop_group'].
+                ' AND out_of_stock != '.(int)$policy['out_of_stock']
+            )) {
+                $updated += $conn->Affected_Rows();
+            }
         }
 
         return json_encode([
@@ -275,12 +346,13 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
      * @param int $shopId
      * @param int $shopGroupId
      * @param int $quantity
+     * @param int $outOfStock
      */
-    public function createStockAvailableRecord(int $productId, int $productAttributeId, int $shopId, int $shopGroupId, int $quantity)
+    public function createStockAvailableRecord(int $productId, int $productAttributeId, int $shopId, int $shopGroupId, int $quantity, int $outOfStock)
     {
         try {
             $stockAvailable = new StockAvailable();
-            $stockAvailable->out_of_stock = StockAvailable::outOfStock($productId, $shopId);
+            $stockAvailable->out_of_stock = $outOfStock;
             $stockAvailable->depends_on_stock = false;
             $stockAvailable->id_product = $productId;
             $stockAvailable->id_product_attribute = $productAttributeId;
@@ -298,19 +370,24 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
     /**
      * @param int $stockAvailableId
      * @param int $quantity
+     * @param int $outOfStock
      * @param bool $fastUpdate
      * @return void
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function updateStockAvailableQuantity(int $stockAvailableId, int $quantity, bool $fastUpdate): void
+    public function updateStockAvailableQuantity(int $stockAvailableId, int $quantity, int $outOfStock, bool $fastUpdate): void
     {
         if ($fastUpdate) {
             $conn = Db::getInstance();
-            $conn->update('stock_available', [ 'quantity' => $quantity ], 'id_stock_available = ' . $stockAvailableId);
+            $conn->update('stock_available', [
+                'quantity' => $quantity,
+                'out_of_stock' => $outOfStock,
+            ], 'id_stock_available = ' . $stockAvailableId);
         } else {
             $stockAvailable = new StockAvailable($stockAvailableId);
             $stockAvailable->quantity = $quantity;
+            $stockAvailable->out_of_stock = $outOfStock;
             $stockAvailable->depends_on_stock = false;
             $stockAvailable->update();
         }

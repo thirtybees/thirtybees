@@ -1696,10 +1696,12 @@ window.product_tabs.Quantities = new function () {
       $availableQuantity.find('input').show();
       $availableQuantity.find('span').hide();
       $('.pack_stock_type').removeAttr('disabled');
+      $('.out_of_stock').removeAttr('disabled');
     } else if ($('#depends_on_stock_1').prop('checked')) {
       $availableQuantity.find('input').hide();
       $availableQuantity.find('span').show();
       $('.pack_stock_type').removeAttr('disabled');
+      $('.out_of_stock').removeAttr('disabled');
     } else if ($('#depends_on_stock_2').prop('checked')) {
       $availableQuantity.find('input').hide();
       $availableQuantity.find('span').show();
@@ -1707,6 +1709,7 @@ window.product_tabs.Quantities = new function () {
           .attr('disabled', 'disabled')
           .attr('checked', false);
       $('#pack_stock_type_2').attr('checked', true);
+      $('.out_of_stock').attr('disabled', 'disabled');
     }
   };
 
@@ -1732,6 +1735,12 @@ window.product_tabs.Quantities = new function () {
             $('#qty_text_'+ id).text(qty);
             $('#qty_input_'+ id).val(qty);
           }
+        }
+        if (msg && typeof msg.out_of_stock !== 'undefined') {
+          $('.out_of_stock')
+              .prop('checked', false)
+              .filter('[value="' + parseInt(msg.out_of_stock, 10) + '"]')
+              .prop('checked', true);
         }
       });
 
