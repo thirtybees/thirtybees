@@ -4167,11 +4167,18 @@ class ProductCore extends ObjectModel implements InitializationCallback
      */
     public function getFieldsShop()
     {
+        $updateUnitPrice = is_null($this->update_fields) || !empty($this->update_fields['unit_price']);
+        if ($updateUnitPrice && is_array($this->update_fields)) {
+            // The back office exposes unit price as a calculated field, but stores
+            // the ratio and its unit label as two separate multishop fields.
+            $this->update_fields['unit_price_ratio'] = true;
+            $this->update_fields['unity'] = true;
+        }
+
         $fields = parent::getFieldsShop();
-        if (is_null($this->update_fields) || (!empty($this->update_fields['price']) && !empty($this->update_fields['unit_price']))) {
+        if ($updateUnitPrice) {
             $fields['unit_price_ratio'] = (float) $this->unit_price > 0 ? $this->price / $this->unit_price : 0;
         }
-        $fields['unity'] = pSQL($this->unity);
 
         return $fields;
     }
