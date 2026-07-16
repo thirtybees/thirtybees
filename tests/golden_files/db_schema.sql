@@ -1783,7 +1783,6 @@ CREATE TABLE `PREFIX_product` (
   `minimal_quantity` int(11) unsigned NOT NULL DEFAULT '1',
   `price` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `wholesale_price` decimal(20,6) NOT NULL DEFAULT '0.000000',
-  `unity` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `unit_price_ratio` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `additional_shipping_cost` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `reference` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -1947,6 +1946,7 @@ CREATE TABLE `PREFIX_product_lang` (
   `meta_keywords` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `meta_title` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `unity` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `available_now` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `available_later` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id_product`,`id_shop`,`id_lang`),
@@ -1974,7 +1974,6 @@ CREATE TABLE `PREFIX_product_shop` (
   `minimal_quantity` int(11) unsigned NOT NULL DEFAULT '1',
   `price` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `wholesale_price` decimal(20,6) NOT NULL DEFAULT '0.000000',
-  `unity` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `unit_price_ratio` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `additional_shipping_cost` decimal(20,6) NOT NULL DEFAULT '0.000000',
   `customizable` tinyint(2) NOT NULL DEFAULT '0',
@@ -2911,4 +2910,3 @@ CREATE TABLE `PREFIX_zone_shop` (
   PRIMARY KEY (`id_zone`,`id_shop`),
   KEY `id_shop` (`id_shop`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-

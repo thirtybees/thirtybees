@@ -141,6 +141,7 @@ class AdminImportControllerCore extends AdminController
             'meta_keywords'          => [static::class, 'createMultiLangField'],
             'meta_description'       => [static::class, 'createMultiLangField'],
             'link_rewrite'           => [static::class, 'createMultiLangField'],
+            'unity'                  => [static::class, 'createMultiLangField'],
             'available_now'          => [static::class, 'createMultiLangField'],
             'available_later'        => [static::class, 'createMultiLangField'],
             'category'               => [static::class, 'split'],

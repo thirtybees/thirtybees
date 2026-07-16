@@ -222,7 +222,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public $online_only = false;
 
     /**
-     * @var string unity
+     * @var string|string[] unity
      */
     public $unity = null;
 
@@ -550,7 +550,6 @@ class ProductCore extends ObjectModel implements InitializationCallback
             'minimal_quantity'          => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbDefault' => '1'],
             'price'                     => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'required' => true, 'dbDefault' => '0.000000'],
             'wholesale_price'           => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
-            'unity'                     => ['type' => self::TYPE_STRING, 'shop' => true, 'validate' => 'isString'],
             'unit_price_ratio'          => ['type' => self::TYPE_FLOAT, 'shop' => true, 'dbDefault' => '0.000000'],
             'additional_shipping_cost'  => ['type' => self::TYPE_PRICE, 'shop' => true, 'validate' => 'isPrice', 'dbDefault' => '0.000000'],
             'reference'                 => ['type' => self::TYPE_STRING, 'validate' => 'isReference', 'size' => self::SIZE_REFERENCE],
@@ -600,6 +599,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             'meta_keywords'             => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
             'meta_title'                => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
             'name'                      => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isCatalogName', 'required' => true, 'size' => 128],
+            'unity'                     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isString', 'size' => 255],
             'available_now'             => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
             'available_later'           => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'IsGenericName', 'size' => 255],
         ],
@@ -1856,7 +1856,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         $sql = new DbQuery();
         $sql->select(
             'p.*, product_shop.*, stock.out_of_stock, IFNULL(stock.quantity, 0) as quantity, pl.`description`, pl.`description_short`, pl.`link_rewrite`, pl.`meta_description`,
-			pl.`meta_keywords`, pl.`meta_title`, pl.`name`, pl.`available_now`, pl.`available_later`, image_shop.`id_image` id_image, il.`legend`, m.`name` AS manufacturer_name,
+			pl.`meta_keywords`, pl.`meta_title`, pl.`name`, pl.`unity`, pl.`available_now`, pl.`available_later`, image_shop.`id_image` id_image, il.`legend`, m.`name` AS manufacturer_name,
 			product_shop.`date_add` > "'.date('Y-m-d', strtotime('-'.(Configuration::get('PS_NB_DAYS_NEW_PRODUCT') ? (int) Configuration::get('PS_NB_DAYS_NEW_PRODUCT') : 20).' DAY')).'" as new'
         );
 
@@ -2438,7 +2438,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
             // no group by needed : there's only one attribute with cover=1 for a given id_product + shop
             $sql = 'SELECT p.*, product_shop.*, stock.`out_of_stock` out_of_stock, pl.`description`, pl.`description_short`,
-						pl.`link_rewrite`, pl.`meta_description`, pl.`meta_keywords`, pl.`meta_title`, pl.`name`, pl.`available_now`, pl.`available_later`,
+						pl.`link_rewrite`, pl.`meta_description`, pl.`meta_keywords`, pl.`meta_title`, pl.`name`, pl.`unity`, pl.`available_now`, pl.`available_later`,
 						p.`ean13`, p.`upc`, image_shop.`id_image` id_image, il.`legend`,
 						DATEDIFF(product_shop.`date_add`, DATE_SUB("'.date('Y-m-d').' 00:00:00",
 						INTERVAL '.(Validate::isUnsignedInt(Configuration::get('PS_NB_DAYS_NEW_PRODUCT')) ? Configuration::get('PS_NB_DAYS_NEW_PRODUCT') : 20).'
@@ -2603,7 +2603,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
         $sql = '
 		SELECT
-			p.*, product_shop.*, stock.out_of_stock, IFNULL(stock.quantity, 0) as quantity, pl.`description`, pl.`description_short`, pl.`available_now`, pl.`available_later`,
+			p.*, product_shop.*, stock.out_of_stock, IFNULL(stock.quantity, 0) as quantity, pl.`description`, pl.`description_short`, pl.`unity`, pl.`available_now`, pl.`available_later`,
 			IFNULL(product_attribute_shop.id_product_attribute, 0) id_product_attribute,
 			pl.`link_rewrite`, pl.`meta_description`, pl.`meta_keywords`, pl.`meta_title`,
 			pl.`name`, image_shop.`id_image` id_image, il.`legend`, m.`name` AS manufacturer_name,
@@ -4169,10 +4169,8 @@ class ProductCore extends ObjectModel implements InitializationCallback
     {
         $updateUnitPrice = is_null($this->update_fields) || !empty($this->update_fields['unit_price']);
         if ($updateUnitPrice && is_array($this->update_fields)) {
-            // The back office exposes unit price as a calculated field, but stores
-            // the ratio and its unit label as two separate multishop fields.
+            // The back office exposes unit price as a calculated field, but stores its ratio.
             $this->update_fields['unit_price_ratio'] = true;
-            $this->update_fields['unity'] = true;
         }
 
         $fields = parent::getFieldsShop();
@@ -6389,7 +6387,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public function getAccessories($idLang, $active = true)
     {
         $sql = 'SELECT p.*, product_shop.*, stock.out_of_stock, IFNULL(stock.quantity, 0) as quantity, pl.`description`, pl.`description_short`, pl.`link_rewrite`,
-					pl.`meta_description`, pl.`meta_keywords`, pl.`meta_title`, pl.`name`, pl.`available_now`, pl.`available_later`,
+                    pl.`meta_description`, pl.`meta_keywords`, pl.`meta_title`, pl.`name`, pl.`unity`, pl.`available_now`, pl.`available_later`,
 					image_shop.`id_image` id_image, il.`legend`, m.`name` as manufacturer_name, cl.`name` AS category_default, IFNULL(product_attribute_shop.id_product_attribute, 0) id_product_attribute,
 					DATEDIFF(
 						p.`date_add`,
@@ -8300,7 +8298,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
         if ($table->getNameWithoutPrefix() === 'product_shop') {
             $table->reorderColumns([
                 'id_product', 'id_shop', 'id_category_default', 'id_tax_rules_group', 'on_sale', 'online_only', 'ecotax',
-                'minimal_quantity', 'price', 'wholesale_price', 'unity', 'unit_price_ratio', 'additional_shipping_cost',
+                'minimal_quantity', 'price', 'wholesale_price', 'unit_price_ratio', 'additional_shipping_cost',
                 'customizable', 'uploadable_files', 'text_fields', 'active', 'redirect_type', 'id_product_redirected',
                 'available_for_order', 'available_date', 'condition', 'show_price', 'indexed', 'visibility',
                 'cache_default_attribute', 'advanced_stock_management', 'date_add', 'date_upd', 'pack_stock_type'

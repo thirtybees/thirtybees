@@ -716,8 +716,9 @@ window.product_tabs.Combinations = new function () {
     $('#span_unit_impact').hide();
     $('#unity_third').html($('#unity_second').html());
 
-    if ($('#unity').is()) {
-      if ($('#unity').get(0).value.length > 0) {
+    var $unity = $('.product-unity:visible').first();
+    if ($unity.length) {
+      if ($unity.val().length > 0) {
         $('#tr_unit_impact').show();
       } else {
         $('#tr_unit_impact').hide();
@@ -1993,7 +1994,6 @@ window.ProductMultishop = new function () {
         break;
       case 'unit_price' :
         $('#unit_price').attr('disabled', checked);
-        $('#unity').attr('disabled', checked);
         break;
       case 'attribute_price_impact' :
         $('#attribute_price_impact').attr('disabled', checked);
@@ -2074,6 +2074,9 @@ window.ProductMultishop = new function () {
     window.ProductMultishop.checkField($('input[name=\'multishop_check[price]\']').prop('checked'), 'price', 'price');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[id_tax_rules_group]\']').prop('checked'), 'id_tax_rules_group');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[unit_price]\']').prop('checked'), 'unit_price', 'unit_price');
+    $.each(window.languages, function (k, v) {
+      window.ProductMultishop.checkField($('input[name=\'multishop_check[unity][' + v.id_lang + ']\']').prop('checked'), 'unity_' + v.id_lang);
+    });
     window.ProductMultishop.checkField($('input[name=\'multishop_check[on_sale]\']').prop('checked'), 'on_sale');
     window.ProductMultishop.checkField($('input[name=\'multishop_check[ecotax]\']').prop('checked'), 'ecotax');
   };

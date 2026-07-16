@@ -13,7 +13,6 @@
     <field name="minimal_quantity"/>
     <field name="price"/>
     <field name="wholesale_price"/>
-    <field name="unity"/>
     <field name="unit_price_ratio"/>
     <field name="additional_shipping_cost"/>
     <field name="reference"/>
@@ -82,7 +81,6 @@
              is_virtual="0"
              cache_default_attribute="1"
              advanced_stock_management="0">
-      <unity/>
       <location/>
     </product>
     <product id="Soap"
@@ -122,7 +120,6 @@
              is_virtual="0"
              cache_default_attribute="7"
              advanced_stock_management="0">
-      <unity/>
       <location/>
     </product>
     <product id="Coffee"
@@ -160,7 +157,6 @@
              is_virtual="0"
              cache_default_attribute="10"
              advanced_stock_management="0">
-      <unity/>
       <location/>
     </product>
     <product id="Tin_Cup"
@@ -198,7 +194,6 @@
              is_virtual="0"
              cache_default_attribute="13"
              advanced_stock_management="0">
-      <unity/>
       <location/>
     </product>
     <product id="Picture_Frame"
@@ -236,7 +231,6 @@
              is_virtual="0"
              cache_default_attribute="15"
              advanced_stock_management="0">
-      <unity/>
       <location/>
     </product>
     <product id="Mug"
@@ -274,7 +268,6 @@
              is_virtual="0"
              cache_default_attribute="17"
              advanced_stock_management="0">
-      <unity/>
       <location/>
     </product>
     <product id="Tea"
@@ -312,7 +305,6 @@
              is_virtual="0"
              cache_default_attribute="21"
              advanced_stock_management="0">
-      <unity/>
       <location/>
     </product>
     <product id="Honey"
@@ -350,7 +342,6 @@
              is_virtual="0"
              cache_default_attribute="0"
              advanced_stock_management="0">
-      <unity/>
       <location/>
     </product>
   </entities>

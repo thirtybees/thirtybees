@@ -272,9 +272,12 @@ function unitPriceWithTax(type) {
 }
 
 function unitySecond() {
-  $('#unity_second').html($('#unity').val());
-  if ($('#unity').get(0).value.length > 0) {
-    $('#unity_third').html($('#unity').val());
+  var $unity = $('.product-unity:visible').first();
+  var value = $unity.length ? $unity.val() : '';
+
+  $('#unity_second').html(value);
+  if (value.length > 0) {
+    $('#unity_third').html(value);
     $('#tr_unit_impact').show();
   }
   else {

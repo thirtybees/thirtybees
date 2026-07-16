@@ -109,6 +109,14 @@ $(document).ready(function () {
 		}
 	};
 	Customer.init();
+	if (tabs_manager.allow_hide_other_languages) {
+		hideOtherLanguage({$default_form_language});
+	}
+	$('.product-unity').on('keyup change', function (event) {
+		if (!isArrowKey(event)) {
+			unitySecond();
+		}
+	});
 });
 </script>
 
@@ -260,7 +268,7 @@ $(document).ready(function () {
 		<label class="control-label col-lg-2" for="unit_price">
 			<span class="label-tooltip" data-toggle="tooltip" title="{l s='When selling a pack of items, you can indicate the unit price for each item of the pack. For instance, "per bottle" or "per pound".'}">{l s='Unit price (tax excl.)'}</span>
 		</label>
-		<div class="col-lg-4">
+		<div class="col-lg-2">
 			<div class="input-group">
 				<span class="input-group-addon">{$currency->prefix}{$currency->suffix}</span>
                 <input type="text"
@@ -271,18 +279,29 @@ $(document).ready(function () {
                              this.value = this.value.replace(/,/g, '.');
                              unitPriceWithTax('unit');"
                 />
-				<span class="input-group-addon">{l s='per'}</span>
-				<input id="unity" name="unity" type="text" value="{$product->unity|htmlentitiesUTF8}"  maxlength="255" onkeyup="if (isArrowKey(event)) return ;unitySecond();" onchange="unitySecond();"/>
 			</div>
 		</div>
+		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="unity" type="default" multilang="true"}</span></div>
+		<label class="control-label col-lg-1" for="unity_{$default_form_language}">
+			{l s='Unit'}
+		</label>
+		<div class="col-lg-5">
+			{include file="controllers/products/input_text_lang.tpl"
+				languages=$languages
+				input_value=$product->unity
+				input_name='unity'
+				input_class='product-unity'
+				maxlength=255}
+			<p class="help-block">{l s='Enter the unit only, for example "ball" or "kg". The translated word "per" is added when the unit price is displayed.'}</p>
+		</div>
 	</div>
-	{if isset($product->unity) && $product->unity}
+	{if $display_unity}
 	<div class="form-group">
 		<div class="col-lg-9 col-lg-offset-3">
 			<div class="alert alert-warning">
-				<span>{l s='or'}
+				<span>{l s='Unit price (tax incl.):'}
 					{$currency->prefix}<span id="unit_price_with_tax">0.00</span>{$currency->suffix}
-					{l s='per'} <span id="unity_second">{$product->unity}</span>{if $ps_tax && $country_display_tax_label} {l s='(tax incl.)'}{/if}
+					{l s='per'} <span id="unity_second">{$display_unity}</span>
 				</span>
 			</div>
 		</div>

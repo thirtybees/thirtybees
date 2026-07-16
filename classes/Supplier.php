@@ -413,6 +413,7 @@ class SupplierCore extends ObjectModel implements InitializationCallback
 					pl.`meta_keywords`,
 					pl.`meta_title`,
 					pl.`name`,
+					pl.`unity`,
 					image_shop.`id_image` id_image,
 					il.`legend`,
 					s.`name` AS supplier_name,

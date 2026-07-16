@@ -279,7 +279,7 @@ class SearchCore
             $alias = 'p.';
         }
         $sql = 'SELECT p.*, product_shop.*, stock.out_of_stock, IFNULL(stock.quantity, 0) as quantity,
-				pl.`description_short`, pl.`available_now`, pl.`available_later`, pl.`link_rewrite`, pl.`name`,
+				pl.`description_short`, pl.`unity`, pl.`available_now`, pl.`available_later`, pl.`link_rewrite`, pl.`name`,
 			 image_shop.`id_image` id_image, il.`legend`, m.`name` manufacturer_name '.$score.',
 				DATEDIFF(
 					p.`date_add`,
@@ -927,7 +927,7 @@ class SearchCore
             );
         }
 
-        $sql = 'SELECT DISTINCT p.*, product_shop.*, stock.out_of_stock, IFNULL(stock.quantity, 0) as quantity, pl.`description_short`, pl.`link_rewrite`, pl.`name`, pl.`available_now`, pl.`available_later`,
+        $sql = 'SELECT DISTINCT p.*, product_shop.*, stock.out_of_stock, IFNULL(stock.quantity, 0) as quantity, pl.`description_short`, pl.`link_rewrite`, pl.`name`, pl.`unity`, pl.`available_now`, pl.`available_later`,
 					MAX(image_shop.`id_image`) id_image, il.`legend`, m.`name` manufacturer_name, 1 position,
 					DATEDIFF(
 						p.`date_add`,

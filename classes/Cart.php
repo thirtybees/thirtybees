@@ -397,7 +397,7 @@ class CartCore extends ObjectModel
         $sql->select('product_shop.`available_for_order`');
         $sql->select('product_shop.`price`');
         $sql->select('product_shop.`active`');
-        $sql->select('product_shop.`unity`');
+        $sql->select('pl.`unity`');
         $sql->select('product_shop.`unit_price_ratio`');
         $sql->select('stock.`quantity` AS `quantity_available`');
         $sql->select('p.`width`');
