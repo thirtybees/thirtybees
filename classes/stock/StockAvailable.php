@@ -435,6 +435,20 @@ class StockAvailableCore extends ObjectModel
             $conn->insert('stock_available', $params, false, true, Db::ON_DUPLICATE_KEY);
         }
 
+        $combinationId = $idProductAttribute
+            ? (int)$idProductAttribute
+            : Pack::ANY_COMBINATION;
+        $dynamicPacks = [];
+        foreach (Pack::getPacksContaining((int)$idProduct, $combinationId) as $pack) {
+            if ($pack->isDynamicPack()) {
+                $packProductId = $pack->getProductId();
+                $dynamicPacks[$packProductId] = $packProductId;
+            }
+        }
+        if ($dynamicPacks) {
+            static::synchronizeDynamicPacks(array_values($dynamicPacks));
+        }
+
         return true;
     }
 

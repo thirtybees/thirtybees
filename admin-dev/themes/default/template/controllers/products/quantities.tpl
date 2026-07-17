@@ -107,7 +107,7 @@
 										 	checked="checked"
 										 {/if}
 									/>
-									{l s='Calculate pack quantities automatically based on available quantities of items in pack'}
+									{l s='Calculate pack quantities automatically based on available quantities of items in pack. This also automatically sets the pack\'s "When out of stock" option based on the items in the pack.'}
 								</label>
 						   </p>
 						{/if}
@@ -247,19 +247,19 @@
 					<div class="col-lg-9">
 						<p class="radio">
 							<label id="label_out_of_stock_1" for="out_of_stock_1">
-								<input type="radio" id="out_of_stock_1" name="out_of_stock" checked="checked" value="0" class="out_of_stock" {if $product->out_of_stock == 0} checked="checked" {/if}>
+								<input type="radio" id="out_of_stock_1" name="out_of_stock" checked="checked" value="0" class="out_of_stock" {if $product->out_of_stock == 0} checked="checked" {/if} {if $product->pack_dynamic}disabled="disabled"{/if}>
 								{l s='Deny orders'}
 							</label>
 						</p>
 						<p class="radio">
 							<label id="label_out_of_stock_2" for="out_of_stock_2">
-								<input type="radio" id="out_of_stock_2" name="out_of_stock" value="1" class="out_of_stock" {if $product->out_of_stock == 1} checked="checked" {/if}>
+								<input type="radio" id="out_of_stock_2" name="out_of_stock" value="1" class="out_of_stock" {if $product->out_of_stock == 1} checked="checked" {/if} {if $product->pack_dynamic}disabled="disabled"{/if}>
 								{l s='Allow orders'}
 							</label>
 						</p>
 						<p class="radio">
 							<label id="label_out_of_stock_3" for="out_of_stock_3">
-								<input type="radio" id="out_of_stock_3" name="out_of_stock" value="2" class="out_of_stock" {if $product->out_of_stock == 2} checked="checked" {/if}>
+								<input type="radio" id="out_of_stock_3" name="out_of_stock" value="2" class="out_of_stock" {if $product->out_of_stock == 2} checked="checked" {/if} {if $product->pack_dynamic}disabled="disabled"{/if}>
 								{l s='Default'}:
 								{if $order_out_of_stock == 1}
 								{l s='Allow orders'}

@@ -5861,7 +5861,8 @@ class AdminProductsControllerCore extends AdminController
 
                 $this->ajaxDie(json_encode([
                     'error' => false,
-                    'quantities' => $this->getProductQuantities($product)
+                    'quantities' => $this->getProductQuantities($product),
+                    'out_of_stock' => StockAvailable::outOfStock($productId),
                 ]));
                 break;
             default:
