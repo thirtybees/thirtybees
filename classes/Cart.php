@@ -1118,10 +1118,18 @@ class CartCore extends ObjectModel
         // Store credits carry no currency, so they are only applied to carts
         // in the shop default currency; a JPY cart would otherwise drain a
         // EUR-granted balance one-to-one.
-        if ($orderTotal > 0 && $this->use_store_credit && (int)$this->id_customer
+        if ($orderTotal > 0 && $this->use_store_credit
             && (int)$this->id_currency === (int)Configuration::get('PS_CURRENCY_DEFAULT')) {
             if ($type == static::BOTH || $type == static::ONLY_STORE_CREDIT) {
-                $creditAvailable = StoreCredit::getByCustomerId((int)$this->id_shop, (int)$this->id_customer);
+                // Claimed balance of the signed-in customer, plus unclaimed
+                // credits attached to the cart before sign-in (guest
+                // redemption). The two sets cannot overlap: attached credits
+                // only count while unclaimed.
+                $creditAvailable = 0.0;
+                if ((int)$this->id_customer) {
+                    $creditAvailable = StoreCredit::getByCustomerId((int)$this->id_shop, (int)$this->id_customer);
+                }
+                $creditAvailable += StoreCredit::getAttachedAmountForCart((int)$this->id_shop, (int)$this->id);
                 // FLOOR to the display precision. The credit balance can hold
                 // sub-precision dust (6-decimal column); rounding UP would
                 // promise more than the balance covers and make the order-time
@@ -2931,6 +2939,7 @@ class CartCore extends ObjectModel
         );
 
         if (!$conn->delete('cart_cart_rule', '`id_cart` = '.(int) $this->id)
+            || !$conn->delete('cart_store_credit', '`id_cart` = '.(int) $this->id)
             || !$conn->delete('cart_product', '`id_cart` = '.(int) $this->id)
         ) {
             return false;
@@ -4144,7 +4153,7 @@ class CartCore extends ObjectModel
         }
 
         $discounts = array_values($cartRules);
-        if ($this->use_store_credit && (int)$this->id_customer) {
+        if ($this->use_store_credit) {
             $creditUsed = $this->getOrderTotal(true, static::ONLY_STORE_CREDIT);
             if ($creditUsed > 0.0) {
                 $baseTotalTaxInc -= $creditUsed;
@@ -4154,6 +4163,12 @@ class CartCore extends ObjectModel
                     'code' => ParentOrderController::STORE_CREDIT_CODE,
                     'id_customer' => $this->id_customer,
                     'value_real' => $creditUsed,
+                    // Credit is a payment, not a taxed line: tax-excluded
+                    // displays show the same figure. Both keys are read by
+                    // the theme's cart summary next to value_real.
+                    'value_tax_exc' => $creditUsed,
+                    'description' => '',
+                    'free_shipping' => 0,
                     'name' => 'Store credit',
                 ];
             }

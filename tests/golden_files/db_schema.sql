@@ -369,6 +369,16 @@ CREATE TABLE `PREFIX_cart_rule_shop` (
   PRIMARY KEY (`id_cart_rule`,`id_shop`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE `PREFIX_cart_store_credit` (
+  `id_cart_store_credit` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `id_cart` int(11) unsigned NOT NULL,
+  `id_store_credit` int(11) unsigned NOT NULL,
+  `date_add` datetime NOT NULL,
+  PRIMARY KEY (`id_cart_store_credit`),
+  UNIQUE KEY `cart_credit` (`id_cart`,`id_store_credit`),
+  KEY `id_store_credit` (`id_store_credit`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE `PREFIX_category` (
   `id_category` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_parent` int(11) unsigned NOT NULL,

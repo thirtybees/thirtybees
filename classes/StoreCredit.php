@@ -260,11 +260,65 @@ class StoreCreditCore extends ObjectModel
     }
 
     /**
+     * Whether visitors may redeem store credit codes without signing in
+     * (shop setting, off by default). When enabled, an unclaimed code entered
+     * before sign-in is attached to the cart and spent at order validation;
+     * codes already claimed by an account stay bound to that account.
+     *
+     * @return bool
+     *
+     * @throws PrestaShopException
+     */
+    public static function guestRedeemEnabled(): bool
+    {
+        return (bool) Configuration::get('PS_STORE_CREDIT_GUEST');
+    }
+
+    /**
+     * Spendable total of the credits attached to a cart (guest redemption).
+     * Only unclaimed credits count: once a credit is claimed by an account,
+     * the owner's balance takes over and a stale cart association must not
+     * make the same money spendable twice.
+     *
+     * @param int $shopId
+     * @param int $cartId
+     *
+     * @return float
+     *
+     * @throws PrestaShopException
+     */
+    public static function getAttachedAmountForCart(int $shopId, int $cartId): float
+    {
+        // The setting is the kill switch: turning it off immediately stops
+        // attachments from counting (and, via spendForOrder, from being
+        // spent), including carts that attached a code while it was on.
+        if ($cartId <= 0 || !static::guestRedeemEnabled()) {
+            return 0.0;
+        }
+        // Master connection for the same reason as getByCustomerId(): this
+        // figure decides how much money the checkout may spend.
+        $conn = Db::getInstance();
+        $sql = (new DbQuery())
+            ->select('SUM(c.amount - c.amount_used)')
+            ->from('store_credit', 'c')
+            ->innerJoin('cart_store_credit', 'csc', 'c.id_store_credit = csc.id_store_credit AND csc.id_cart = ' . (int) $cartId)
+            ->innerJoin('store_credit_shop', 'cs', 'c.id_store_credit = cs.id_store_credit AND cs.id_shop = ' . (int) $shopId)
+            ->where('c.id_customer = 0')
+            ->where('c.date_from <= NOW()')
+            // Dates before 1900 mean "no expiry", see getByCustomerId().
+            ->where('(c.date_to < "1900-00-00" OR c.date_to >= NOW())');
+        return (float) $conn->getValue($sql);
+    }
+
+    /**
      * Debit $amount from the order's customer credit balance and record one
      * StoreCreditSpend row per credit touched. This is the durable side of
      * paying with store credit: Cart::getOrderTotal() only lowers the payable
      * total, and without this booking the balance would never decrease and
      * nothing on the order would show the credit was used.
+     *
+     * With guest redemption enabled, unclaimed credits attached to the
+     * order's cart are debited too; those stay unclaimed afterwards.
      *
      * Credits are consumed deterministically: soonest expiry first (credits
      * without an expiry last), then oldest first. Each debit is a single
@@ -295,12 +349,25 @@ class StoreCreditCore extends ObjectModel
             throw new PrestaShopException('Store credit can only be spent by a customer account.');
         }
 
+        // Besides the customer's own claimed credits, unclaimed credits
+        // attached to the order's cart are spendable too (guest redemption:
+        // the code was entered before sign-in). Such credits stay unclaimed
+        // after the spend, so the code keeps working for its holder. Gated on
+        // the same setting as the counting side, so the two never disagree.
+        $spendable = 'c.id_customer = ' . $idCustomer;
+        $idCart = (int) $order->id_cart;
+        if ($idCart > 0 && static::guestRedeemEnabled()) {
+            $spendable = '(' . $spendable . ' OR (c.id_customer = 0 AND c.id_store_credit IN (
+                SELECT csc.id_store_credit FROM `' . _DB_PREFIX_ . 'cart_store_credit` csc WHERE csc.id_cart = ' . $idCart . '
+            )))';
+        }
+
         $conn = Db::getInstance();
         $candidates = $conn->getArray((new DbQuery())
             ->select('c.id_store_credit, c.code, c.amount, c.amount_used')
             ->from('store_credit', 'c')
             ->innerJoin('store_credit_shop', 'cs', 'c.id_store_credit = cs.id_store_credit AND cs.id_shop = ' . (int) $order->id_shop)
-            ->where('c.id_customer = ' . $idCustomer)
+            ->where($spendable)
             ->where('c.date_from <= NOW()')
             // Dates before 1900 mean "no expiry", see getByCustomerId().
             ->where('(c.date_to < "1900-00-00" OR c.date_to >= NOW())')

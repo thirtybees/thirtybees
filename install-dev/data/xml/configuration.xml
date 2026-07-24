@@ -314,6 +314,9 @@
     <configuration id="PS_GUEST_CHECKOUT_ENABLED" name="PS_GUEST_CHECKOUT_ENABLED">
       <value>0</value>
     </configuration>
+    <configuration id="PS_STORE_CREDIT_GUEST" name="PS_STORE_CREDIT_GUEST">
+      <value>0</value>
+    </configuration>
     <configuration id="PS_DISPLAY_SUPPLIERS" name="PS_DISPLAY_SUPPLIERS">
       <value>1</value>
     </configuration>

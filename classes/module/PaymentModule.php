@@ -565,7 +565,13 @@ abstract class PaymentModuleCore extends Module
                     // with/without difference, so it mirrors exactly what the
                     // totals deducted.
                     $storeCreditApplied = 0.0;
-                    if ($this->context->cart->use_store_credit && (int) $this->context->cart->id_customer) {
+                    // No id_customer condition here: Cart::getOrderTotal()
+                    // subtracts credit without one (guest carts), so gating
+                    // the gross-up on it would price an order net of a credit
+                    // that is never debited. A truly customerless order makes
+                    // spendForOrder() throw, which is the loud failure we
+                    // want for that broken state.
+                    if ($this->context->cart->use_store_credit) {
                         $grossTaxIncl = (float) $this->context->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_STORE_CREDIT, $productList, $idCarrier);
                         $storeCreditApplied = Tools::roundPrice($grossTaxIncl - $order->total_paid_tax_incl);
                         if ($storeCreditApplied > 0) {
