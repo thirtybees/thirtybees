@@ -12,6 +12,7 @@ use WebserviceRequest;
 use AddressFormat;
 use Alias;
 use Attachment;
+use CartStoreCredit;
 use CMSRole;
 use CompareProduct;
 use ConfigurationKPI;
@@ -57,6 +58,7 @@ class WebserviceMetadataTest extends Unit
         AddressFormat::class,
         Alias::class,
         Attachment::class,
+        CartStoreCredit::class, // internal cart association
         CMSRole::class,
         CompareProduct::class,
         ConfigurationKPI::class,

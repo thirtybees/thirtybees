@@ -61,7 +61,7 @@ class AdminStoreCreditControllerCore extends AdminController implements Initiali
                 'LEFT JOIN `' . _DB_PREFIX_ . 'customer` `c` ON (`c`.`id_customer` = `a`.`id_customer`)',
             ]);
             $this->_select = implode(',', [
-                'IF(COALESCE(a.id_customer, 0) = 0, "'.$this->l('Not redeemed codes').'", CONCAT(`c`.`firstname`, " ", `c`.`lastname`)) AS `customer_name`',
+                'IF(COALESCE(a.id_customer, 0) = 0, "'.$this->l('Gift card, no owner').'", CONCAT(`c`.`firstname`, " ", `c`.`lastname`)) AS `customer_name`',
                 '`c`.`email` as email',
                 "SUM($outstandingExpr) AS `amount_outstanding`",
             ]);
@@ -281,7 +281,7 @@ class AdminStoreCreditControllerCore extends AdminController implements Initiali
                     $customer = new Customer($customerId);
                     $customerName = trim($customer->firstname . ' ' . $customer->lastname);
                 } else {
-                    $customerName = $this->l('Not redeemed codes');
+                    $customerName = $this->l('Gift card, no owner');
                 }
                 $helper->title = sprintf($this->l('Store credits: %s'), $customerName);
             }
@@ -315,7 +315,7 @@ class AdminStoreCreditControllerCore extends AdminController implements Initiali
             ]);
             return '<a href="'.$link.'">' . Tools::safeOutput($value) . "</a>";
         } else {
-            return $this->l('Not redeemed codes');
+            return $this->l('Gift card, no owner');
         }
     }
 

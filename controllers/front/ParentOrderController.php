@@ -159,18 +159,41 @@ class ParentOrderControllerCore extends FrontController
                                 Tools::redirect('index.php?controller=order&addingCartRule=1');
                             }
                         } elseif (($storeCredit = StoreCredit::getByCode($code))) {
-                            if (!$customerId) {
-                                $this->errors[] = Tools::displayError('You need to sign in before you can redeem store credit vouchers');
+                            // Guest checkout creates a customer record without an
+                            // account, so the id alone does not say whether this
+                            // visitor signed in.
+                            $signedIn = Validate::isLoadedObject($this->context->customer)
+                                && $this->context->customer->isLogged();
+                            if (!$signedIn && !StoreCredit::guestRedeemEnabled()) {
+                                // Same wording as an unknown code, so a visitor
+                                // cannot find out which codes exist.
+                                $this->errors[] = Tools::displayError('This voucher does not exists.');
+                            } elseif (!$storeCredit->isValidForShop((int) $this->context->shop->id)
+                                || (int) $this->context->cart->id_currency !== (int) Configuration::get('PS_CURRENCY_DEFAULT')) {
+                                // A code from another shop, or a cart in another
+                                // currency, would attach and then pay nothing:
+                                // credit carries no currency.
+                                $this->errors[] = Tools::displayError('This code cannot be redeemed here.');
                             } elseif ((int)$storeCredit->id_customer && (int)$storeCredit->id_customer !== $customerId) {
-                                // Codes are bearer secrets: once a credit is bound to an
-                                // account, (re)entering its code must never move it to
-                                // another customer's account.
-                                $this->errors[] = Tools::displayError('This code has already been redeemed.');
+                                // Credit granted to a customer in the back office is
+                                // that customer's money and is applied automatically;
+                                // its code is not a bearer instrument and must never
+                                // move to somebody else. Visitors who are not signed in
+                                // get one generic refusal for every state, so they
+                                // cannot probe whether a code exists, expired or is
+                                // empty.
+                                $this->errors[] = $signedIn
+                                    ? Tools::displayError('This code cannot be redeemed here.')
+                                    : Tools::displayError('This voucher does not exists.');
                             } elseif (!$storeCredit->isCurrentlyValid()) {
-                                $this->errors[] = Tools::displayError('This code is no longer valid.');
+                                $this->errors[] = $signedIn
+                                    ? Tools::displayError('This code is no longer valid.')
+                                    : Tools::displayError('This voucher does not exists.');
                             } elseif ($storeCredit->getRemainingAmount() <= 0) {
-                                $this->errors[] = Tools::displayError('This code has no remaining balance.');
-                            } elseif (!$storeCredit->claimForCustomer($customerId)) {
+                                $this->errors[] = $signedIn
+                                    ? Tools::displayError('This code has no remaining balance.')
+                                    : Tools::displayError('This voucher does not exists.');
+                            } elseif (!CartStoreCredit::attach((int)$this->context->cart->id, (int)$storeCredit->id)) {
                                 $this->errors[] = Tools::displayError('This code could not be redeemed. Please contact customer service.');
                             } else {
                                 $cart = $this->context->cart;
@@ -199,6 +222,9 @@ class ParentOrderControllerCore extends FrontController
                     } elseif ($discount === static::STORE_CREDIT_CODE) {
                         $this->context->cart->use_store_credit = false;
                         $this->context->cart->save();
+                        // Also unhook any codes attached before sign-in, so
+                        // removing the store credit line removes everything.
+                        CartStoreCredit::deleteForCart((int)$this->context->cart->id);
                         Tools::redirect('index.php?controller=order-opc');
                     }
                 }

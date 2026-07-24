@@ -885,6 +885,12 @@ class CartCore extends ObjectModel
             return 0;
         }
 
+        // A cart without anything to ship asks for a total without shipping.
+        // Remember what the caller actually asked for: store credit pays for
+        // the whole order, so an all-virtual cart must still have it taken
+        // off its payable total.
+        $storeCreditApplies = ($type == static::BOTH || $type == static::ONLY_STORE_CREDIT);
+        $creditOnFullTotal = ($type == static::BOTH);
         if ($virtual && $type == static::BOTH) {
             $type = static::BOTH_WITHOUT_SHIPPING;
         }
@@ -1118,10 +1124,21 @@ class CartCore extends ObjectModel
         // Store credits carry no currency, so they are only applied to carts
         // in the shop default currency; a JPY cart would otherwise drain a
         // EUR-granted balance one-to-one.
-        if ($orderTotal > 0 && $this->use_store_credit && (int)$this->id_customer
+        if ($orderTotal > 0 && $this->use_store_credit
             && (int)$this->id_currency === (int)Configuration::get('PS_CURRENCY_DEFAULT')) {
-            if ($type == static::BOTH || $type == static::ONLY_STORE_CREDIT) {
-                $creditAvailable = StoreCredit::getByCustomerId((int)$this->id_shop, (int)$this->id_customer);
+            if ($storeCreditApplies) {
+                // The customer's own balance plus the gift cards whose code
+                // was entered into this cart. The two sets cannot overlap: a
+                // gift card has no owner, a balance always has one.
+                $creditAvailable = StoreCredit::getSpendableAmount(
+                    (int)$this->id_shop,
+                    (int)$this->id_customer,
+                    (int)$this->id
+                );
+                // Products store credit may not pay for stay out of the base.
+                // The type passed on is the one the caller asked for, before
+                // an all-virtual cart turned BOTH into BOTH_WITHOUT_SHIPPING.
+                $creditBase = max(0.0, $orderTotal - $this->getStoreCreditExcludedTotal($withTaxes, $products));
                 // FLOOR to the display precision. The credit balance can hold
                 // sub-precision dust (6-decimal column); rounding UP would
                 // promise more than the balance covers and make the order-time
@@ -1132,11 +1149,11 @@ class CartCore extends ObjectModel
                 // otherwise floor to 32.04, leaving a cent that never goes.
                 $factor = pow(10, (int) $displayPrecision);
                 $scaled = round(
-                    max(0.0, min($orderTotal, $creditAvailable)) * $factor,
+                    max(0.0, min($creditBase, $creditAvailable)) * $factor,
                     max(0, _TB_PRICE_DATABASE_PRECISION_ - (int) $displayPrecision)
                 );
                 $creditUsed = floor($scaled) / $factor;
-                if ($type == static::BOTH) {
+                if ($creditOnFullTotal) {
                     $orderTotal -= $creditUsed;
                 } else {
                     $orderTotal = $creditUsed;
@@ -1149,6 +1166,66 @@ class CartCore extends ObjectModel
         }
 
         return Tools::ps_round((float) $orderTotal, $displayPrecision);
+    }
+
+    /**
+     * Part of the cart total that store credit may not pay for.
+     *
+     * Modules answer the actionStoreCreditExcludedTotal hook with the amount
+     * of their own products in this cart. The canonical case is a gift-card
+     * product: paying for one with credit would move an expiring balance onto
+     * a fresh code, so the liability could be renewed forever and never
+     * expire. Excluded products simply have to be paid by other means; the
+     * credit still covers the rest of the cart.
+     *
+     * The largest amount returned wins rather than the sum, so two modules
+     * excluding the same product cannot subtract it twice. A module must
+     * therefore return the total for every product it excludes.
+     *
+     * @param bool $withTaxes whether the caller works with tax-included amounts
+     * @param int $type the getOrderTotal() type being computed
+     * @param array|null $products package products, when the caller limited
+     *                             the total to one package
+     *
+     * @return float amount in cart currency, never negative
+     *
+     * @throws PrestaShopException
+     */
+    protected function getStoreCreditExcludedTotal($withTaxes, ?array $products = null): float
+    {
+        // collect information about excluded products
+        $responses = Hook::getResponses('actionStoreCreditExcludedProducts', ['cart' => $this]);
+        $excludedProducts = [];
+        foreach ($responses as $response) {
+            if (is_array($response)) {
+                foreach ($response as $excludedProduct) {
+                    if (isset($excludedProduct['id_product']) && isset($excludedProduct['id_product_attribute'])) {
+                        $productId = (int)$excludedProduct['id_product'];
+                        $combinationId = (int)$excludedProduct['id_product_attribute'];
+                        $key = $productId . '_' . $combinationId;
+                        $excludedProducts[$key] = true;
+                    }
+                }
+            }
+        }
+
+        // calculate excluded amount
+        $excluded = 0.0;
+        if ($excludedProducts) {
+            if (!is_array($products)) {
+                $products = $this->getProducts();
+            }
+            $amountKey = $withTaxes ? 'total_wt' : 'total';
+            foreach ($products as $product) {
+                $productId = (int)$product['id_product'];
+                $combinationId = (int)$product['id_product_attribute'];
+                $key = $productId . '_' . $combinationId;
+                if (array_key_exists($key, $excludedProducts)) {
+                    $excluded += (float)($product[$amountKey] ?? 0);
+                }
+            }
+        }
+        return max(0.0, $excluded);
     }
 
     /**
@@ -2938,6 +3015,7 @@ class CartCore extends ObjectModel
         );
 
         if (!$conn->delete('cart_cart_rule', '`id_cart` = '.(int) $this->id)
+            || !$conn->delete('cart_store_credit', '`id_cart` = '.(int) $this->id)
             || !$conn->delete('cart_product', '`id_cart` = '.(int) $this->id)
         ) {
             return false;
@@ -4151,16 +4229,27 @@ class CartCore extends ObjectModel
         }
 
         $discounts = array_values($cartRules);
-        if ($this->use_store_credit && (int)$this->id_customer) {
+        if ($this->use_store_credit) {
             $creditUsed = $this->getOrderTotal(true, static::ONLY_STORE_CREDIT);
             if ($creditUsed > 0.0) {
+                // Credit is a payment, not a taxed discount: it lowers what
+                // is left to pay by the same amount in both displays, so the
+                // tax-excluded total has to follow or the summary stops
+                // adding up for shops that show prices without tax.
                 $baseTotalTaxInc -= $creditUsed;
+                $baseTotalTaxExc -= $creditUsed;
                 $discounts[] = [
                     'id_cart_rule' => -1,
                     'id_discount' => ParentOrderController::STORE_CREDIT_CODE,
                     'code' => ParentOrderController::STORE_CREDIT_CODE,
                     'id_customer' => $this->id_customer,
                     'value_real' => $creditUsed,
+                    // Credit is a payment, not a taxed line: tax-excluded
+                    // displays show the same figure. Both keys are read by
+                    // the theme's cart summary next to value_real.
+                    'value_tax_exc' => $creditUsed,
+                    'description' => '',
+                    'free_shipping' => 0,
                     'name' => 'Store credit',
                 ];
             }
@@ -4535,6 +4624,13 @@ class CartCore extends ObjectModel
 
         $conn = Db::getInstance();
         $success = true;
+
+        // Gift card codes live on the cart, not on the customer, so a copy
+        // that leaves them behind silently charges the customer full price.
+        foreach (CartStoreCredit::getCreditIdsForCart((int) $this->id) as $idStoreCredit) {
+            $success = CartStoreCredit::attach((int) $cart->id, (int) $idStoreCredit) && $success;
+        }
+
         $products = $conn->getArray(
             (new DbQuery())
                 ->select('*')

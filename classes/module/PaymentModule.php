@@ -486,6 +486,20 @@ abstract class PaymentModuleCore extends Module
                 }
             }
 
+            // Store credit is applied to the CART once. A cart that splits
+            // into several packages becomes several orders, and asking each
+            // package for its own with/without difference would hand every
+            // one of them the full credit. Work from one budget instead and
+            // hand out what is left, so the spends can never exceed what the
+            // customer actually saw deducted.
+            $storeCreditBudget = 0.0;
+            if ($this->context->cart->use_store_credit) {
+                $storeCreditBudget = Tools::roundPrice(
+                    (float) $this->context->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_STORE_CREDIT)
+                    - (float) $this->context->cart->getOrderTotal(true, Cart::BOTH)
+                );
+            }
+
             $orders = [];
             foreach ($packageList as $idAddress => $packageByAddress) {
                 foreach ($packageByAddress as $package) {
@@ -561,17 +575,28 @@ abstract class PaymentModuleCore extends Module
                     // The ORDER must carry the GROSS totals, with the credit
                     // recorded as a payment next to the gateway's, otherwise
                     // the payments would sum above the order total on every
-                    // credit order. The applied amount is the per-package
-                    // with/without difference, so it mirrors exactly what the
-                    // totals deducted.
+                    // credit order.
                     $storeCreditApplied = 0.0;
-                    if ($this->context->cart->use_store_credit && (int) $this->context->cart->id_customer) {
+                    // No id_customer condition here: Cart::getOrderTotal()
+                    // subtracts credit without one (a code entered by a
+                    // visitor who is not signed in), so gating the gross-up on
+                    // it would price an order net of a credit that is never
+                    // debited. A truly customerless order makes
+                    // spendForOrder() throw, which is the loud failure we
+                    // want for that broken state.
+                    if ($storeCreditBudget > 0) {
                         $grossTaxIncl = (float) $this->context->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_STORE_CREDIT, $productList, $idCarrier);
-                        $storeCreditApplied = Tools::roundPrice($grossTaxIncl - $order->total_paid_tax_incl);
+                        // What the cart takes from credit for this package on
+                        // its own: without the products credit may not pay for
+                        // (actionStoreCreditExcludedTotal), so the budget does
+                        // not land on a package that only holds those.
+                        $packageCredit = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_STORE_CREDIT, $productList, $idCarrier);
+                        $storeCreditApplied = Tools::roundPrice(min($grossTaxIncl, $packageCredit, $storeCreditBudget));
                         if ($storeCreditApplied > 0) {
                             $order->total_paid_tax_excl = (float) $this->context->cart->getOrderTotal(false, Cart::BOTH_WITHOUT_STORE_CREDIT, $productList, $idCarrier);
                             $order->total_paid_tax_incl = $grossTaxIncl;
                             $order->total_paid = $grossTaxIncl;
+                            $storeCreditBudget = Tools::roundPrice($storeCreditBudget - $storeCreditApplied);
                         }
                     }
 
