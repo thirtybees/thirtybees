@@ -337,11 +337,20 @@ class ProductCore extends ObjectModel implements InitializationCallback
     public $active = true;
 
     /**
+     * What to do with requests for this product while it is disabled:
+     * '' (product active, no redirect configured), '404',
+     * '301'/'302' (redirect to another product) or
+     * '301-category'/'302-category' (redirect to a category).
+     *
      * @var string
      */
     public $redirect_type = '';
 
     /**
+     * Redirect target: a product id for redirect types '301'/'302', a
+     * category id for '301-category'/'302-category'. For the category
+     * types, 0 means the product's own default category.
+     *
      * @var int
      */
     public $id_product_redirected = 0;
@@ -566,7 +575,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
             'uploadable_files'          => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbType' => 'tinyint(4)', 'dbDefault' => '0'],
             'text_fields'               => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedInt', 'dbType' => 'tinyint(4)', 'dbDefault' => '0'],
             'active'                    => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool', 'dbDefault' => '0'],
-            'redirect_type'             => ['type' => self::TYPE_STRING, 'shop' => true, 'validate' => 'isString', 'values' => ['', '404', '301', '302'], 'dbDefault' => ''],
+            'redirect_type'             => ['type' => self::TYPE_STRING, 'shop' => true, 'validate' => 'isString', 'values' => ['', '404', '301', '302', '301-category', '302-category'], 'dbDefault' => ''],
             'id_product_redirected'     => ['type' => self::TYPE_INT, 'shop' => true, 'validate' => 'isUnsignedId', 'dbDefault' => '0'],
             'available_for_order'       => ['type' => self::TYPE_BOOL, 'shop' => true, 'validate' => 'isBool', 'dbType' => 'tinyint(1)', 'dbDefault' => '1'],
             'available_date'            => ['type' => self::TYPE_DATE, 'shop' => true, 'validate' => 'isDateFormat', 'dbDefault' => '1970-01-01', 'dbType' => 'date'],

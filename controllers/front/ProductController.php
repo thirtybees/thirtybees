@@ -134,8 +134,30 @@ class ProductControllerCore extends FrontController
                     $this->context->smarty->assign('adminActionDisplay', true);
                 } else {
                     $this->context->smarty->assign('adminActionDisplay', false);
-                    if (!$this->product->id_product_redirected || $this->product->id_product_redirected == $this->product->id) {
+                    // Product redirects need a valid target product. Category
+                    // redirects fall back to the product's default category
+                    // when no target is set; a target that is missing,
+                    // disabled, restricted or not in this shop turns into a
+                    // 404, because redirecting a visitor to another error
+                    // page helps nobody.
+                    if (in_array($this->product->redirect_type, ['301', '302'])
+                        && (!$this->product->id_product_redirected || $this->product->id_product_redirected == $this->product->id)
+                    ) {
                         $this->product->redirect_type = '404';
+                    }
+                    $redirectCategory = null;
+                    if (in_array($this->product->redirect_type, ['301-category', '302-category'])) {
+                        $idCategory = (int) $this->product->id_product_redirected ?: (int) $this->product->id_category_default;
+                        $category = new Category($idCategory, $this->context->language->id);
+                        if (Validate::isLoadedObject($category)
+                            && $category->active
+                            && $category->isAssociatedToShop()
+                            && $category->checkAccess((int) $this->context->customer->id)
+                        ) {
+                            $redirectCategory = $category;
+                        } else {
+                            $this->product->redirect_type = '404';
+                        }
                     }
 
                     switch ($this->product->redirect_type) {
@@ -147,6 +169,15 @@ class ProductControllerCore extends FrontController
                             header('HTTP/1.1 302 Moved Temporarily');
                             header('Cache-Control: no-cache');
                             header('Location: '.$this->context->link->getProductLink($this->product->id_product_redirected));
+                            exit;
+                        case '301-category':
+                            header('HTTP/1.1 301 Moved Permanently');
+                            header('Location: '.$this->context->link->getCategoryLink($redirectCategory));
+                            exit;
+                        case '302-category':
+                            header('HTTP/1.1 302 Moved Temporarily');
+                            header('Cache-Control: no-cache');
+                            header('Location: '.$this->context->link->getCategoryLink($redirectCategory));
                             exit;
                         case '404':
                         default:

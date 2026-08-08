@@ -1796,6 +1796,14 @@ class AdminProductsControllerCore extends AdminController
             if ($this->checkMultishopBox('online_only', $this->context)) {
                 $object->online_only = Tools::getIntValue('online_only');
             }
+
+            // Category redirects reuse id_product_redirected; the form posts
+            // the category target in its own field, so copy it over here.
+            if (in_array($object->redirect_type, ['301-category', '302-category'])
+                && $this->checkMultishopBox('id_product_redirected', $this->context)
+            ) {
+                $object->id_product_redirected = Tools::getIntValue('id_category_redirected');
+            }
         }
         if ($this->isTabSubmitted('Prices')) {
             $object->on_sale = Tools::getIntValue('on_sale');
@@ -4788,7 +4796,15 @@ class AdminProductsControllerCore extends AdminController
         );
         $this->object = $product;
         //$this->display = 'edit';
-        $data->assign('product_name_redirected', Product::getProductName((int) $product->id_product_redirected, null, (int) $this->context->language->id));
+        // id_product_redirected holds a category id for the category
+        // redirect types — resolving a product name from it would show the
+        // name of an unrelated product that happens to share the id.
+        $productNameRedirected = '';
+        if (in_array($product->redirect_type, ['301', '302'])) {
+            $productNameRedirected = Product::getProductName((int) $product->id_product_redirected, null, (int) $this->context->language->id);
+        }
+        $data->assign('product_name_redirected', $productNameRedirected);
+        $data->assign('redirect_categories', Category::getSimpleCategories((int) $this->context->language->id));
 
         $productProps = [];
         // global informations
