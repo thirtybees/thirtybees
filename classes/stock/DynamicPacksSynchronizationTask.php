@@ -202,6 +202,7 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
         $updated = 0;
         $created = 0;
         $ignored = 0;
+        $fixProductLevelQuantities = [];
         // update stock
         foreach ($expectedQuantities as $row) {
             $productId = (int)$row['id_product'];
@@ -215,6 +216,9 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
                 if ($currentQuantities[$key]['quantity'] !== $quantity) {
                     $stockAvailableId = (int)$currentQuantities[$key]['id'];
                     $this->updateStockAvailableQuantity($stockAvailableId, $quantity, $fastUpdate);
+                    if ($fastUpdate && $productAttributeId !== 0) {
+                        $fixProductLevelQuantities[$productId] = $productId;
+                    }
                     $updated++;
                 } else {
                     $ignored++;
@@ -230,6 +234,10 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
         if ($currentQuantities) {
             $ids = implode(',', array_column($currentQuantities, 'id'));
             $conn->delete('stock_available', "id_stock_available IN ($ids) AND id_product_attribute != 0");
+        }
+
+        if ($fixProductLevelQuantities) {
+            $this->fixProductLevelQuantities($fixProductLevelQuantities);
         }
 
         return json_encode([
@@ -334,5 +342,35 @@ class DynamicPacksSynchronizationTaskCore implements WorkQueueTaskCallable, Init
         }
     }
 
+    /**
+     * If we updated combination quantities in fast update mode, we need to fix product level
+     * quantities as well for those products
+     *
+     * @param int[] $productIds
+     * @return void
+     * @throws PrestaShopException
+     */
+    protected function fixProductLevelQuantities(array $productIds)
+    {
+        $productIds = array_filter(array_map('intval', array_values($productIds)));
+        if ($productIds) {
+            $ids = implode(', ', array_values($productIds));
+            $sql = implode("\n", [
+                "UPDATE " . _DB_PREFIX_ . "stock_available sa1",
+                "SET sa1.quantity = ",
+                "   (",
+                "      SELECT SUM(sa2.quantity)",
+                "      FROM " . _DB_PREFIX_ . "stock_available sa2",
+                "      WHERE sa2.id_product = sa1.id_product",
+                "        AND sa2.id_product_attribute <> 0",
+                "        AND sa2.id_shop_group = sa1.id_shop_group",
+                "        AND sa2.id_shop = sa1.id_shop",
+                "   )",
+                "WHERE sa1.id_product IN ($ids)",
+                "  AND sa1.id_product_attribute = 0"
+            ]);
+            Db::getInstance()->execute($sql);
+        }
+    }
 
 }
