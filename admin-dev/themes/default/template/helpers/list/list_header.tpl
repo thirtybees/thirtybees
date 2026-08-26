@@ -325,8 +325,8 @@
 								{if $params.type === HelperList::COLUMN_TYPE_BOOL}
 									<select class="filter fixed-width-xs center" onchange="$('#submitFilterButton{$list_id}').focus();$('#submitFilterButton{$list_id}').click();" name="{$list_id}Filter_{if isset($params.filter_key)}{$params.filter_key}{else}{$key}{/if}">
 										<option value="">-</option>
-										<option value="1" {if $params.value == 1} selected="selected" {/if}>{l s='Yes'}</option>
-										<option value="0" {if $params.value == 0 && $params.value != ''} selected="selected" {/if}>{l s='No'}</option>
+										<option value="1" {if $params.value === true || $params.value === 1 || $params.value === '1'} selected="selected" {/if}>{l s='Yes'}</option>
+										<option value="0" {if $params.value === false || $params.value === 0 || $params.value === '0'} selected="selected" {/if}>{l s='No'}</option>
 									</select>
 								{elseif $params.type === HelperList::COLUMN_TYPE_DATE || $params.type == HelperList::COLUMN_TYPE_DATETIME}
 									<div class="date_range row">
