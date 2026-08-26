@@ -99,9 +99,14 @@ class CookieCore
     protected $_content;
 
     /**
-     * @var array Crypted cookie name for setcookie()
+     * @var string Crypted cookie name for setcookie()
      */
     protected $_name;
+
+    /**
+     * @var string Actual cookie name, without prefix and suffixes
+     */
+    protected $realName;
 
     /**
      * @var array expiration date for setcookie()
@@ -158,6 +163,7 @@ class CookieCore
      */
     public function __construct($name, $path = '', $expire = null, $sharedUrls = null, $standalone = false, $secure = false)
     {
+        $this->realName = (string)$name;
         $this->_content = [];
         $this->_standalone = $standalone;
         $this->_expire = is_null($expire) ? time() + 1728000 : (int) $expire;
@@ -590,6 +596,14 @@ class CookieCore
     public function getName()
     {
         return $this->_name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRealName(): string
+    {
+        return $this->realName;
     }
 
     /**
