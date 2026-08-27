@@ -175,7 +175,7 @@
 	<relation iso="im" zone="Europe/Isle_of_Man" />
 	<relation iso="tr" zone="Europe/Istanbul" />
 	<relation iso="je" zone="Europe/Jersey" />
-	<relation iso="ua" zone="Europe/Kiev" />
+	<relation iso="ua" zone="Europe/Kyiv" />
 	<relation iso="pt" zone="Europe/Lisbon" />
 	<relation iso="si" zone="Europe/Ljubljana" />
 	<relation iso="gb" zone="Europe/London" />
