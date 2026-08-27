@@ -35,6 +35,7 @@ use Thirtybees\Core\Mail\MailAddress;
 use Thirtybees\Core\Mail\MailAttachement;
 use Thirtybees\Core\Mail\MailTemplate;
 use Thirtybees\Core\Mail\MailTransport;
+use Thirtybees\Core\Mail\EnvelopeFromSupport;
 use Thirtybees\Core\Mail\Template\SimpleMailTemplate;
 use Thirtybees\Core\Mail\Transport\MailTransportNone;
 
@@ -133,6 +134,7 @@ class MailCore extends ObjectModel
      * @param int $idShop Shop ID
      * @param string|string[]|null $bcc Bcc recipient (email address)
      * @param string $replyTo Email address for setting the Reply-To header
+     * @param string|null $envelopeFrom Email address for setting the Return-Path (Envelope-From) header
      *
      * @return bool Whether sending was successful
      *
@@ -153,7 +155,8 @@ class MailCore extends ObjectModel
         $die = false,
         $idShop = null,
         $bcc = null,
-        $replyTo = null
+        $replyTo = null,
+        $envelopeFrom = null
     ) {
         try {
             // allow hooks to modify input parameters
@@ -173,6 +176,7 @@ class MailCore extends ObjectModel
                 'idShop' => &$idShop,
                 'bcc' => &$bcc,
                 'replyTo' => &$replyTo,
+                'envelopeFrom' => &$envelopeFrom,
             ]);
 
             // do NOT continue if any module returned false
@@ -212,6 +216,10 @@ class MailCore extends ObjectModel
             // get email transport
             $transportId = static::getSelectedTransport();
             $transport = static::getTransport($transportId);
+
+            if ($envelopeFrom && $transport instanceof EnvelopeFromSupport) {
+                $transport->setEnvelopeFrom($envelopeFrom);
+            }
 
             // send email via transport
             $success = $transport->sendMail(
