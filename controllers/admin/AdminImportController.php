@@ -54,6 +54,31 @@ class AdminImportControllerCore extends AdminController
     const ENTITY_TYPE_SUPPLY_ORDERS = 'supply_orders';
     const ENTITY_TYPE_SUPPLY_ORDER_DETAILS = 'supply_order_details';
 
+    /**
+     * CSV fields used while importing a product which are not part of the Product model.
+     */
+    const PRODUCT_IMPORT_DATA_FIELDS = [
+        'price_tex',
+        'price_tin',
+        'reduction_price',
+        'reduction_percent',
+        'reduction_from',
+        'reduction_to',
+        'supplier',
+        'manufacturer',
+        'image',
+        'image_alt',
+        'delete_existing_images',
+        'features',
+        'shop',
+        'warehouse',
+        'accessories',
+        'file_url',
+        'nb_downloadable',
+        'date_expiration',
+        'nb_days_accessible',
+    ];
+
     /** @var array $columnMask */
     public static $columnMask;
     /** @var array $defaultValues */
@@ -347,7 +372,6 @@ class AdminImportControllerCore extends AdminController
                 ];
 
                 static::$defaultValues = [
-                    'id_category'               => [(int) Configuration::get('PS_HOME_CATEGORY')],
                     'id_category_default'       => null,
                     'active'                    => '1',
                     'width'                     => 0.000000,
@@ -642,6 +666,33 @@ class AdminImportControllerCore extends AdminController
         }
 
         return true;
+    }
+
+    /**
+     * Extract and normalize product import fields which do not belong to the Product model.
+     *
+     * @param array $info
+     *
+     * @return array
+     */
+    protected static function extractProductImportData(array &$info)
+    {
+        $importData = [];
+        foreach (static::PRODUCT_IMPORT_DATA_FIELDS as $key) {
+            if (!array_key_exists($key, $info)) {
+                continue;
+            }
+
+            $value = trim($info[$key]);
+            if (!empty($value) || $value == '0') {
+                $importData[$key] = isset(static::$validators[$key])
+                    ? call_user_func(static::$validators[$key], $value)
+                    : $value;
+            }
+            unset($info[$key]);
+        }
+
+        return $importData;
     }
 
     /**
@@ -2355,13 +2406,15 @@ class AdminImportControllerCore extends AdminController
             $product->category = $product->getCategories();
         }
 
+        $productImportData = static::extractProductImportData($info);
+        $productCategories = [(int) Configuration::get('PS_HOME_CATEGORY')];
         static::setEntityDefaultValues($product);
         array_walk($info, [static::class, 'fillInfo'], $product);
 
         if (!$shopIsFeatureActive) {
-            $product->shop = (int) Configuration::get('PS_SHOP_DEFAULT');
-        } elseif (empty($product->shop)) {
-            $product->shop = implode($this->multiple_value_separator, Shop::getContextListShopID());
+            $productImportData['shop'] = (int) Configuration::get('PS_SHOP_DEFAULT');
+        } elseif (empty($productImportData['shop'])) {
+            $productImportData['shop'] = implode($this->multiple_value_separator, Shop::getContextListShopID());
         }
 
         if (!$shopIsFeatureActive) {
@@ -2372,7 +2425,7 @@ class AdminImportControllerCore extends AdminController
 
         // link product to shops
         $product->id_shop_list = [];
-        foreach (explode($this->multiple_value_separator, $product->shop) as $shop) {
+        foreach (explode($this->multiple_value_separator, (string) $productImportData['shop']) as $shop) {
             if (!empty($shop) && !is_numeric($shop)) {
                 $product->id_shop_list[] = Shop::getIdByName($shop);
             } elseif (!empty($shop)) {
@@ -2394,14 +2447,14 @@ class AdminImportControllerCore extends AdminController
                 );
             }
         }
-        if (isset($product->manufacturer) && is_numeric($product->manufacturer) && Manufacturer::manufacturerExists((int) $product->id_manufacturer)) {
-            $product->id_manufacturer = (int) $product->manufacturer;
-        } elseif (is_string($product->manufacturer) && !empty($product->manufacturer)) {
-            if ($manufacturer = Manufacturer::getIdByName($product->manufacturer)) {
+        if (isset($productImportData['manufacturer']) && is_numeric($productImportData['manufacturer']) && Manufacturer::manufacturerExists((int) $product->id_manufacturer)) {
+            $product->id_manufacturer = (int) $productImportData['manufacturer'];
+        } elseif (isset($productImportData['manufacturer']) && is_string($productImportData['manufacturer']) && !empty($productImportData['manufacturer'])) {
+            if ($manufacturer = Manufacturer::getIdByName($productImportData['manufacturer'])) {
                 $product->id_manufacturer = (int) $manufacturer;
             } else {
                 $manufacturer = new Manufacturer();
-                $manufacturer->name = $product->manufacturer;
+                $manufacturer->name = $productImportData['manufacturer'];
                 $manufacturer->active = true;
                 if (($fieldError = $manufacturer->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
                     ($langFieldError = $manufacturer->validateFieldsLang(static::UNFRIENDLY_ERROR, true)) === true &&
@@ -2425,14 +2478,14 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        if (isset($product->supplier) && is_numeric($product->supplier) && Supplier::supplierExists((int) $product->supplier)) {
-            $product->id_supplier = (int) $product->supplier;
-        } elseif (is_string($product->supplier) && !empty($product->supplier)) {
-            if ($supplier = Supplier::getIdByName($product->supplier)) {
+        if (isset($productImportData['supplier']) && is_numeric($productImportData['supplier']) && Supplier::supplierExists((int) $productImportData['supplier'])) {
+            $product->id_supplier = (int) $productImportData['supplier'];
+        } elseif (isset($productImportData['supplier']) && is_string($productImportData['supplier']) && !empty($productImportData['supplier'])) {
+            if ($supplier = Supplier::getIdByName($productImportData['supplier'])) {
                 $product->id_supplier = (int) $supplier;
             } else {
                 $supplier = new Supplier();
-                $supplier->name = $product->supplier;
+                $supplier->name = $productImportData['supplier'];
                 $supplier->active = true;
 
                 if (($fieldError = $supplier->validateFields(static::UNFRIENDLY_ERROR, true)) === true &&
@@ -2457,20 +2510,20 @@ class AdminImportControllerCore extends AdminController
             }
         }
 
-        if (isset($product->price_tex)) {
+        if (isset($productImportData['price_tex'])) {
             $product->price = round(
-                $product->price_tex,
+                $productImportData['price_tex'],
                 _TB_PRICE_DATABASE_PRECISION_
             );
-        } elseif (isset($product->price_tin)) {
+        } elseif (isset($productImportData['price_tin'])) {
             $product->price = round(
-                $product->price_tin,
+                $productImportData['price_tin'],
                 _TB_PRICE_DATABASE_PRECISION_
             );
             // If a tax is already included in price, withdraw it from price
             if ($product->tax_rate) {
                 $product->price = round(
-                    $product->price_tin / (1 + $product->tax_rate / 100),
+                    $productImportData['price_tin'] / (1 + $product->tax_rate / 100),
                     _TB_PRICE_DATABASE_PRECISION_
                 );
             }
@@ -2481,11 +2534,11 @@ class AdminImportControllerCore extends AdminController
         }
 
         if (isset($product->category) && is_array($product->category) && count($product->category)) {
-            $product->id_category = []; // Reset default values array
+            $productCategories = [];
             foreach ($product->category as $value) {
                 if (is_numeric($value)) {
                     if (Category::categoryExists((int) $value)) {
-                        $product->id_category[] = (int) $value;
+                        $productCategories[] = (int) $value;
                     } else {
                         $categoryToCreate = new Category();
                         $categoryToCreate->id = (int) $value;
@@ -2499,7 +2552,7 @@ class AdminImportControllerCore extends AdminController
                             !$validateOnly &&  // Do not move this condition: previous tests should be played always, but next ->add() test should not be played in validateOnly mode
                             $categoryToCreate->add()
                         ) {
-                            $product->id_category[] = (int) $categoryToCreate->id;
+                            $productCategories[] = (int) $categoryToCreate->id;
                         } else {
                             if (!$validateOnly) {
                                 $this->errors[] = sprintf(
@@ -2516,26 +2569,22 @@ class AdminImportControllerCore extends AdminController
                 } elseif (!$validateOnly && is_string($value) && !empty($value)) {
                     $category = Category::searchByPath($idDefaultLanguage, trim($value), $this, 'productImportCreateCat');
                     if ($category['id_category']) {
-                        $product->id_category[] = (int) $category['id_category'];
+                        $productCategories[] = (int) $category['id_category'];
                     } else {
                         $this->errors[] = sprintf($this->l('%1$s cannot be saved'), trim($value));
                     }
                 }
             }
 
-            $product->id_category = array_values(array_unique($product->id_category));
+            $productCategories = array_values(array_unique($productCategories));
         }
 
         // ensure that product will be associated with at least one category
-        $productCategories = isset($product->id_category) && is_array($product->id_category)
-            ? $product->id_category
-            : $product->getCategories();
         if (! $productCategories) {
             $defaultProductShop = new Shop($product->id_shop_default);
             $rootCategory = Category::getRootCategory(null, Validate::isLoadedObject($defaultProductShop) ? $defaultProductShop : null);
             $rootCategoryId = (int)$rootCategory->id;
             $productCategories = [$rootCategoryId];
-            $product->id_category = $productCategories;
         }
 
         // Will update default category if forced or if there is none set here
@@ -2659,21 +2708,22 @@ class AdminImportControllerCore extends AdminController
                 }
 
                 if ($product->getType() == Product::PTYPE_VIRTUAL) {
+                    $fileUrl = $productImportData['file_url'] ?? '';
                     $productDownload = new ProductDownload();
                     $productDownload->filename = ProductDownload::getNewFilename();
-                    Tools::copy($info['file_url'], _PS_DOWNLOAD_DIR_.$productDownload->filename);
+                    Tools::copy($fileUrl, _PS_DOWNLOAD_DIR_.$productDownload->filename);
                     $productDownload->id_product = (int) $product->id;
-                    $productDownload->nb_downloadable = (int) $info['nb_downloadable'];
-                    $productDownload->date_expiration = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['date_expiration']);
-                    $productDownload->nb_days_accessible = (int) $info['nb_days_accessible'];
-                    $productDownload->display_filename = basename($info['file_url']);
+                    $productDownload->nb_downloadable = (int) ($productImportData['nb_downloadable'] ?? 0);
+                    $productDownload->date_expiration = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $productImportData['date_expiration'] ?? '');
+                    $productDownload->nb_days_accessible = (int) ($productImportData['nb_days_accessible'] ?? 0);
+                    $productDownload->display_filename = basename($fileUrl);
                     $productDownload->add();
                 }
             }
         }
 
         $shops = [];
-        $productShop = explode($this->multiple_value_separator, $product->shop);
+        $productShop = explode($this->multiple_value_separator, (string) $productImportData['shop']);
         foreach ($productShop as $shop) {
             if (empty($shop)) {
                 continue;
@@ -2722,17 +2772,10 @@ class AdminImportControllerCore extends AdminController
             }
 
             // SpecificPrice (only the basic reduction feature is supported by the import)
-            if (!$shopIsFeatureActive) {
-                $info['shop'] = 1;
-            } elseif (empty($info['shop'])) {
-                $info['shop'] = implode($this->multiple_value_separator, Shop::getContextListShopID());
-            }
-
             // Get shops for each attributes
-            $info['shop'] = explode($this->multiple_value_separator, $info['shop']);
-
             $idShopList = [];
-            foreach ($info['shop'] as $shop) {
+            $specificPriceShops = $shopIsFeatureActive ? $productShop : [1];
+            foreach ($specificPriceShops as $shop) {
                 if (!empty($shop) && !is_numeric($shop)) {
                     $idShopList[] = (int) Shop::getIdByName($shop);
                 } elseif (!empty($shop)) {
@@ -2740,7 +2783,9 @@ class AdminImportControllerCore extends AdminController
                 }
             }
 
-            if ((isset($info['reduction_price']) && $info['reduction_price'] > 0) || (isset($info['reduction_percent']) && $info['reduction_percent'] > 0)) {
+            $reductionPrice = $productImportData['reduction_price'] ?? 0;
+            $reductionPercent = $productImportData['reduction_percent'] ?? 0;
+            if ($reductionPrice > 0 || $reductionPercent > 0) {
                 foreach ($idShopList as $idShop) {
                     $specificPrice = SpecificPrice::getSpecificPrice($product->id, $idShop, 0, 0, 0, 1, 0, 0, 0, 0);
 
@@ -2759,13 +2804,13 @@ class AdminImportControllerCore extends AdminController
                     $specificPrice->id_customer = 0;
                     $specificPrice->from_quantity = 1;
                     $specificPrice->reduction = round(
-                        (isset($info['reduction_price']) && $info['reduction_price']) ?
-                        $info['reduction_price'] :
-                        $info['reduction_percent'] / 100
+                        $reductionPrice ?
+                        $reductionPrice :
+                        $reductionPercent / 100
                     );
-                    $specificPrice->reduction_type = (isset($info['reduction_price']) && $info['reduction_price']) ? 'amount' : 'percentage';
-                    $specificPrice->from = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['reduction_from']);
-                    $specificPrice->to = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $info['reduction_to']);
+                    $specificPrice->reduction_type = $reductionPrice ? 'amount' : 'percentage';
+                    $specificPrice->from = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $productImportData['reduction_from'] ?? '');
+                    $specificPrice->to = Tools::getDateFromDateFormat(Tools::getValue('date_format', 'Y-m-d'), $productImportData['reduction_to'] ?? '');
                     if (!$validateOnly && !$specificPrice->save()) {
                         $this->addProductWarning(Tools::safeOutput($info['name']), $product->id, $this->l('Discount is invalid'));
                     }
@@ -2815,13 +2860,13 @@ class AdminImportControllerCore extends AdminController
             }
 
             //delete existing images if "delete_existing_images" is set to 1
-            if (!$validateOnly && isset($product->delete_existing_images) && $product->delete_existing_images) {
+            if (!$validateOnly && !empty($productImportData['delete_existing_images'])) {
                 $product->deleteImages();
             }
 
-            if (!$validateOnly && isset($product->image) && is_array($product->image) && count($product->image)) {
+            if (!$validateOnly && !empty($productImportData['image']) && is_array($productImportData['image'])) {
                 $productHasImages = (bool) Image::getImages($this->context->language->id, (int) $product->id);
-                foreach ($product->image as $key => $url) {
+                foreach ($productImportData['image'] as $key => $url) {
                     $url = trim($url);
                     $error = false;
                     if (!empty($url)) {
@@ -2831,8 +2876,8 @@ class AdminImportControllerCore extends AdminController
                         $image->id_product = (int) $product->id;
                         $image->position = Image::getHighestPosition($product->id) + 1;
                         $image->cover = !$key && !$productHasImages;
-                        if (isset($product->image_alt[$key])) {
-                            $alt = substr($product->image_alt[$key], 0, 127); // Auto truncate
+                        if (isset($productImportData['image_alt'][$key])) {
+                            $alt = substr($productImportData['image_alt'][$key], 0, 127); // Auto truncate
                             if (strlen($alt) > 0) {
                                 $image->legend = static::createMultiLangField($alt);
                             }
@@ -2861,8 +2906,8 @@ class AdminImportControllerCore extends AdminController
                 }
             }
 
-            if (!$validateOnly && isset($product->id_category) && is_array($product->id_category)) {
-                $product->updateCategories(array_map('intval', $product->id_category));
+            if (!$validateOnly) {
+                $product->updateCategories(array_map('intval', $productCategories));
             }
 
             $product->checkDefaultAttributes();
@@ -2871,11 +2916,9 @@ class AdminImportControllerCore extends AdminController
             }
 
             // Features import
-            $features = get_object_vars($product);
-
-            if (!$validateOnly && !empty($features['features'])) {
+            if (!$validateOnly && !empty($productImportData['features'])) {
                 $featureValuesToImport = [];
-                foreach (explode($this->multiple_value_separator, $features['features']) as $singleFeature) {
+                foreach (explode($this->multiple_value_separator, $productImportData['features']) as $singleFeature) {
                     if (empty($singleFeature)) {
                         continue;
                     }
@@ -2920,11 +2963,12 @@ class AdminImportControllerCore extends AdminController
             }
 
             // Check if warehouse exists
-            if (isset($product->warehouse) && $product->warehouse) {
+            $warehouseId = $productImportData['warehouse'] ?? null;
+            if ($warehouseId) {
                 if (!Configuration::get('PS_ADVANCED_STOCK_MANAGEMENT')) {
                     $this->warnings[] = sprintf($this->l('Advanced stock management is not enabled, warehouse not set on product %1$s '), $product->name[$idDefaultLanguage]);
                 } elseif (!$validateOnly) {
-                    if (Warehouse::exists($product->warehouse)) {
+                    if (Warehouse::exists($warehouseId)) {
                         // Get already associated warehouses
                         $associatedWarehousesCollection = WarehouseProductLocation::getCollection($product->id);
 
@@ -2935,8 +2979,8 @@ class AdminImportControllerCore extends AdminController
                         $warehouseLocationEntity = new WarehouseProductLocation();
                         $warehouseLocationEntity->id_product = $product->id;
                         $warehouseLocationEntity->id_product_attribute = 0;
-                        $warehouseLocationEntity->id_warehouse = $product->warehouse;
-                        if (WarehouseProductLocation::getProductLocation($product->id, 0, $product->warehouse) !== false) {
+                        $warehouseLocationEntity->id_warehouse = $warehouseId;
+                        if (WarehouseProductLocation::getProductLocation($product->id, 0, $warehouseId) !== false) {
                             $warehouseLocationEntity->update();
                         } else {
                             $warehouseLocationEntity->save();
@@ -2964,7 +3008,7 @@ class AdminImportControllerCore extends AdminController
                     if ($product->depends_on_stock == 1) {
                         $stockManager = StockManagerFactory::getManager();
                         $price = Tools::parseNumber($product->wholesale_price);
-                        $warehouse = new Warehouse($product->warehouse);
+                        $warehouse = new Warehouse($warehouseId);
                         if ($stockManager->addProduct((int) $product->id, 0, $warehouse, (int) $product->quantity, 1, $price, true)) {
                             StockAvailable::synchronize((int) $product->id);
                         }
@@ -2990,8 +3034,8 @@ class AdminImportControllerCore extends AdminController
             }
 
             // Accessories linkage
-            if (isset($product->accessories) && !$validateOnly && is_array($product->accessories) && count($product->accessories)) {
-                $accessories[$product->id] = $product->accessories;
+            if (!$validateOnly && !empty($productImportData['accessories']) && is_array($productImportData['accessories'])) {
+                $accessories[$product->id] = $productImportData['accessories'];
             }
         }
     }
