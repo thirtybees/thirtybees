@@ -726,7 +726,7 @@
 								{/block}{* end block input *}
 								{block name="description"}
 									{if isset($input.desc) && !empty($input.desc)}
-										<p class="help-block">
+										<p class="help-block col-lg-12">
 											{if is_array($input.desc)}
 												{foreach $input.desc as $p}
 													{if is_array($p)}
