@@ -346,8 +346,8 @@ class AdminInformationControllerCore extends AdminController
 
             $path = str_replace($basePath, '', $file->getPathname());
             $path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
-            $path = str_replace($adminDir, '/admin', $path);
-            if ( ! in_array($path, $fileList)) {
+            $normalizedPath = str_replace($adminDir, '/admin', $path);
+            if ( ! in_array($normalizedPath, $fileList)) {
                 $this->fileList['obsolete'][] = ltrim($path, '/');
             }
         }
