@@ -344,7 +344,7 @@ class AdminImagesControllerCore extends AdminController
         if (Tools::isSubmit('submitRegenerate'.$this->table)) {
             if ($this->hasEditPermission()) {
                 if ($this->_regenerateThumbnails(Tools::getValue('type'), Tools::getValue('erase'))) {
-                    Tools::redirectAdmin(static::$currentIndex.'&conf=9'.'&token='.$this->token);
+                    Tools::redirectAdmin(static::$currentIndex.'&conf=9&token='.$this->token);
                 }
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
@@ -366,12 +366,33 @@ class AdminImagesControllerCore extends AdminController
             } else {
                 $this->errors[] = Tools::displayError('You do not have permission to edit this.');
             }
+        } elseif (Tools::isSubmit('submitCleanImages'.$this->table)) {
+            if ($this->tabAccess['edit'] == 1) {
+                if (Tools::getValue('cleanImages')) {
+                    // 1) Call the method
+                    $results = Image::cleanOrphanedImages();
+
+                    // 2) Add the green confirmation for the orphaned images
+                    $this->confirmations[] = $results['orphaned_count'].' '
+                        .$this->l('orphaned images found. Temporary product images deleted if found.');
+
+                    // 3) If suspicious files exist, display them as a warning
+                    if (!empty($results['suspicious_files'])) {
+                        $message = '<strong>'.$this->l('Suspicious files found in img/p:').'</strong><br>';
+                        $message .= implode('<br>', $results['suspicious_files']);
+                            $this->warnings[] = $message;                        }
+
+                    unset($_POST['submitCleanImages'.$this->table]);
+                    return parent::postProcess();
+                }
+            } else {
+                $this->errors[] = Tools::displayError('You do not have permission to edit this.');
+            }
         } else {
             parent::postProcess();
 
             // Save image type aliases & image type entities
             if (Tools::isSubmit('submitAdd' . $this->table) && $this->object->id) {
-
                 $imageTypeId = (int)$this->object->id;
                 $db = Db::getInstance();
 

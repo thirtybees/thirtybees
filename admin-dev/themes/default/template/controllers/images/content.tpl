@@ -28,6 +28,41 @@
   {$content}
 {/if}
 
+<form class="form-horizontal" action="{$current|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}" method="post">
+        <div class="panel">
+            <h3>
+                <i class="icon-trash"></i>
+                {l s='Check & Clean'}
+            </h3>
+            <div class="form-group">
+                <div class="control-label col-lg-3">
+                    {l s='Check and clean orphaned product images'}
+                </div>
+                <div class="col-lg-9">
+                    <span class="switch prestashop-switch fixed-width-lg">
+                        <input type="radio" name="cleanImages" id="cleanImages_on" value="1">
+                        <label for="cleanImages_on" class="radioCheck">
+                            {l s='Yes'}
+                        </label>
+                        <input type="radio" name="cleanImages" id="cleanImages_off" value="0" checked="checked">
+                        <label for="cleanImages_off" class="radioCheck">
+                            {l s='No'}
+                        </label>
+                        <a class="slide-button btn"></a>
+                    </span>
+                    <p class="help-block">
+                        {l s='This option will scan for and remove all orphaned product images, as well as delete any obsolete temporary product images if found. Please note that this process may take some time. The /img/p folder should contain only valid image files. If any additional files are detected, you will be notified so you can review and remove them if deemed suspicious.'}
+                    </p>
+                </div>
+            </div>
+            <div class="panel-footer">
+                <button type="submit" name="submitCleanImages{$table}" class="btn btn-default pull-right">
+                    <i class="process-icon-cogs"></i> {l s='Clean up!'}
+                </button>
+            </div>
+        </div>
+    </form>
+    
 {if isset($display_regenerate) && $display_regenerate}
   <form class="form-horizontal" action="{$current|escape:'html':'UTF-8'}&amp;token={$token|escape:'html':'UTF-8'}" method="post">
     <div class="panel">
