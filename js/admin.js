@@ -546,11 +546,10 @@ function showRedirectProductOptions(show) {
 }
 
 function redirectSelectChange() {
-  if ($('#redirect_type :selected').val() == '404') {
-    showRedirectProductSelectOptions(false);
-  } else {
-    showRedirectProductSelectOptions(true);
-  }
+  var redirectType = $('#redirect_type :selected').val();
+
+  showRedirectProductSelectOptions(redirectType == '301' || redirectType == '302');
+  showRedirectCategorySelectOptions(redirectType == '301-category' || redirectType == '302-category');
 }
 
 function addRelatedProduct(id_product_to_add, product_name) {
@@ -572,12 +571,21 @@ function removeRelatedProduct() {
 
 function showRedirectProductSelectOptions(show) {
   if (show) {
-    $('.redirect_product_options_product_choise').show();
+    $('.redirect_product_options_product_choice').show();
   } else {
-    $('.redirect_product_options_product_choise').hide();
+    $('.redirect_product_options_product_choice').hide();
     removeRelatedProduct();
   }
 
+}
+
+function showRedirectCategorySelectOptions(show) {
+  if (show) {
+    $('.redirect_product_options_category_choice').show();
+  } else {
+    $('.redirect_product_options_category_choice').hide();
+    $('#id_category_redirected').val(0);
+  }
 }
 
 function showOptions(show) {

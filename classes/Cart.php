@@ -1122,13 +1122,14 @@ class CartCore extends ObjectModel
             && (int)$this->id_currency === (int)Configuration::get('PS_CURRENCY_DEFAULT')) {
             if ($type == static::BOTH || $type == static::ONLY_STORE_CREDIT) {
                 $creditAvailable = StoreCredit::getByCustomerId((int)$this->id_shop, (int)$this->id_customer);
+                $creditBase = max(0.0, $orderTotal - $this->getStoreCreditExcludedTotal($withTaxes, $type, $products));
                 // FLOOR to the display precision. The credit balance can hold
                 // sub-precision dust (6-decimal column); rounding UP would
                 // promise more than the balance covers and make the order-time
                 // debit fail deterministically. Flooring leaves the dust on
                 // the credit instead of blocking the checkout.
                 $factor = pow(10, (int) $displayPrecision);
-                $creditUsed = floor(max(0.0, min($orderTotal, $creditAvailable)) * $factor) / $factor;
+                $creditUsed = floor(max(0.0, min($creditBase, $creditAvailable)) * $factor) / $factor;
                 if ($type == static::BOTH) {
                     $orderTotal -= $creditUsed;
                 } else {
@@ -1142,6 +1143,53 @@ class CartCore extends ObjectModel
         }
 
         return Tools::ps_round((float) $orderTotal, $displayPrecision);
+    }
+
+    /**
+     * Part of the cart total that store credit may not pay for.
+     *
+     * Modules answer the actionStoreCreditExcludedTotal hook with the amount
+     * of their own products in this cart. The canonical case is a gift-card
+     * product: paying for one with credit would move an expiring balance onto
+     * a fresh code, so the liability could be renewed forever and never
+     * expire. Excluded products simply have to be paid by other means; the
+     * credit still covers the rest of the cart.
+     *
+     * The largest amount returned wins rather than the sum, so two modules
+     * excluding the same product cannot subtract it twice. A module must
+     * therefore return the total for every product it excludes.
+     *
+     * @param bool $withTaxes whether the caller works with tax-included amounts
+     * @param int $type the getOrderTotal() type being computed
+     * @param array|null $products package products, when the caller limited
+     *                             the total to one package
+     *
+     * @return float amount in cart currency, never negative
+     *
+     * @throws PrestaShopException
+     */
+    protected function getStoreCreditExcludedTotal($withTaxes, $type, $products = null)
+    {
+        $results = Hook::exec(
+            'actionStoreCreditExcludedTotal',
+            [
+                'cart' => $this,
+                'withTaxes' => (bool) $withTaxes,
+                'type' => (int) $type,
+                'products' => $products,
+            ],
+            null,
+            true
+        );
+        if (!is_array($results)) {
+            return 0.0;
+        }
+
+        $excluded = 0.0;
+        foreach ($results as $result) {
+            $excluded = max($excluded, (float) $result);
+        }
+        return max(0.0, $excluded);
     }
 
     /**

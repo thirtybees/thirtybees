@@ -256,8 +256,10 @@
 		<div class="col-lg-5">
 			<select name="redirect_type" id="redirect_type">
 				<option value="404" {if $product->redirect_type == '404'} selected="selected" {/if}>{l s='No redirect (404)'}</option>
-				<option value="301" {if $product->redirect_type == '301'} selected="selected" {/if}>{l s='Redirected permanently (301)'}</option>
-				<option value="302" {if $product->redirect_type == '302'} selected="selected" {/if}>{l s='Redirected temporarily (302)'}</option>
+				<option value="301" {if $product->redirect_type == '301'} selected="selected" {/if}>{l s='Redirected permanently to a product (301)'}</option>
+				<option value="302" {if $product->redirect_type == '302'} selected="selected" {/if}>{l s='Redirected temporarily to a product (302)'}</option>
+				<option value="301-category" {if $product->redirect_type == '301-category'} selected="selected" {/if}>{l s='Redirected permanently to a category (301)'}</option>
+				<option value="302-category" {if $product->redirect_type == '302-category'} selected="selected" {/if}>{l s='Redirected temporarily to a category (302)'}</option>
 			</select>
 		</div>
 	</div>
@@ -265,13 +267,13 @@
 		<div class="col-lg-9 col-lg-offset-3">
 			<div class="alert alert-info">
 				{l s='404 Not Found = Do not redirect and display a 404 page.'}<br/>
-				{l s='301 Moved Permanently = Permanently display another product instead.'}<br/>
-				{l s='302 Moved Temporarily = Temporarily display another product instead.'}
+				{l s='301 Moved Permanently = Permanently display another product or category instead.'}<br/>
+				{l s='302 Moved Temporarily = Temporarily display another product or category instead.'}
 			</div>
 		</div>
 	</div>
 
-	<div class="form-group redirect_product_options redirect_product_options_product_choise" style="display:none">
+	<div class="form-group redirect_product_options redirect_product_options_product_choice" style="display:none">
 		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="id_product_redirected" type="radio" onclick=""}</span></div>
 		<label class="control-label col-lg-2" for="related_product_autocomplete_input">
 			{l s='Related product:'}
@@ -296,9 +298,29 @@
 		</div>
 		<script>
 			var no_related_product = '{l s='No related product'}';
-			var id_product_redirected = {$product->id_product_redirected|intval};
+			{* For category redirect types id_product_redirected holds a
+			   category id — never seed the product autocomplete with it. *}
+			var id_product_redirected = {if $product->redirect_type == '301' || $product->redirect_type == '302'}{$product->id_product_redirected|intval}{else}0{/if};
 			var product_name_redirected = '{$product_name_redirected|escape:'html':'UTF-8'}';
 		</script>
+	</div>
+
+	<div class="form-group redirect_product_options redirect_product_options_category_choice" style="display:none">
+		<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="id_product_redirected" type="radio" onclick=""}</span></div>
+		<label class="control-label col-lg-2" for="id_category_redirected">
+			{l s='Target category:'}
+		</label>
+		<div class="col-lg-5">
+			{* The category id is stored in id_product_redirected; it is
+			   posted in its own field so the product autocomplete on this
+			   form cannot overwrite it. *}
+			<select name="id_category_redirected" id="id_category_redirected">
+				<option value="0">{l s='Default category of this product'}</option>
+				{foreach from=$redirect_categories item=redirect_category}
+					<option value="{$redirect_category.id_category|intval}" {if ($product->redirect_type == '301-category' || $product->redirect_type == '302-category') && $product->id_product_redirected == $redirect_category.id_category} selected="selected" {/if}>{$redirect_category.name|escape:'html':'UTF-8'}</option>
+				{/foreach}
+			</select>
+		</div>
 	</div>
 
 	<div class="form-group">
