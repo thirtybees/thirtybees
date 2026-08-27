@@ -104,6 +104,13 @@ class AdminOrderPreferencesControllerCore extends AdminController
                         'cast'       => 'intval',
                         'type'       => 'bool',
                     ],
+                    'PS_STORE_CREDIT_GUEST'          => [
+                        'title'      => $this->l('Allow store credit codes without an account'),
+                        'hint'       => $this->l('Visitors can enter an unclaimed store credit code before signing in; it is spent when the order is placed and any remaining balance keeps working for whoever holds the code. Codes already claimed by an account stay bound to that account.'),
+                        'validation' => 'isBool',
+                        'cast'       => 'intval',
+                        'type'       => 'bool',
+                    ],
                     'PS_DISALLOW_HISTORY_REORDERING' => [
                         'title'      => $this->l('Disable Reordering Option'),
                         'hint'       => $this->l('Disable the option to allow customers to reorder in one click from the order history page (required in some European countries).'),
