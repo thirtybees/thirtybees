@@ -2914,16 +2914,16 @@ class OrderCore extends ObjectModel
             }
 
             if ($cartRule->isCheapestProductSystemRule()) {
-                $cheapestProductId = $cartRule->getCheapestProductId();
-                if (! isset($cheapestProductDiscounts[$cheapestProductId])) {
-                    $cheapestProductDiscounts[$cheapestProductId] = [
+                $cheapestProductKey = $cartRule->getCheapestProductId().'-'.$cartRule->getCheapestProductAttributeId();
+                if (! isset($cheapestProductDiscounts[$cheapestProductKey])) {
+                    $cheapestProductDiscounts[$cheapestProductKey] = [
                         'tax_amount' => 0,
                         'tax_base'  => 0
                     ];
                 }
 
-                $cheapestProductDiscounts[$cheapestProductId]['tax_amount'] += (float)($orderCartRule['value'] - $orderCartRule['value_tax_excl']);
-                $cheapestProductDiscounts[$cheapestProductId]['tax_base'] += (float)($orderCartRule['value_tax_excl']);
+                $cheapestProductDiscounts[$cheapestProductKey]['tax_amount'] += (float)($orderCartRule['value'] - $orderCartRule['value_tax_excl']);
+                $cheapestProductDiscounts[$cheapestProductKey]['tax_base'] += (float)($orderCartRule['value_tax_excl']);
             }
         }
 
@@ -2955,10 +2955,11 @@ class OrderCore extends ObjectModel
             foreach ($taxCalculator->getTaxesAmount($discountedPriceTaxExcl) as $idTax => $unitAmount) {
                 $totalTaxBase = $quantity * $discountedPriceTaxExcl;
                 $totalAmount = $quantity * $unitAmount;
+                $orderDetailKey = (int)$orderDetail['product_id'].'-'.(int)$orderDetail['product_attribute_id'];
 
-                if (isset($cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'])) {
-                    $totalTaxBase -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_base'];
-                    $totalAmount -= $cheapestProductDiscounts[$orderDetail['product_id']]['tax_amount'];
+                if (isset($cheapestProductDiscounts[$orderDetailKey]['tax_base'])) {
+                    $totalTaxBase -= $cheapestProductDiscounts[$orderDetailKey]['tax_base'];
+                    $totalAmount -= $cheapestProductDiscounts[$orderDetailKey]['tax_amount'];
                 }
 
                 $orderDetailTaxRows[] = [
