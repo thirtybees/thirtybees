@@ -33,17 +33,17 @@
 			{assign var=total_thread value=0}
 			{assign var=id_customer_thread value=0}
 
-			{foreach $contacts as $tmp => $tmp2}
-				{if $val.id_contact == $tmp2.id_contact}
-					{assign var=total_thread value=$tmp2.total}
-					{assign var=id_customer_thread value=$tmp2.id_customer_thread}
-				{/if}
-			{/foreach}
+                        {foreach $contacts as $tmp => $tmp2}
+                                {if $val.id_contact == $tmp2.id_contact && $val.id_shop == $tmp2.id_shop}
+                                        {assign var=total_thread value=$tmp2.total}
+                                        {assign var=id_customer_thread value=$tmp2.id_customer_thread}
+                                {/if}
+                        {/foreach}
 			<div class="col-lg-3">
 				<div class="panel">
-					<div class="panel-heading">
-						{$val.name}
-					</div>
+                                        <div class="panel-heading">
+                                                {$val.shop_name} - {$val.name}
+                                        </div>
 					{if $nb_categories < 6}
 						<p>{$val.description}</p>
 					{/if}
