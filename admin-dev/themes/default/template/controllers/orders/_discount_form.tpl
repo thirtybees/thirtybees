@@ -64,6 +64,17 @@
 		</div>
 	</div>
 
+	<div id="discount_shipping_field" class="form-group">
+		<div class="col-lg-9 col-lg-offset-3">
+			<p class="checkbox">
+				<label class="control-label" for="discount_include_shipping">
+					<input type="checkbox" name="discount_include_shipping" id="discount_include_shipping" value="1" checked="checked" />
+					{l s='Include delivery amount in percentage discount'}
+				</label>
+			</p>
+		</div>
+	</div>
+
 	{if $order->hasInvoice()}
 	<div class="form-group">
 		<label class="control-label col-lg-3">
