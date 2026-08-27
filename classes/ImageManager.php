@@ -493,6 +493,11 @@ class ImageManagerCore
                 break;
 
             case 'webp':
+                // if this is a palette image, convert it to truecolor first:
+                if (!imageistruecolor($resource) && function_exists('imagepalettetotruecolor')) {
+                    imagepalettetotruecolor($resource);
+                }
+                
                 $success = imagewebp($resource, $filename, (int) $quality);
                 break;
 
