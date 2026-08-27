@@ -202,41 +202,76 @@ class SpecificPriceRuleCore extends ObjectModel
                 $attributesJoinAdded = false;
 
                 // Add the conditions
+
                 foreach ($conditionGroup as $idCondition => $condition) {
                     if ($condition['type'] == 'attribute') {
-                        if (!$attributesJoinAdded) {
-                            $query->select('pa.`id_product_attribute`')
-                                ->leftJoin('product_attribute', 'pa', 'p.`id_product` = pa.`id_product`')
-                                ->join(Shop::addSqlAssociation('product_attribute', 'pa', false));
+                        $idAttr = (int) $condition['value'];
+                        if ($idAttr >= 0) {
+                            if (!$attributesJoinAdded) {
+                                $query->select('pa.`id_product_attribute`')
+                                    ->leftJoin('product_attribute', 'pa', 'p.`id_product` = pa.`id_product`')
+                                    ->join(Shop::addSqlAssociation('product_attribute', 'pa', false));
 
-                            $attributesJoinAdded = true;
+                                $attributesJoinAdded = true;
+                            }
+
+                            $query->leftJoin('product_attribute_combination', 'pac'.(int) $idCondition, 'pa.`id_product_attribute` = pac'.(int) $idCondition.'.`id_product_attribute`')
+                                ->where('pac'.(int) $idCondition.'.`id_attribute` = '.$idAttr);
+                        } else {
+                            $idAttr = -$idAttr;
+
+                            // ensure we are selecting per-combination
+                            if (!$attributesJoinAdded) {
+                                $query->select('pa.`id_product_attribute`')
+                                    ->leftJoin('product_attribute', 'pa', 'p.`id_product` = pa.`id_product`')
+                                    ->join(Shop::addSqlAssociation('product_attribute', 'pa', false));
+                                $attributesJoinAdded = true;
+                            }
+
+                            // for this condition, exclude combinations that have the attribute
+                            $alias = 'pac'.(int) $idCondition;
+                            $query->leftJoin(
+                                'product_attribute_combination',
+                                $alias,
+                                'pa.`id_product_attribute` = '.$alias.'.`id_product_attribute`
+                                 AND '.$alias.'.`id_attribute` = '.$idAttr
+                            )->where($alias.'.`id_product_attribute` IS NULL');
                         }
-
-                        $query->leftJoin('product_attribute_combination', 'pac'.(int) $idCondition, 'pa.`id_product_attribute` = pac'.(int) $idCondition.'.`id_product_attribute`')
-                            ->where('pac'.(int) $idCondition.'.`id_attribute` = '.(int) $condition['value']);
                     } elseif ($condition['type'] == 'manufacturer') {
-                        $query->where('p.id_manufacturer = '.(int) $condition['value']);
+                        $idMan = (int) $condition['value'];
+                        if ($idMan >= 0) {
+                            $query->where('p.id_manufacturer = '.$idMan);
+                        } else {
+                            $query->where('p.id_manufacturer != '.(-$idMan));
+                        }
                     } elseif ($condition['type'] == 'category') {
-                        $query->leftJoin('category_product', 'cp'.(int) $idCondition, 'p.`id_product` = cp'.(int) $idCondition.'.`id_product`')
-                            ->where('cp'.(int) $idCondition.'.id_category = '.(int) $condition['value']);
+                        $idCategory = (int) $condition['value'];
+                        if ($idCategory >= 0) {
+                            $query->leftJoin('category_product', 'cp'.(int) $idCondition, 'p.`id_product` = cp'.(int) $idCondition.'.`id_product`')
+                                ->where('cp'.(int) $idCondition.'.id_category = '.$idCategory);
+                        } else {
+                            $idCategory = -$idCategory;
+                            $query->where('NOT EXISTS(SELECT 1 FROM `'._DB_PREFIX_.'category_product` cp WHERE cp.id_product = p.id_product AND cp.id_category = '.$idCategory.')');
+                        }
                     } elseif ($condition['type'] == 'supplier') {
-                        $query->where(
-                            'EXISTS(
-							SELECT
-								`ps'.(int) $idCondition.'`.`id_product`
-							FROM
-								`'._DB_PREFIX_.'product_supplier` `ps'.(int) $idCondition.'`
-							WHERE
-								`p`.`id_product` = `ps'.(int) $idCondition.'`.`id_product`
-								AND `ps'.(int) $idCondition.'`.`id_supplier` = '.(int) $condition['value'].'
-						)'
-                        );
+                        $idSupplier = (int) $condition['value'];
+                        if ($idSupplier >= 0) {
+                            $query->where('EXISTS(SELECT `ps'.(int) $idCondition.'`.`id_product` FROM `'._DB_PREFIX_.'product_supplier` `ps'.(int) $idCondition.'` WHERE `p`.`id_product` = `ps'.(int) $idCondition.'`.`id_product` AND `ps'.(int) $idCondition.'`.`id_supplier` = '.$idSupplier.')');
+                        } else {
+                            $idSupplier = -$idSupplier;
+                            $query->where('NOT EXISTS(SELECT `ps'.(int) $idCondition.'`.`id_product` FROM `'._DB_PREFIX_.'product_supplier` `ps'.(int) $idCondition.'` WHERE `p`.`id_product` = `ps'.(int) $idCondition.'`.`id_product` AND `ps'.(int) $idCondition.'`.`id_supplier` = '.$idSupplier.')');
+                        }
                     } elseif ($condition['type'] == 'feature') {
-                        $query->leftJoin('feature_product', 'fp'.(int) $idCondition, 'p.`id_product` = fp'.(int) $idCondition.'.`id_product`')
-                            ->where('fp'.(int) $idCondition.'.`id_feature_value` = '.(int) $condition['value']);
+                        $idFeatureValue = (int) $condition['value'];
+                        if ($idFeatureValue >= 0) {
+                            $query->leftJoin('feature_product', 'fp'.(int) $idCondition, 'p.`id_product` = fp'.(int) $idCondition.'.`id_product`')
+                                ->where('fp'.(int) $idCondition.'.`id_feature_value` = '.$idFeatureValue);
+                        } else {
+                            $idFeatureValue = -$idFeatureValue;
+                            $query->where('NOT EXISTS(SELECT 1 FROM `'._DB_PREFIX_.'feature_product` fp WHERE fp.id_product = p.id_product AND fp.id_feature_value = '.$idFeatureValue.')');
+                        }
                     }
                 }
-
                 // Products limitation
                 if ($products && count($products)) {
                     $query->where('p.`id_product` IN ('.implode(', ', array_map('intval', $products)).')');
@@ -291,14 +326,14 @@ class SpecificPriceRuleCore extends ObjectModel
                 if ($condition['type'] == 'attribute') {
                     $condition['id_attribute_group'] = $conn->getValue(
                         'SELECT id_attribute_group
-							 FROM '._DB_PREFIX_.'attribute
-							 WHERE id_attribute='.(int) $condition['value']
+                                                         FROM '._DB_PREFIX_.'attribute
+                                                         WHERE id_attribute='.(int) abs($condition['value'])
                     );
                 } elseif ($condition['type'] == 'feature') {
                     $condition['id_feature'] = $conn->getValue(
                         'SELECT id_feature
-							 FROM '._DB_PREFIX_.'feature_value
-							 WHERE id_feature_value='.(int) $condition['value']
+                                                         FROM '._DB_PREFIX_.'feature_value
+                                                         WHERE id_feature_value='.(int) abs($condition['value'])
                     );
                 }
                 $conditionsGroup[(int) $condition['id_specific_price_rule_condition_group']][] = $condition;
