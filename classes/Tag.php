@@ -305,6 +305,48 @@ class TagCore extends ObjectModel
     }
 
     /**
+     * Retrieve most frequently used tags
+     *
+     * @param int $idLang
+     * @param int $offset
+     * @param int $limit
+     * @param int[]|null $shopIds
+     *
+     * @return array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    public static function getPopularTags($idLang, $offset = 0, $limit = 25, ?array $shopIds = null, array $excludeNames = [])
+    {
+        if ($shopIds === null) {
+            $shopIds = Shop::getContextListShopID();
+        }
+
+        $shopIds = array_map('intval', $shopIds);
+        if (!$shopIds) {
+            return [];
+        }
+
+        $query = (new DbQuery())
+            ->select('t.`name`, COUNT(DISTINCT ps.`id_product`) AS `times`')
+            ->from('product_tag', 'pt')
+            ->innerJoin('tag', 't', 't.`id_tag` = pt.`id_tag`')
+            ->innerJoin('product_shop', 'ps', 'ps.`id_product` = pt.`id_product` AND ps.`id_shop` IN ('.implode(',', $shopIds).')')
+            ->where('pt.`id_lang` = '.(int)$idLang)
+            ->groupBy('pt.`id_tag`')
+            ->orderBy('`times` DESC')
+            ->limit((int)$limit, (int)$offset);
+
+        if ($excludeNames) {
+            $excludeNames = array_map('pSQL', $excludeNames);
+            $query->where('t.`name` NOT IN (\'' . implode("','", $excludeNames) . '\')');
+        }
+
+        return Db::readOnly()->getArray($query);
+    }
+
+    /**
      * @param int $idProduct
      *
      * @return array|false
