@@ -63,6 +63,14 @@
 	</div>
 
 	<div class="form-group">
+		<label class="control-label col-lg-2 col-lg-offset-1">{l s='Package volume'}</label>
+		<div class="col-lg-9">
+			<p class="form-control-static" id="package_volume" data-dimension-unit="{$ps_dimension_unit|escape:'html':'UTF-8'}">-</p>
+			<p class="help-block">{l s='Calculated from the package width, height and depth above.'}</p>
+		</div>
+	</div>
+
+	<div class="form-group">
 		<label class="control-label col-lg-2 col-lg-offset-1" for="weight">{$bullet_common_field} {l s='Package weight'}</label>
 		<div class="col-lg-9">
 			<div class="input-group col-lg-3">
@@ -242,5 +250,33 @@
 		};
 		$('input[name=dangerous_goods]').on('change', toggle);
 		toggle();
+	});
+</script>
+
+<script>
+	$(function () {
+		// dm3 per cubic dimension unit, so the volume can be shown in a unit
+		// that is meaningful regardless of the shop's dimension unit
+		const dm3PerUnit = { mm: 0.000001, cm: 0.001, dm: 1, m: 1000, in: 0.016387064, ft: 28.316846592 };
+		const $volume = $('#package_volume');
+		const unit = String($volume.data('dimension-unit') || 'cm').toLowerCase();
+		const render = () => {
+			const width = parseFloat($('#width').val()) || 0;
+			const height = parseFloat($('#height').val()) || 0;
+			const depth = parseFloat($('#depth').val()) || 0;
+			const raw = width * height * depth;
+			if (raw <= 0) {
+				$volume.text("{l s='Not calculated: fill in width, height and depth' js=1}");
+				return;
+			}
+			const dm3 = raw * (dm3PerUnit[unit] || dm3PerUnit.cm);
+			$volume.text(
+				raw.toFixed(3) + ' ' + unit + '³ = '
+				+ dm3.toFixed(3) + ' dm³ = '
+				+ (dm3 / 1000).toFixed(6) + ' m³'
+			);
+		};
+		$('#width, #height, #depth').on('keyup change', render);
+		render();
 	});
 </script>

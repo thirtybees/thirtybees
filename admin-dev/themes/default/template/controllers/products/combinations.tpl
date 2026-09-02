@@ -357,6 +357,62 @@
 			</div>
 		</div>
 
+		<div class="form-group">
+			<div class="col-lg-1"></div>
+			<label class="control-label col-lg-2">{l s='Resulting volume'}</label>
+			<div class="col-lg-9">
+				<p class="form-control-static" id="attribute_volume"
+				   data-dimension-unit="{$ps_dimension_unit|escape:'html':'UTF-8'}"
+				   data-width="{$product->width|floatval}"
+				   data-height="{$product->height|floatval}"
+				   data-depth="{$product->depth|floatval}">-</p>
+				<p class="help-block">{l s='Package dimensions of the product with the impacts above applied.'}</p>
+			</div>
+		</div>
+		<script type="text/javascript">
+			$(function () {
+				const dm3PerUnit = { mm: 0.000001, cm: 0.001, dm: 1, m: 1000, in: 0.016387064, ft: 28.316846592 };
+				const $volume = $('#attribute_volume');
+				const unit = String($volume.data('dimension-unit') || 'cm').toLowerCase();
+				const dimension = (base, selectId, inputId) => {
+					// impact selects hold 1 (increase), -1 (reduction) or 0 (none)
+					const sign = parseInt($('#' + selectId).val(), 10) || 0;
+					const impact = Math.abs(parseFloat($('#' + inputId).val()) || 0);
+					return base + sign * impact;
+				};
+				const render = () => {
+					const width = dimension(parseFloat($volume.data('width')) || 0, 'attribute_width_impact', 'attribute_width');
+					const height = dimension(parseFloat($volume.data('height')) || 0, 'attribute_height_impact', 'attribute_height');
+					const depth = dimension(parseFloat($volume.data('depth')) || 0, 'attribute_depth_impact', 'attribute_depth');
+					const raw = width * height * depth;
+					if (raw <= 0) {
+						$volume.text("{l s='Not calculated: the product needs width, height and depth' js=1}");
+						return;
+					}
+					const dm3 = raw * (dm3PerUnit[unit] || dm3PerUnit.cm);
+					$volume.text(
+						width.toFixed(2) + ' x ' + height.toFixed(2) + ' x ' + depth.toFixed(2) + ' ' + unit + ' = '
+						+ raw.toFixed(3) + ' ' + unit + '³ = '
+						+ dm3.toFixed(3) + ' dm³'
+					);
+				};
+				$('#attribute_width, #attribute_height, #attribute_depth').on('keyup change', render);
+				$('#attribute_width_impact, #attribute_height_impact, #attribute_depth_impact').on('change', render);
+				// editing an existing combination fills the fields from script
+				// and then calls these helpers, so hook them to refresh as well
+				['check_width_impact', 'check_height_impact', 'check_depth_impact'].forEach(function (name) {
+					const original = window[name];
+					if (typeof original === 'function') {
+						window[name] = function () {
+							original.apply(this, arguments);
+							render();
+						};
+					}
+				});
+				render();
+			});
+		</script>
+
 		<div id="tr_unit_impact" class="form-group">
 			<div class="col-lg-1"><span class="pull-right">{include file="controllers/products/multishop/checkbox.tpl" field="attribute_unit_impact" type="attribute_unit_impact"}</span></div>
 			<label class="control-label col-lg-2" for="attribute_unit_impact">
