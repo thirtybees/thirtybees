@@ -392,8 +392,8 @@
 					const dm3 = raw * (dm3PerUnit[unit] || dm3PerUnit.cm);
 					$volume.text(
 						width.toFixed(2) + ' x ' + height.toFixed(2) + ' x ' + depth.toFixed(2) + ' ' + unit + ' = '
-						+ raw.toFixed(3) + ' ' + unit + '³ = '
-						+ dm3.toFixed(3) + ' dm³'
+						+ raw.toFixed(3) + ' ' + unit + '\u00B3 = '
+						+ dm3.toFixed(3) + ' dm\u00B3'
 					);
 				};
 				$('#attribute_width, #attribute_height, #attribute_depth').on('keyup change', render);
