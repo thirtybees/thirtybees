@@ -259,29 +259,42 @@
 
 <script>
 	$(function () {
-		// dm3 per cubic dimension unit, so the volume can be shown in a unit
-		// that is meaningful regardless of the shop's dimension unit
-		const dm3PerUnit = { mm: 0.000001, cm: 0.001, dm: 1, m: 1000, in: 0.016387064, ft: 28.316846592 };
+		// dm3 per cubic dimension unit; the aliases cover the free-text values
+		// merchants type into the dimension unit setting
+		const dm3PerUnit = {
+			mm: 0.000001, millimeter: 0.000001, millimetre: 0.000001,
+			cm: 0.001, centimeter: 0.001, centimetre: 0.001,
+			dm: 1,
+			m: 1000, meter: 1000, metre: 1000,
+			in: 0.016387064, inch: 0.016387064, inches: 0.016387064,
+			ft: 28.316846592, foot: 28.316846592, feet: 28.316846592
+		};
 		const $volume = $('#package_volume');
-		const unit = String($volume.data('dimension-unit') || 'cm').toLowerCase();
+		const unit = String($volume.data('dimension-unit') || 'cm').trim().toLowerCase();
+		const factor = dm3PerUnit[unit];
 		const render = () => {
 			const width = parseFloat($('#width').val()) || 0;
 			const height = parseFloat($('#height').val()) || 0;
 			const depth = parseFloat($('#depth').val()) || 0;
-			const raw = width * height * depth;
-			if (raw <= 0) {
+			if (width <= 0 || height <= 0 || depth <= 0) {
 				$volume.text("{l s='Not calculated: fill in width, height and depth' js=1}");
 				return;
 			}
+			const raw = width * height * depth;
+			if (!factor) {
+				// unknown dimension unit: show the product without converting it
+				$volume.text(raw.toFixed(2) + ' ' + unit + '3');
+				return;
+			}
 			// always cm3 / dm3 / m3, whatever the shop's dimension unit is
-			const dm3 = raw * (dm3PerUnit[unit] || dm3PerUnit.cm);
+			const dm3 = raw * factor;
 			$volume.text(
 				(dm3 * 1000).toFixed(0) + ' cm3 = '
 				+ dm3.toFixed(3) + ' dm3 = '
 				+ (dm3 / 1000).toFixed(6) + ' m3'
 			);
 		};
-		$('#width, #height, #depth').on('keyup change', render);
+		$('#width, #height, #depth').on('input keyup change', render);
 		render();
 	});
 </script>

@@ -371,37 +371,66 @@
 		</div>
 		<script type="text/javascript">
 			$(function () {
-				const dm3PerUnit = { mm: 0.000001, cm: 0.001, dm: 1, m: 1000, in: 0.016387064, ft: 28.316846592 };
+				const dm3PerUnit = {
+					mm: 0.000001, millimeter: 0.000001, millimetre: 0.000001,
+					cm: 0.001, centimeter: 0.001, centimetre: 0.001,
+					dm: 1,
+					m: 1000, meter: 1000, metre: 1000,
+					in: 0.016387064, inch: 0.016387064, inches: 0.016387064,
+					ft: 28.316846592, foot: 28.316846592, feet: 28.316846592
+				};
 				const $volume = $('#attribute_volume');
-				const unit = String($volume.data('dimension-unit') || 'cm').toLowerCase();
-				const dimension = (base, selectId, inputId) => {
+				const unit = String($volume.data('dimension-unit') || 'cm').trim().toLowerCase();
+				const factor = dm3PerUnit[unit];
+				// the shipping tab is on the same page, so prefer its live fields
+				// over the saved values rendered into the data attributes
+				const base = (fieldId, dataKey) => {
+					const $field = $('#' + fieldId);
+					if ($field.length) {
+						return parseFloat($field.val()) || 0;
+					}
+					return parseFloat($volume.data(dataKey)) || 0;
+				};
+				const impact = (selectId, inputId) => {
 					// impact selects hold 1 (increase), -1 (reduction) or 0 (none)
 					const sign = parseInt($('#' + selectId).val(), 10) || 0;
-					const impact = Math.abs(parseFloat($('#' + inputId).val()) || 0);
-					return base + sign * impact;
+					return sign * Math.abs(parseFloat($('#' + inputId).val()) || 0);
 				};
 				const render = () => {
-					const width = dimension(parseFloat($volume.data('width')) || 0, 'attribute_width_impact', 'attribute_width');
-					const height = dimension(parseFloat($volume.data('height')) || 0, 'attribute_height_impact', 'attribute_height');
-					const depth = dimension(parseFloat($volume.data('depth')) || 0, 'attribute_depth_impact', 'attribute_depth');
-					const raw = width * height * depth;
-					if (raw <= 0) {
+					const baseWidth = base('width', 'width');
+					const baseHeight = base('height', 'height');
+					const baseDepth = base('depth', 'depth');
+					if (baseWidth <= 0 || baseHeight <= 0 || baseDepth <= 0) {
 						$volume.text("{l s='Not calculated: the product needs width, height and depth' js=1}");
 						return;
 					}
+					const width = baseWidth + impact('attribute_width_impact', 'attribute_width');
+					const height = baseHeight + impact('attribute_height_impact', 'attribute_height');
+					const depth = baseDepth + impact('attribute_depth_impact', 'attribute_depth');
+					if (width <= 0 || height <= 0 || depth <= 0) {
+						$volume.text("{l s='Not calculated: a reduction exceeds the product dimension' js=1}");
+						return;
+					}
+					const raw = width * height * depth;
+					const dimensions = width.toFixed(2) + ' x ' + height.toFixed(2) + ' x ' + depth.toFixed(2) + ' ' + unit;
+					if (!factor) {
+						// unknown dimension unit: show the product without converting it
+						$volume.text(dimensions + ' = ' + raw.toFixed(2) + ' ' + unit + '3');
+						return;
+					}
 					// always cm3 / dm3 / m3, whatever the shop's dimension unit is
-					const dm3 = raw * (dm3PerUnit[unit] || dm3PerUnit.cm);
+					const dm3 = raw * factor;
 					$volume.text(
-						width.toFixed(2) + ' x ' + height.toFixed(2) + ' x ' + depth.toFixed(2) + ' ' + unit + ' = '
+						dimensions + ' = '
 						+ (dm3 * 1000).toFixed(0) + ' cm3 = '
 						+ dm3.toFixed(3) + ' dm3 = '
 						+ (dm3 / 1000).toFixed(6) + ' m3'
 					);
 				};
-				$('#attribute_width, #attribute_height, #attribute_depth').on('keyup change', render);
-				$('#attribute_width_impact, #attribute_height_impact, #attribute_depth_impact').on('change', render);
-				// editing an existing combination fills the fields from script
-				// and then calls these helpers, so hook them to refresh as well
+				$('#attribute_width, #attribute_height, #attribute_depth, #width, #height, #depth').on('input keyup change', render);
+				// the impact selects call check_*_impact() inline, and editing an
+				// existing combination fills the fields from script and calls them
+				// too, so hooking these helpers covers both paths
 				['check_width_impact', 'check_height_impact', 'check_depth_impact'].forEach(function (name) {
 					const original = window[name];
 					if (typeof original === 'function') {
