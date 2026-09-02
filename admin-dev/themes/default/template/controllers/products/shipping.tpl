@@ -272,7 +272,7 @@
 			// always cm3 / dm3 / m3, whatever the shop's dimension unit is
 			const dm3 = raw * (dm3PerUnit[unit] || dm3PerUnit.cm);
 			$volume.text(
-				(dm3 * 1000).toFixed(3) + ' cm3 = '
+				(dm3 * 1000).toFixed(0) + ' cm3 = '
 				+ dm3.toFixed(3) + ' dm3 = '
 				+ (dm3 / 1000).toFixed(6) + ' m3'
 			);

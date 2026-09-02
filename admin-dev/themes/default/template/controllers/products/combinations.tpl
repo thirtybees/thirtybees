@@ -393,7 +393,7 @@
 					const dm3 = raw * (dm3PerUnit[unit] || dm3PerUnit.cm);
 					$volume.text(
 						width.toFixed(2) + ' x ' + height.toFixed(2) + ' x ' + depth.toFixed(2) + ' ' + unit + ' = '
-						+ (dm3 * 1000).toFixed(3) + ' cm3 = '
+						+ (dm3 * 1000).toFixed(0) + ' cm3 = '
 						+ dm3.toFixed(3) + ' dm3 = '
 						+ (dm3 / 1000).toFixed(6) + ' m3'
 					);
