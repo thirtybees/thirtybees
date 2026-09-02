@@ -63,10 +63,14 @@
 	</div>
 
 	<div class="form-group">
-		<label class="control-label col-lg-2 col-lg-offset-1">{l s='Package volume'}</label>
+		<label class="control-label col-lg-2 col-lg-offset-1">
+			<span class="label-tooltip" data-toggle="tooltip"
+				title="{l s='Calculated from the package width, height and depth above. For reference: a shoe box is about 10 dm3, a moving box about 60 dm3, a pallet about 1500 dm3 (1 dm3 = 1 litre).'}">
+				{l s='Package volume'}
+			</span>
+		</label>
 		<div class="col-lg-9">
 			<p class="form-control-static" id="package_volume" data-dimension-unit="{$ps_dimension_unit|escape:'html':'UTF-8'}">-</p>
-			<p class="help-block">{l s='Calculated from the package width, height and depth above.'} {l s='For reference: a shoe box is about 10 dm3, a moving box about 60 dm3, a pallet about 1500 dm3 (1 dm3 = 1 litre).'}</p>
 		</div>
 	</div>
 
