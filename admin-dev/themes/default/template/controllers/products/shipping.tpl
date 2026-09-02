@@ -272,6 +272,17 @@
 		const $volume = $('#package_volume');
 		const unit = String($volume.data('dimension-unit') || 'cm').trim().toLowerCase();
 		const factor = dm3PerUnit[unit];
+		// decimal separator follows the employee language (comma in most of
+		// Europe, point in the US); trailing zeros are dropped
+		const locale = (typeof full_language_code !== 'undefined' && full_language_code) || navigator.language;
+		const number = (value, maxDecimals) => {
+			try {
+				return new Intl.NumberFormat(locale, { maximumFractionDigits: maxDecimals }).format(value);
+			} catch (e) {
+				return value.toFixed(maxDecimals);
+			}
+		};
+		const cubic = '\u00B3';
 		const render = () => {
 			const width = parseFloat($('#width').val()) || 0;
 			const height = parseFloat($('#height').val()) || 0;
@@ -283,15 +294,15 @@
 			const raw = width * height * depth;
 			if (!factor) {
 				// unknown dimension unit: show the product without converting it
-				$volume.text(raw.toFixed(2) + ' ' + unit + '3');
+				$volume.text(number(raw, 2) + ' ' + unit + cubic);
 				return;
 			}
 			// always cm3 / dm3 / m3, whatever the shop's dimension unit is
 			const dm3 = raw * factor;
 			$volume.text(
-				(dm3 * 1000).toFixed(0) + ' cm3 = '
-				+ dm3.toFixed(3) + ' dm3 = '
-				+ (dm3 / 1000).toFixed(6) + ' m3'
+				number(dm3 * 1000, 0) + ' cm' + cubic + ' = '
+				+ number(dm3, 3) + ' dm' + cubic + ' = '
+				+ number(dm3 / 1000, 6) + ' m' + cubic
 			);
 		};
 		$('#width, #height, #depth').on('input keyup change', render);
