@@ -269,11 +269,12 @@
 				$volume.text("{l s='Not calculated: fill in width, height and depth' js=1}");
 				return;
 			}
+			// always cm3 / dm3 / m3, whatever the shop's dimension unit is
 			const dm3 = raw * (dm3PerUnit[unit] || dm3PerUnit.cm);
 			$volume.text(
-				raw.toFixed(3) + ' ' + unit + '\u00B3 = '
-				+ dm3.toFixed(3) + ' dm\u00B3 = '
-				+ (dm3 / 1000).toFixed(6) + ' m\u00B3'
+				(dm3 * 1000).toFixed(3) + ' cm3 = '
+				+ dm3.toFixed(3) + ' dm3 = '
+				+ (dm3 / 1000).toFixed(6) + ' m3'
 			);
 		};
 		$('#width, #height, #depth').on('keyup change', render);
