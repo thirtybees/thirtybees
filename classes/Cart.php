@@ -2843,7 +2843,21 @@ class CartCore extends ObjectModel
                 $this->id_address_delivery = $idAddressNew;
             }
             if ($toUpdate) {
+                // Re-key the stored delivery option(s) onto the new address id,
+                // otherwise a mid-checkout address change leaves them stored
+                // under the old id, where they fail validation in
+                // getDeliveryOption() and the shipping cost evaluates to 0.
+                $deliveryOption = json_decode($this->delivery_option, true);
+                if (is_array($deliveryOption) && array_key_exists($idAddress, $deliveryOption)) {
+                    $deliveryOption[$idAddressNew] = $deliveryOption[$idAddress];
+                    unset($deliveryOption[$idAddress]);
+                    $this->delivery_option = json_encode($deliveryOption);
+                }
                 $this->update();
+
+                // The delivery option list is cached per cart and country; the
+                // address change invalidates it.
+                Cache::clean('Cart::getDeliveryOptionList_' . (int) $this->id . '_*');
             }
 
             $conn = Db::getInstance();
