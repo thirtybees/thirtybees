@@ -180,22 +180,11 @@ class PasswordControllerCore extends FrontController
      */
     protected static function resolveCustomer()
     {
-        $token = Tools::getValue('token');
+        $token = (string)Tools::getValue('token');
         $idCustomer = Tools::getIntValue('id_customer');
         if ($token && $idCustomer) {
-            $email = Db::readOnly()->getValue(
-                (new DbQuery())
-                    ->select('c.`email`')
-                    ->from('customer', 'c')
-                    ->where('c.`secure_key` = \''.pSQL($token).'\'')
-                    ->where('c.`id_customer` = '.(int) $idCustomer)
-            );
-            if ($email) {
-                $customer = new Customer();
-                $customer->getByemail($email);
-                if (!Validate::isLoadedObject($customer)) {
-                    throw new PrestaShopException(Tools::displayError('Customer account not found'));
-                }
+            $customer = new Customer($idCustomer);
+            if (Validate::isLoadedObject($customer) && $customer->secure_key === $token) {
                 if (!$customer->active) {
                     throw new PrestaShopException(Tools::displayError('You cannot regenerate the password for this account.'));
                 }
