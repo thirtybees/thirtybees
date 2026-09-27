@@ -391,7 +391,7 @@ class AdminStoreCreditControllerCore extends AdminController implements Initiali
         if (! $tabId) {
             $tab = new Tab();
             $tab->class_name = $classname;
-            $tab->id_parent = (int)Tab::getIdFromClassName('AdminParentCustomer');
+            $tab->id_parent = (int)Tab::getIdFromClassName('AdminPriceRule');
             $tab->name = [];
             foreach (Language::getIDs() as $langId) {
                 $tab->name[$langId] = 'Store Credits';
