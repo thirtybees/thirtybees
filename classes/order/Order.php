@@ -2453,6 +2453,57 @@ class OrderCore extends ObjectModel
     }
 
     /**
+     * What the customer pays for this order with its payment method: the
+     * order total minus the store credit spent on it. Orders carry gross
+     * totals, with the credit recorded as a payment of its own.
+     *
+     * @return float
+     *
+     * @throws PrestaShopException
+     */
+    public function getTotalToPay()
+    {
+        return Tools::roundPrice(max(0.0, (float) $this->total_paid_tax_incl - $this->getStoreCreditSpent(false)));
+    }
+
+    /**
+     * Like getTotalToPay(), for all orders with similar reference: what the
+     * payment method has to collect for the cart.
+     *
+     * @return float
+     *
+     * @throws PrestaShopException
+     */
+    public function getOrdersTotalToPay()
+    {
+        return Tools::roundPrice(max(0.0, (float) $this->getOrdersTotalPaid() - $this->getStoreCreditSpent(true)));
+    }
+
+    /**
+     * @param bool $wholeCart all orders with similar reference, or only this one
+     *
+     * @return float store credit spent and not reverted
+     *
+     * @throws PrestaShopException
+     */
+    protected function getStoreCreditSpent($wholeCart)
+    {
+        $query = (new DbQuery())
+            ->select('SUM(s.`amount`)')
+            ->from('store_credit_spend', 's')
+            ->where('(s.`date_reverted` IS NULL OR s.`date_reverted` < "1900-00-00")');
+        if ($wholeCart) {
+            $query->innerJoin('orders', 'o', 'o.`id_order` = s.`id_order`')
+                ->where('o.`reference` = \''.pSQL($this->reference).'\'')
+                ->where('o.`id_cart` = '.(int) $this->id_cart);
+        } else {
+            $query->where('s.`id_order` = '.(int) $this->id);
+        }
+
+        return (float) Db::readOnly()->getValue($query);
+    }
+
+    /**
      * This method allows to change the shipping cost of the current order
      *
      * @param float $amount

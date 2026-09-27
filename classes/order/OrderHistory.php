@@ -524,7 +524,9 @@ class OrderHistoryCore extends ObjectModel
                 $data = array_merge($data, $templateVars);
             }
 
-            $data['{total_paid}'] = Tools::displayPrice((float) $order->total_paid, new Currency((int) $order->id_currency), false);
+            // What is still to pay with the payment method, e.g. the amount to
+            // transfer in the bank wire e-mail: store credit already paid part.
+            $data['{total_paid}'] = Tools::displayPrice($order->getTotalToPay(), new Currency((int) $order->id_currency), false);
 
             if (Validate::isLoadedObject($order)) {
                 // Attach invoice and / or delivery-slip if they exists and status is set to attach them
