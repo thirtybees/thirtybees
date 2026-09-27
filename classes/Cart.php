@@ -1127,8 +1127,15 @@ class CartCore extends ObjectModel
                 // promise more than the balance covers and make the order-time
                 // debit fail deterministically. Flooring leaves the dust on
                 // the credit instead of blocking the checkout.
+                // Float noise is rounded away first, to the precision amounts
+                // are stored with: 32.05 is 32.0499999... as a float and would
+                // otherwise floor to 32.04, leaving a cent that never goes.
                 $factor = pow(10, (int) $displayPrecision);
-                $creditUsed = floor(max(0.0, min($orderTotal, $creditAvailable)) * $factor) / $factor;
+                $scaled = round(
+                    max(0.0, min($orderTotal, $creditAvailable)) * $factor,
+                    max(0, _TB_PRICE_DATABASE_PRECISION_ - (int) $displayPrecision)
+                );
+                $creditUsed = floor($scaled) / $factor;
                 if ($type == static::BOTH) {
                     $orderTotal -= $creditUsed;
                 } else {
