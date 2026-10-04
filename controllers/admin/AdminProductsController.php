@@ -2804,7 +2804,7 @@ class AdminProductsControllerCore extends AdminController
             foreach ($saveInfo['associate'] as $featureValueId => $customDisplayable) {
                 $product->addFeaturesToDB($featureId, $featureValueId);
                 foreach ($customDisplayable as $idLang => $displayable) {
-                    $product->addFeaturesDisplayableToDb($featureValueId, $idLang, $displayable);
+                    $product->addFeaturesDisplayableToDb($featureId, $featureValueId, $idLang, $displayable);
                 }
             }
 

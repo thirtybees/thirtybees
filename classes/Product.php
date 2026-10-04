@@ -6464,6 +6464,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
     }
 
     /**
+     * @param int $featureId
      * @param int $featureValueId
      * @param int $langId
      * @param string $displayable
@@ -6471,14 +6472,14 @@ class ProductCore extends ObjectModel implements InitializationCallback
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function addFeaturesDisplayableToDb($featureValueId, $langId, $displayable)
+    public function addFeaturesDisplayableToDb($featureId, $featureValueId, $langId, $displayable)
     {
-
         if (!$displayable = pSQL($displayable)) {
             return false;
         }
 
         return Db::getInstance()->insert('feature_product_lang', [
+            'id_feature' => (int)$featureId,
             'id_product' => (int)$this->id,
             'id_feature_value' => (int)$featureValueId,
             'id_lang' => (int)$langId,
