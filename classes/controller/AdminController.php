@@ -570,12 +570,46 @@ class AdminControllerCore extends Controller implements DatasetQuery
     }
 
     /**
+     * Returns true when PHP probably dropped POST fields because the request had more
+     * than max_input_vars of them. PHP does that silently, and the lost fields can
+     * include the submit button, so the form would otherwise be ignored without
+     * any error, or saved with missing data.
+     *
+     * PHP keeps max_input_vars fields (or one more for urlencoded forms), so a form
+     * that has exactly that many fields is reported too.
+     *
+     * @return bool
+     */
+    protected function isPostTruncated()
+    {
+        $maxInputVars = (int) ini_get('max_input_vars');
+        if ($maxInputVars <= 0 || empty($_POST)) {
+            return false;
+        }
+
+        $count = 0;
+        array_walk_recursive($_POST, function () use (&$count) {
+            $count++;
+        });
+
+        return $count >= $maxInputVars;
+    }
+
+    /**
      * @return false|mixed
      *
      * @throws PrestaShopException
      */
     public function postProcess()
     {
+        if ($this->isPostTruncated()) {
+            $this->errors[] = sprintf(
+                Tools::displayError('This form has more fields than the server accepts (max_input_vars = %d), so some of them were lost and the form was not processed. Ask your host to raise max_input_vars in the PHP configuration.'),
+                (int) ini_get('max_input_vars')
+            );
+            return false;
+        }
+
         try {
             if ($this->ajax) {
                 // from ajax-tab.php
