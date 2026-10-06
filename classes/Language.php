@@ -746,7 +746,7 @@ class LanguageCore extends ObjectModel
 
         if (!file_exists(_PS_TRANSLATIONS_DIR_.$isoCode)) {
             if (@mkdir(_PS_TRANSLATIONS_DIR_.$isoCode)) {
-                @chmod(_PS_TRANSLATIONS_DIR_.$isoCode, 0777);
+                @chmod(_PS_TRANSLATIONS_DIR_.$isoCode, Tools::applyUmask(0777));
             }
         }
 
@@ -770,7 +770,7 @@ class LanguageCore extends ObjectModel
                 }
             }
 
-            @chmod($pathFile, 0777);
+            @chmod($pathFile, Tools::applyUmask(0777));
         }
     }
 
