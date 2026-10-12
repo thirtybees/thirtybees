@@ -1122,6 +1122,9 @@ class CartCore extends ObjectModel
             && (int)$this->id_currency === (int)Configuration::get('PS_CURRENCY_DEFAULT')) {
             if ($type == static::BOTH || $type == static::ONLY_STORE_CREDIT) {
                 $creditAvailable = StoreCredit::getByCustomerId((int)$this->id_shop, (int)$this->id_customer);
+                // Products that store credit may not pay for stay out of the
+                // part the credit covers; they are paid by other means.
+                $creditBase = max(0.0, $orderTotal - $this->getStoreCreditExcludedTotal($products, (bool) $withTaxes));
                 // FLOOR to the display precision. The credit balance can hold
                 // sub-precision dust (6-decimal column); rounding UP would
                 // promise more than the balance covers and make the order-time
@@ -1132,7 +1135,7 @@ class CartCore extends ObjectModel
                 // otherwise floor to 32.04, leaving a cent that never goes.
                 $factor = pow(10, (int) $displayPrecision);
                 $scaled = round(
-                    max(0.0, min($orderTotal, $creditAvailable)) * $factor,
+                    max(0.0, min($creditBase, $creditAvailable)) * $factor,
                     max(0, _TB_PRICE_DATABASE_PRECISION_ - (int) $displayPrecision)
                 );
                 $creditUsed = floor($scaled) / $factor;
@@ -1149,6 +1152,75 @@ class CartCore extends ObjectModel
         }
 
         return Tools::ps_round((float) $orderTotal, $displayPrecision);
+    }
+
+    /**
+     * Products in this cart that store credit may not pay for.
+     *
+     * Modules answer the hook actionStoreCreditExcludedProducts with a list
+     * of ['id_product' => int, 'id_product_attribute' => int] entries. The
+     * canonical case is a gift card product: paying for one with credit would
+     * move a balance that is about to expire onto a fresh code, so the
+     * liability could be renewed forever. Leave out id_product_attribute to
+     * exclude every combination of a product.
+     *
+     * @return array "idProduct-idProductAttribute" (or "idProduct-*") => true
+     *
+     * @throws PrestaShopException
+     */
+    public function getStoreCreditExcludedProducts()
+    {
+        $results = Hook::exec('actionStoreCreditExcludedProducts', ['cart' => $this], null, true);
+        $excluded = [];
+        if (!is_array($results)) {
+            return $excluded;
+        }
+        foreach ($results as $list) {
+            if (!is_array($list)) {
+                continue;
+            }
+            foreach ($list as $entry) {
+                if (!is_array($entry) || empty($entry['id_product'])) {
+                    continue;
+                }
+                $attribute = isset($entry['id_product_attribute']) ? (string) (int) $entry['id_product_attribute'] : '*';
+                $excluded[(int) $entry['id_product'].'-'.$attribute] = true;
+            }
+        }
+
+        return $excluded;
+    }
+
+    /**
+     * Value of the lines that store credit may not pay for, out of the given
+     * lines: the whole cart, or one package when an order is split.
+     *
+     * The line totals are taken before cart rules, so a discount on an
+     * excluded product leaves a little less for credit to cover, never more.
+     *
+     * @param array $products lines as returned by getProducts()
+     * @param bool $withTaxes
+     *
+     * @return float never negative
+     *
+     * @throws PrestaShopException
+     */
+    protected function getStoreCreditExcludedTotal($products, $withTaxes)
+    {
+        $excluded = $this->getStoreCreditExcludedProducts();
+        if (!$excluded || !is_array($products)) {
+            return 0.0;
+        }
+        $total = 0.0;
+        foreach ($products as $product) {
+            $idProduct = (int) $product['id_product'];
+            $key = $idProduct.'-'.(int) $product['id_product_attribute'];
+            if (isset($excluded[$key]) || isset($excluded[$idProduct.'-*'])) {
+                $total += (float) ($withTaxes ? $product['total_wt'] : $product['total']);
+            }
+        }
+
+        return max(0.0, $total);
     }
 
     /**

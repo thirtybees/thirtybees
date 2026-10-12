@@ -40,6 +40,9 @@
     <hook id="actionCartSave" live_edit="0">
       <name>actionCartSave</name><title>Cart creation and update</title><description>This hook is displayed when a product is added to the cart or if the cart's content is modified</description>
     </hook>
+    <hook id="actionStoreCreditExcludedProducts" live_edit="0">
+      <name>actionStoreCreditExcludedProducts</name><title>Products store credit may not pay for</title><description>This hook lets modules keep products out of reach of store credit, for example gift cards that would otherwise move an expiring balance onto a new code. Return a list of id_product and id_product_attribute entries.</description>
+    </hook>
     <hook id="actionAuthentication" live_edit="0">
       <name>actionAuthentication</name><title>Successful customer authentication</title><description>This hook is displayed after a customer successfully signs in</description>
     </hook>
