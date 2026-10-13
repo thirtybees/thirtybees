@@ -108,6 +108,11 @@ class MediaCore
     protected static $inline_script_src = [];
 
     /**
+     * @var array list of deferred javascript scripts with attributes
+     */
+    protected static $deferred_scripts = [];
+
+    /**
      * @var string used for preg_replace_callback parameter (avoid global)
      */
     protected static $current_css_file;
@@ -945,6 +950,7 @@ class MediaCore
      */
     public static function deferInlineScripts($output)
     {
+        Media::$deferred_scripts = [];
         /* Try to enqueue in js_files inline scripts with src but without conditionnal comments */
         $dom = new DOMDocument();
         libxml_use_internal_errors(true);
@@ -985,7 +991,12 @@ class MediaCore
                             }
                         }
                     }
-                    if (!in_array($src, Media::$inline_script_src) && !$script->getAttribute(Media::$pattern_keepinline)) {
+                    $keepInline = $script->getAttribute(Media::$pattern_keepinline);
+                    if (!$keepInline && !in_array($src, Media::$inline_script_src)) {
+                        Media::$deferred_scripts[] = [
+                            'src' => $src,
+                            'attrs' => Media::buildScriptAttributeString($script),
+                        ];
                         Context::getContext()->controller->addJS($src);
                     }
                 }
@@ -994,6 +1005,95 @@ class MediaCore
         $output = preg_replace_callback(Media::$pattern_js, ['Media', 'deferScript'], $output);
 
         return $output;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getDeferredScripts(array $jsFiles)
+    {
+        if (!Media::$deferred_scripts) {
+            return array_map(function ($jsFile) {
+                return [
+                    'src' => $jsFile,
+                    'attrs' => null,
+                ];
+            }, $jsFiles);
+        }
+
+        $existingSources = [];
+        foreach (Media::$deferred_scripts as $script) {
+            if (!empty($script['src'])) {
+                $existingSources[$script['src']] = true;
+            }
+        }
+
+        $mergedScripts = Media::$deferred_scripts;
+        foreach ($jsFiles as $jsFile) {
+            if (isset($existingSources[$jsFile])) {
+                continue;
+            }
+            $mergedScripts[] = [
+                'src' => $jsFile,
+                'attrs' => null,
+            ];
+        }
+
+        return $mergedScripts;
+    }
+
+    /**
+     * @param DOMElement $script
+     *
+     * @return string|null
+     */
+    protected static function buildScriptAttributeString(DOMElement $script)
+    {
+        $attributes = [];
+        $allowedAttributes = [
+            'type' => true,
+            'async' => true,
+            'defer' => true,
+            'nomodule' => true,
+            'nonce' => true,
+            'integrity' => true,
+            'crossorigin' => true,
+            'referrerpolicy' => true,
+            'fetchpriority' => true,
+        ];
+        if ($script->hasAttributes()) {
+            foreach ($script->attributes as $attribute) {
+                $name = strtolower($attribute->name);
+                if ($name === 'src' || $name === 'id' || $name === 'onload' || $name === 'onerror') {
+                    continue;
+                }
+                $isDataAttribute = (strpos($name, 'data-') === 0);
+                if (!$isDataAttribute && !isset($allowedAttributes[$name])) {
+                    continue;
+                }
+
+                if (in_array($name, ['async', 'defer', 'nomodule'], true)) {
+                    $attributes[] = $attribute->name;
+                    continue;
+                }
+
+                $value = htmlspecialchars(trim($attribute->value), ENT_QUOTES, 'UTF-8');
+                if ($value === '' && !$isDataAttribute) {
+                    continue;
+                }
+                if ($value === '' && $isDataAttribute) {
+                    $attributes[] = $attribute->name.'=""';
+                    continue;
+                }
+                $attributes[] = $attribute->name.'="'.$value.'"';
+            }
+        }
+
+        if (!$attributes) {
+            return null;
+        }
+
+        return ' '.implode(' ', $attributes);
     }
 
     /**
