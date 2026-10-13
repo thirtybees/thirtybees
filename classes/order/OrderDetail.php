@@ -924,7 +924,7 @@ class OrderDetailCore extends ObjectModel
                 $product['id_product_attribute'],
                 true
             );
-            if ($supplierPrice !== false) {
+            if ($supplierPrice !== false && (float) $supplierPrice > 0) {
                 $purchaseSupplierPriceDefCur = $supplierPrice;
             }
         }
