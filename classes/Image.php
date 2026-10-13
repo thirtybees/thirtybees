@@ -1050,4 +1050,151 @@ class ImageCore extends ObjectModel
         }
     }
 
+    /**
+     * Cleans orphaned product images and temporary images older than one hour,
+     * and identifies suspicious (non-image) files in the product images directory.
+     * 
+     * Steps:
+     * 1) Gathers all valid image IDs in one query.
+     * 2) Recursively scans the product images folder:
+     *    - Deletes images whose IDs are not in the database.
+     *    - Flags any non-allowed file extension (or modified index.php) as suspicious.
+     * 3) Deletes stale temporary images (older than 1 hour).
+     * 4) Cleans up empty folders.
+     *
+     * @return array {
+     *     @type int     $orphaned_count   The total number of orphaned and temporary images deleted.
+     *     @type string[] $suspicious_files Paths of files with suspicious or non-image extensions.
+     * }
+     */
+    public static function cleanOrphanedImages()
+    {
+        // Increase execution time for large operations.
+        @ini_set('max_execution_time', 3600);
+
+        // -----------------------------
+        // Retrieve valid image IDs from DB in one query.
+        // -----------------------------
+        $dbRows = Db::getInstance()->executeS('SELECT id_image FROM ' . _DB_PREFIX_ . 'image');
+        $validIds = [];
+        foreach ($dbRows as $row) {
+            $validIds[(int)$row['id_image']] = true;
+        }
+
+        // -----------------------------
+        // Single pass through the product images directory for orphan and suspicious file detection.
+        // -----------------------------
+        $imagesToDelete = [];
+        $suspiciousFiles = [];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif'];
+
+        // Define the canonical index.php file path.
+        $canonicalIndexFile = _PS_PROD_IMG_DIR_ . 'index.php';
+        $canonicalIndexSize = is_file($canonicalIndexFile) ? filesize($canonicalIndexFile) : null;
+
+        // Use RecursiveDirectoryIterator to iterate only over existing files.
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(_PS_PROD_IMG_DIR_, RecursiveDirectoryIterator::SKIP_DOTS)
+        );
+
+        foreach ($iterator as $fileInfo) {
+            if ($fileInfo->isDir()) {
+                continue;
+            }
+
+            $filePath = $fileInfo->getPathname();
+            $filename = $fileInfo->getFilename();
+            $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+            // --- Orphan detection for allowed image files ---
+            if (in_array($ext, $allowedExtensions)) {
+                // Extract numeric candidate from filename (ignoring extension).
+                $numericId = (int)pathinfo($filename, PATHINFO_FILENAME);
+                if ($numericId > 0 && !isset($validIds[$numericId])) {
+                    $imagesToDelete[] = $filePath;
+                }
+                // Skip further checks for valid image files.
+                continue;
+            }
+
+            // --- Suspicious file detection for non-image files ---
+            if ($filename === 'index.php') {
+                // For index.php, compare with the canonical file.
+                // Only the size of the file is compares as we would like to
+                // update the header years in the canonical file in future.
+                if ($canonicalIndexSize !== null) {
+                    if ($fileInfo->getSize() !== $canonicalIndexSize) {
+                        $suspiciousFiles[] = $filePath;
+                    }
+                } else {
+                    // If there is no canonical index.php, flag it.
+                    $suspiciousFiles[] = $filePath;
+                }
+            } else {
+                // Flag any other file with a non-allowed extension.
+                $suspiciousFiles[] = $filePath;
+            }
+        }
+
+        // -----------------------------
+        // Process temporary images (only delete if older than 1 hour).
+        // -----------------------------
+        $tempPatterns = [
+            _PS_TMP_IMG_DIR_ . 'product_*',
+            _PS_TMP_IMG_DIR_ . 'tinylink_form_mini_*'
+        ];
+        $oneHourAgo = time() - 3600;
+        foreach ($tempPatterns as $pattern) {
+            if ($tempImages = glob($pattern)) {
+                foreach ($tempImages as $tempImage) {
+                    if (is_file($tempImage) && filemtime($tempImage) < $oneHourAgo) {
+                        $imagesToDelete[] = $tempImage;
+                    }
+                }
+            }
+        }
+
+        // -----------------------------
+        // Delete marked files and clean empty folders.
+        // -----------------------------
+        $orphanedCount = count($imagesToDelete);
+        foreach ($imagesToDelete as $file) {
+            if (file_exists($file) && !unlink($file)) {
+                PrestaShopLogger::addLog('Failed to delete file: ' . $file, 3);
+            }
+        }
+
+        self::cleanEmptyFolders(_PS_PROD_IMG_DIR_, true);
+
+        return [
+            'orphaned_count'   => $orphanedCount,
+            'suspicious_files' => $suspiciousFiles,
+        ];
+    }
+
+    /**
+     * Recursively removes empty directories in the product images folder.
+     * A directory is considered empty if it contains no files
+     * or only an 'index.php' file. The root directory itself is never removed.
+     *
+     * @param string $dir    The directory path to clean.
+     * @param bool   $isRoot Whether this directory is the root (and should not be removed).
+     *
+     * @return void
+     */
+    protected static function cleanEmptyFolders($dir, $isRoot = false)
+    {
+        // Recursively process subdirectories.
+        $items = array_diff(scandir($dir), array('.', '..'));
+        foreach ($items as $item) {
+            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($path)) {
+                self::cleanEmptyFolders($path, false);
+            }
+        }
+        // If not the root and the directory is empty (ignoring index.php), delete it.
+        if (!$isRoot && Tools::isDirectoryEmpty($dir, ['index.php'])) {
+            Tools::deleteDirectory($dir);
+        }
+    }
 }
