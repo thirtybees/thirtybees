@@ -588,7 +588,7 @@ abstract class PaymentModuleCore extends Module
                         $grossTaxIncl = (float) $this->context->cart->getOrderTotal(true, Cart::BOTH_WITHOUT_STORE_CREDIT, $productList, $idCarrier);
                         // What the cart takes from credit for this package on
                         // its own: without the products credit may not pay for
-                        // (actionStoreCreditExcludedProducts), so the budget does
+                        // (actionStoreCreditExcludedTotal), so the budget does
                         // not land on a package that only holds those.
                         $packageCredit = (float) $this->context->cart->getOrderTotal(true, Cart::ONLY_STORE_CREDIT, $productList, $idCarrier);
                         $storeCreditApplied = Tools::roundPrice(min($grossTaxIncl, $packageCredit, $storeCreditBudget));
