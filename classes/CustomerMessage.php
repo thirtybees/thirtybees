@@ -94,7 +94,7 @@ class CustomerMessageCore extends ObjectModel
             'id_customer_thread' => ['type' => self::TYPE_INT, 'dbType' => 'int(11)'],
             'id_employee'        => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId'],
             'message'            => ['type' => self::TYPE_STRING, 'validate' => 'isCleanHtml', 'required' => true, 'size' => ObjectModel::SIZE_MEDIUM_TEXT],
-            'file_name'          => ['type' => self::TYPE_STRING, 'size' => 18],
+            'file_name'          => ['type' => self::TYPE_STRING, 'size' => ObjectModel::SIZE_TEXT],
             'ip_address'         => ['type' => self::TYPE_STRING, 'validate' => 'isIp2Long', 'size' => 16],
             'user_agent'         => ['type' => self::TYPE_STRING, 'size' => 250],
             'date_add'           => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
@@ -190,35 +190,155 @@ class CustomerMessageCore extends ObjectModel
      */
     public function delete()
     {
-        if ($this->fileExists()) {
-            unlink($this->getFilePath());
+        foreach ($this->getAttachments() as $attachment) {
+            $filePath = $this->getFilePath($attachment['stored_name'] ?? '');
+            if ($filePath && file_exists($filePath)) {
+                unlink($filePath);
+            }
         }
 
         return parent::delete();
     }
 
     /**
+     * @param string|null $storedName
+     *
      * @return string
      */
-    public function getFilePath(): string
+    public function getFilePath(?string $storedName = null): string
     {
-        if ($this->file_name) {
-            return _PS_UPLOAD_DIR_ . basename($this->file_name);
+        $storedName = $storedName ?: $this->getPrimaryStoredName();
+        if ($storedName) {
+            return _PS_UPLOAD_DIR_ . basename($storedName);
         }
+
         return '';
     }
 
     /**
+     * @param string|null $storedName
+     *
      * @return bool
      */
-    public function fileExists(): bool
+    public function fileExists(?string $storedName = null): bool
     {
-        $filePath = $this->getFilePath();
+        $filePath = $this->getFilePath($storedName);
         return (
             $filePath &&
             file_exists($filePath) &&
             is_file($filePath)
         );
+    }
+
+    /**
+     * @return array
+     */
+    public function getAttachments(): array
+    {
+        return static::decodeAttachments($this->file_name);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPrimaryStoredName(): ?string
+    {
+        $attachments = $this->getAttachments();
+        if (isset($attachments[0]['stored_name'])) {
+            return $attachments[0]['stored_name'];
+        }
+
+        return ($this->file_name && !is_array($this->file_name)) ? (string)$this->file_name : null;
+    }
+
+    /**
+     * @param string|null $encoded
+     *
+     * @return array
+     */
+    public static function decodeAttachments($encoded): array
+    {
+        if (!$encoded) {
+            return [];
+        }
+
+        if (is_array($encoded)) {
+            return array_values(array_filter($encoded, function ($attachment) {
+                return isset($attachment['stored_name']) && $attachment['stored_name'];
+            }));
+        }
+
+        if (is_string($encoded)) {
+            $decoded = json_decode($encoded, true);
+
+            if (is_array($decoded)) {
+                return array_values(array_filter($decoded, function ($attachment) {
+                    return isset($attachment['stored_name']) && $attachment['stored_name'];
+                }));
+            }
+
+            return [
+                [
+                    'stored_name' => $encoded,
+                    'original_name' => null,
+                    'mime' => null,
+                ],
+            ];
+        }
+
+        return [];
+    }
+
+    /**
+     * @param array $attachments
+     *
+     * @return string|null
+     */
+    public static function encodeAttachments(array $attachments): ?string
+    {
+        return $attachments ? json_encode(array_values($attachments)) : null;
+    }
+
+    /**
+     * Normalize the result of Tools::fileAttachment so controllers can handle single or multiple uploads the same way.
+     *
+     * @param array|null $fileAttachment
+     *
+     * @return array
+     */
+    public static function normalizeFileAttachments($fileAttachment): array
+    {
+        if (!$fileAttachment) {
+            return [];
+        }
+
+        if (isset($fileAttachment['rename'])) {
+            return [$fileAttachment];
+        }
+
+        if (is_array($fileAttachment)) {
+            return array_values(array_filter($fileAttachment, function ($attachment) {
+                return is_array($attachment) && isset($attachment['rename']);
+            }));
+        }
+
+        return [];
+    }
+
+    /**
+     * Hydrate attachment information for a list of message rows.
+     *
+     * @param array $messages
+     *
+     * @return array
+     */
+    public static function appendAttachmentData(array $messages): array
+    {
+        foreach ($messages as &$message) {
+            $message['attachments'] = static::decodeAttachments($message['file_name'] ?? null);
+        }
+
+        return $messages;
     }
 
 }
