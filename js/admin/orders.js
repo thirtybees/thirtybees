@@ -856,18 +856,21 @@ function init() {
     if (parseInt($(this).val(), 10) === 1) {
       // Percent type
       $('#discount_value_field').show();
+      $('#discount_shipping_field').show();
       $('#discount_currency_sign').hide();
       $('#discount_value_help').hide();
       $('#discount_percent_symbol').show();
     } else if (parseInt($(this).val(), 10) === 2) {
       // Amount type
       $('#discount_value_field').show();
+      $('#discount_shipping_field').hide();
       $('#discount_percent_symbol').hide();
       $('#discount_value_help').show();
       $('#discount_currency_sign').show();
     } else if (parseInt($(this).val(), 10) === 3) {
       // Free shipping
       $('#discount_value_field').hide();
+      $('#discount_shipping_field').hide();
     }
   });
 
