@@ -280,7 +280,6 @@ class PrestaShopBackupCore
             if (!in_array($schema[0]['Table'], $ignoreInsertTable)) {
                 $data = $conn->query('SELECT * FROM `'.$schema[0]['Table'].'`');
                 $sizeof = $conn->NumRows();
-                $lines = explode("\n", $schema[0]['Create Table']);
 
                 if ($data && $sizeof > 0) {
                     // Export the table data
@@ -289,22 +288,8 @@ class PrestaShopBackupCore
                     while ($row = $conn->nextRow($data)) {
                         $s = '(';
 
-                        foreach ($row as $field => $value) {
-                            $tmp = "'".pSQL($value, true)."',";
-                            if ($tmp != "'',") {
-                                $s .= $tmp;
-                            } else {
-                                foreach ($lines as $line) {
-                                    if (strpos($line, '`'.$field.'`') !== false) {
-                                        if (preg_match('/(.*NOT NULL.*)/Ui', $line)) {
-                                            $s .= "'',";
-                                        } else {
-                                            $s .= 'NULL,';
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
+                        foreach ($row as $value) {
+                            $s .= ($value === null) ? 'NULL,' : "'".pSQL($value, true)."',";
                         }
                         $s = rtrim($s, ',');
 
