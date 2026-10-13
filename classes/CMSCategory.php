@@ -133,13 +133,14 @@ class CMSCategoryCore extends ObjectModel
      * @param int $active
      * @param int $links
      * @param Link|null $link
+     * @param int|null $idShop Optional shop ID, null for all shops
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getRecurseCategory($idLang = null, $current = 1, $active = 1, $links = 0, ?Link $link = null)
+    public static function getRecurseCategory($idLang = null, $current = 1, $active = 1, $links = 0, ?Link $link = null, $idShop = null)
     {
         if (!$link) {
             $link = Context::getContext()->link;
@@ -149,28 +150,42 @@ class CMSCategoryCore extends ObjectModel
         }
 
         $connection = Db::readOnly();
-        $category = $connection->getRow(
-            (new DbQuery())
-                ->select('c.`id_cms_category`, c.`id_parent`, c.`level_depth`, cl.`name`, cl.`link_rewrite`')
-                ->from('cms_category', 'c')
-                ->innerJoin('cms_category_lang', 'cl', 'c.`id_cms_category` = cl.`id_cms_category`')
-                ->where('c.`id_cms_category` = '.(int) $current)
-                ->where('`id_lang` = '.(int) $idLang)
-        );
 
-        if (! $category) {
+        $categoryQuery = (new DbQuery())
+            ->select('c.`id_cms_category`, c.`id_parent`, c.`level_depth`, cl.`name`, cl.`link_rewrite`')
+            ->from('cms_category', 'c')
+            ->leftJoin('cms_category_lang', 'cl', 'c.`id_cms_category` = cl.`id_cms_category` AND cl.`id_lang` = '.(int) $idLang)
+            ->where('c.`id_cms_category` = '.(int) $current);
+
+        if ($idShop !== null) {
+            $categoryQuery->innerJoin('cms_category_shop', 'cs', 'c.`id_cms_category` = cs.`id_cms_category` AND cs.`id_shop` = '.(int) $idShop);
+            $categoryQuery->where('cl.`id_shop` = '.(int) $idShop);
+        }
+
+        $category = $connection->getRow($categoryQuery);
+
+        if (!$category) {
             return [];
         }
 
-        $sql = 'SELECT c.`id_cms_category`
-				FROM `'._DB_PREFIX_.'cms_category` c
-				WHERE c.`id_parent` = '.(int) $current.
-            ($active ? ' AND c.`active` = 1' : '');
-        $result = $connection->getArray($sql);
+        $childrenQuery = (new DbQuery())
+            ->select('c.`id_cms_category`')
+            ->from('cms_category', 'c')
+            ->where('c.`id_parent` = '.(int) $current);
+
+        if ($idShop !== null) {
+            $childrenQuery->innerJoin('cms_category_shop', 'cs', 'c.`id_cms_category` = cs.`id_cms_category` AND cs.`id_shop` = '.(int) $idShop);
+        }
+
+        if ($active) {
+            $childrenQuery->where('c.`active` = 1');
+        }
+
+        $result = $connection->getArray($childrenQuery);
         $children = [];
         if ($result) {
             foreach ($result as $row) {
-                $childrenTree = static::getRecurseCategory($idLang, $row['id_cms_category'], $active, $links);
+                $childrenTree = static::getRecurseCategory($idLang, $row['id_cms_category'], $active, $links, $link, $idShop);
                 if ($childrenTree) {
                     $children[] = $childrenTree;
                 }
@@ -178,15 +193,24 @@ class CMSCategoryCore extends ObjectModel
         }
         $category['children'] = $children;
 
-        $sql = 'SELECT c.`id_cms`, cl.`meta_title`, cl.`link_rewrite`
-				FROM `'._DB_PREFIX_.'cms` c
-				'.Shop::addSqlAssociation('cms', 'c').'
-				JOIN `'._DB_PREFIX_.'cms_lang` cl ON c.`id_cms` = cl.`id_cms`
-				WHERE `id_cms_category` = '.(int) $current.'
-				AND cl.`id_lang` = '.(int) $idLang.($active ? ' AND c.`active` = 1' : '').'
-				GROUP BY c.id_cms
-				ORDER BY c.`position`';
-        $category['cms'] = $connection->getArray($sql);
+        $cmsQuery = (new DbQuery())
+            ->select('c.`id_cms`, cl.`meta_title`, cl.`link_rewrite`')
+            ->from('cms', 'c')
+            ->leftJoin('cms_lang', 'cl', 'c.`id_cms` = cl.`id_cms` AND cl.`id_lang` = '.(int) $idLang)
+            ->where('`id_cms_category` = '.(int) $current)
+            ->groupBy('c.id_cms')
+            ->orderBy('c.`position`');
+
+        if ($idShop !== null) {
+            $cmsQuery->innerJoin('cms_shop', 'cs', 'c.`id_cms` = cs.`id_cms` AND cs.`id_shop` = '.(int) $idShop);
+            $cmsQuery->where('cl.`id_shop` = '.(int) $idShop);
+        }
+
+        if ($active) {
+            $cmsQuery->where('c.`active` = 1');
+        }
+
+        $category['cms'] = $connection->getArray($cmsQuery);
         if ($links == 1) {
             $category['link'] = $link->getCMSCategoryLink($current, $category['link_rewrite']);
             foreach ($category['cms'] as $key => $cms) {
@@ -229,23 +253,32 @@ class CMSCategoryCore extends ObjectModel
      * @param int $idLang Language ID
      * @param bool $active return only active categories
      * @param bool $order
+     * @param int|null $idShop Optional shop ID, null for all shops
      *
      * @return array Categories
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getCategories($idLang, $active = true, $order = true)
+    public static function getCategories($idLang, $active = true, $order = true, $idShop = null)
     {
-        $result = Db::readOnly()->getArray(
-            '
-		SELECT *
-		FROM `'._DB_PREFIX_.'cms_category` c
-		LEFT JOIN `'._DB_PREFIX_.'cms_category_lang` cl ON c.`id_cms_category` = cl.`id_cms_category`
-		WHERE `id_lang` = '.(int) $idLang.'
-		'.($active ? 'AND `active` = 1' : '').'
-		ORDER BY `name` ASC'
-        );
+        $query = (new DbQuery())
+            ->select('c.*, cl.*')
+            ->from('cms_category', 'c')
+            ->leftJoin('cms_category_lang', 'cl', 'c.`id_cms_category` = cl.`id_cms_category` AND cl.`id_lang` = '.(int) $idLang);
+
+        if ($idShop !== null) {
+            $query->innerJoin('cms_category_shop', 'cs', 'c.`id_cms_category` = cs.`id_cms_category` AND cs.`id_shop` = '.(int) $idShop);
+            $query->where('cl.`id_shop` = '.(int) $idShop);
+        }
+
+        if ($active) {
+            $query->where('c.`active` = 1');
+        }
+
+        $query->orderBy('cl.`name` ASC');
+
+        $result = Db::readOnly()->getArray($query);
 
         if (!$order) {
             return $result;
@@ -261,22 +294,27 @@ class CMSCategoryCore extends ObjectModel
 
     /**
      * @param int $idLang
+     * @param int|null $idShop Optional shop ID, null for all shops
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getSimpleCategories($idLang)
+    public static function getSimpleCategories($idLang, $idShop = null)
     {
-        return Db::readOnly()->getArray(
-            '
-		SELECT c.`id_cms_category`, cl.`name`
-		FROM `'._DB_PREFIX_.'cms_category` c
-		LEFT JOIN `'._DB_PREFIX_.'cms_category_lang` cl ON (c.`id_cms_category` = cl.`id_cms_category`)
-		WHERE cl.`id_lang` = '.(int) $idLang.'
-		ORDER BY cl.`name`'
-        );
+        $query = (new DbQuery())
+            ->select('c.`id_cms_category`, cl.`name`')
+            ->from('cms_category', 'c')
+            ->leftJoin('cms_category_lang', 'cl', 'c.`id_cms_category` = cl.`id_cms_category` AND cl.`id_lang` = '.(int) $idLang)
+            ->orderBy('cl.`name`');
+
+        if ($idShop !== null) {
+            $query->innerJoin('cms_category_shop', 'cs', 'c.`id_cms_category` = cs.`id_cms_category` AND cs.`id_shop` = '.(int) $idShop);
+            $query->where('cl.`id_shop` = '.(int) $idShop);
+        }
+
+        return Db::readOnly()->getArray($query);
     }
 
     /**
@@ -299,24 +337,32 @@ class CMSCategoryCore extends ObjectModel
      * @param int $idParent
      * @param int $idLang
      * @param bool $active
+     * @param int|null $idShop Optional shop ID, null for all shops
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public static function getChildren($idParent, $idLang, $active = true)
+    public static function getChildren($idParent, $idLang, $active = true, $idShop = null)
     {
-        $result = Db::readOnly()->getArray(
-            '
-		SELECT c.`id_cms_category`, cl.`name`, cl.`link_rewrite`
-		FROM `'._DB_PREFIX_.'cms_category` c
-		LEFT JOIN `'._DB_PREFIX_.'cms_category_lang` cl ON c.`id_cms_category` = cl.`id_cms_category`
-		WHERE `id_lang` = '.(int) $idLang.'
-		AND c.`id_parent` = '.(int) $idParent.'
-		'.($active ? 'AND `active` = 1' : '').'
-		ORDER BY `name` ASC'
-        );
+        $query = (new DbQuery())
+            ->select('c.`id_cms_category`, cl.`name`, cl.`link_rewrite`')
+            ->from('cms_category', 'c')
+            ->leftJoin('cms_category_lang', 'cl', 'c.`id_cms_category` = cl.`id_cms_category` AND cl.`id_lang` = '.(int) $idLang)
+            ->where('c.`id_parent` = '.(int) $idParent)
+            ->orderBy('cl.`name` ASC');
+
+        if ($idShop !== null) {
+            $query->innerJoin('cms_category_shop', 'cs', 'c.`id_cms_category` = cs.`id_cms_category` AND cs.`id_shop` = '.(int) $idShop);
+            $query->where('cl.`id_shop` = '.(int) $idShop);
+        }
+
+        if ($active) {
+            $query->where('c.`active` = 1');
+        }
+
+        $result = Db::readOnly()->getArray($query);
 
         // Modify SQL result
         $resultsArray = [];
@@ -641,24 +687,33 @@ class CMSCategoryCore extends ObjectModel
      *
      * @param int $idLang Language ID
      * @param bool $active return only active categories
+     * @param int|null $idShop Optional shop ID, null for all shops
      *
      * @return array Categories
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getSubCategories($idLang, $active = true)
+    public function getSubCategories($idLang, $active = true, $idShop = null)
     {
-        $result = Db::readOnly()->getArray(
-            '
-		SELECT c.*, cl.id_lang, cl.name, cl.description, cl.link_rewrite, cl.meta_title, cl.meta_keywords, cl.meta_description
-		FROM `'._DB_PREFIX_.'cms_category` c
-		LEFT JOIN `'._DB_PREFIX_.'cms_category_lang` cl ON (c.`id_cms_category` = cl.`id_cms_category` AND `id_lang` = '.(int) $idLang.')
-		WHERE `id_parent` = '.(int) $this->id.'
-		'.($active ? 'AND `active` = 1' : '').'
-		GROUP BY c.`id_cms_category`
-		ORDER BY `name` ASC'
-        );
+        $query = (new DbQuery())
+            ->select('c.*, cl.id_lang, cl.name, cl.description, cl.link_rewrite, cl.meta_title, cl.meta_keywords, cl.meta_description')
+            ->from('cms_category', 'c')
+            ->leftJoin('cms_category_lang', 'cl', 'c.`id_cms_category` = cl.`id_cms_category` AND cl.`id_lang` = '.(int) $idLang)
+            ->where('c.`id_parent` = '.(int) $this->id)
+            ->groupBy('c.`id_cms_category`')
+            ->orderBy('cl.`name` ASC');
+
+        if ($idShop !== null) {
+            $query->innerJoin('cms_category_shop', 'cs', 'c.`id_cms_category` = cs.`id_cms_category` AND cs.`id_shop` = '.(int) $idShop);
+            $query->where('cl.`id_shop` = '.(int) $idShop);
+        }
+
+        if ($active) {
+            $query->where('c.`active` = 1');
+        }
+
+        $result = Db::readOnly()->getArray($query);
 
         // Modify SQL result
         foreach ($result as &$row) {
@@ -825,13 +880,14 @@ class CMSCategoryCore extends ObjectModel
      * Get Each parent CMSCategory of this CMSCategory until the root CMSCategory
      *
      * @param int $idLang Language ID
+     * @param int|null $idShop Optional shop ID, null for all shops
      *
      * @return array
      *
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      */
-    public function getParentsCategories($idLang = null)
+    public function getParentsCategories($idLang = null, $idShop = null)
     {
         if (is_null($idLang)) {
             $idLang = Context::getContext()->language->id;
@@ -840,12 +896,17 @@ class CMSCategoryCore extends ObjectModel
         $categories = null;
         $idCurrent = $this->id;
         while (true) {
-            $query = '
-				SELECT c.*, cl.*
-				FROM `'._DB_PREFIX_.'cms_category` c
-				LEFT JOIN `'._DB_PREFIX_.'cms_category_lang` cl ON (c.`id_cms_category` = cl.`id_cms_category` AND `id_lang` = '.(int) $idLang.')
-				WHERE c.`id_cms_category` = '.(int) $idCurrent.' AND c.`id_parent` != 0
-			';
+            $query = (new DbQuery())
+                ->select('c.*, cl.*')
+                ->from('cms_category', 'c')
+                ->leftJoin('cms_category_lang', 'cl', 'c.`id_cms_category` = cl.`id_cms_category` AND cl.`id_lang` = '.(int) $idLang)
+                ->where('c.`id_cms_category` = '.(int) $idCurrent.' AND c.`id_parent` != 0');
+
+            if ($idShop !== null) {
+                $query->innerJoin('cms_category_shop', 'cs', 'c.`id_cms_category` = cs.`id_cms_category` AND cs.`id_shop` = '.(int) $idShop);
+                $query->where('cl.`id_shop` = '.(int) $idShop);
+            }
+
             $result = Db::readOnly()->getArray($query);
 
             $categories[] = $result[0];
