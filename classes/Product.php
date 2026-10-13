@@ -6478,7 +6478,15 @@ class ProductCore extends ObjectModel implements InitializationCallback
             return false;
         }
 
+        $featureId = (int)Db::getInstance()->getValue(
+            'SELECT `id_feature` FROM `'._DB_PREFIX_.'feature_value` WHERE `id_feature_value` = '.(int)$featureValueId
+        );
+        if (!$featureId) {
+            return false;
+        }
+
         return Db::getInstance()->insert('feature_product_lang', [
+            'id_feature' => $featureId,
             'id_product' => (int)$this->id,
             'id_feature_value' => (int)$featureValueId,
             'id_lang' => (int)$langId,
