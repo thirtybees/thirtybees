@@ -3740,10 +3740,28 @@ class AdminImportControllerCore extends AdminController
             return;
         }
 
+        if ($product->date_add === null) {
+                    $query = (new DbQuery())
+                        ->select('id_shop, `date_add`')
+                        ->from('product_shop')
+                        ->where('id_product = '.(int) $product->id);
+
+                    if ($idShopList) {
+                        $query->where('id_shop IN ('.implode(',', array_map('intval', $idShopList)).')');
+                    }
+
+                    $dateAdds = Db::readOnly()->executeS($query);
+                    if (is_array($dateAdds)) {
+                        foreach ($dateAdds as $row) {
+                            $product->date_add[(int) $row['id_shop']] = $row['date_add'];
+                        }
+                    }
+        }
+        
         // delete combinations for product
         $deleteCombinationsForProduct = Tools::getValue('only_file_product');
-        if ($deleteCombinationsForProduct && !in_array((int)$product->id, $deletedProducts)) {
-            $deletedProducts[] = (int)$product->id;
+        if ($deleteCombinationsForProduct && !in_array((int) $product->id, $deletedProducts)) {
+            $deletedProducts[] = (int) $product->id;
             $product->deleteProductAttributes();
         }
 
