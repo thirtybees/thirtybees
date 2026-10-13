@@ -1171,21 +1171,21 @@ class CartCore extends ObjectModel
     /**
      * Part of the cart total that store credit may not pay for.
      *
-     * Modules answer the actionStoreCreditExcludedTotal hook with the amount
-     * of their own products in this cart. The canonical case is a gift-card
+     * Modules answer the actionStoreCreditExcludedProducts hook with a list of
+     * the products in this cart that credit may not pay for, as entries with
+     * id_product and id_product_attribute. The canonical case is a gift-card
      * product: paying for one with credit would move an expiring balance onto
      * a fresh code, so the liability could be renewed forever and never
      * expire. Excluded products simply have to be paid by other means; the
      * credit still covers the rest of the cart.
      *
-     * The largest amount returned wins rather than the sum, so two modules
-     * excluding the same product cannot subtract it twice. A module must
-     * therefore return the total for every product it excludes.
+     * The excluded amount is the sum of the matching cart lines. A line that
+     * several modules exclude counts once.
      *
      * @param bool $withTaxes whether the caller works with tax-included amounts
-     * @param int $type the getOrderTotal() type being computed
      * @param array|null $products package products, when the caller limited
-     *                             the total to one package
+     *                             the total to one package; the whole cart
+     *                             otherwise
      *
      * @return float amount in cart currency, never negative
      *
