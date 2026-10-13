@@ -30,6 +30,7 @@
 		$(document).ready(function() {
 			checkFiles();
 			runTests();
+			scanOpenDirs();
 		});
 
 		function checkFiles() {
@@ -44,9 +45,9 @@
 				success: function(json)
 				{
 					const tab = {
-						'missing': '{l s='Missing files'}',
-						'updated': '{l s='Updated files'}',
-						'obsolete': '{l s='Obsolete files'}'
+						'missing': '{l s="Missing files" js=1}',
+						'updated': '{l s="Updated files" js=1}',
+						'obsolete': '{l s="Obsolete files" js=1}'
 					};
 
 					if (json.missing.length || json.updated.length || json.obsolete.length || json.listMissing) {
@@ -66,19 +67,30 @@
 					}
 
 					$.each(tab, function (key, lang) {
-						if (json[key].length) {
-							let html = $('<ul>').attr('id', key + '_files');
-							$(json[key]).each(function (key, file) {
-								html.append($('<li>').html(file))
-							});
-							$('#changedFiles')
-								.append($('<h4>').html(lang + ' (' + json[key].length + ')'))
-								.append(html);
-						}
-					});
-				}
-			});
-		}
+                                                if (json[key].length) {
+                                                        let html = $('<ul>').attr('id', key + '_files');
+                                                        $(json[key]).each(function (key, file) {
+                                                                html.append($('<li>').html(file))
+                                                        });
+                                                        $('#changedFiles')
+                                                                .append($('<h4>').html(lang + ' (' + json[key].length + ')'))
+                                                                .append(html);
+                                                }
+                                        });
+
+                                        if (json.openDirectories && json.openDirectories.length) {
+                                                let html = $('<ul>').attr('id', 'open_directories');
+                                                $(json.openDirectories).each(function (key, dir) {
+                                                        html.append($('<li>').html(dir));
+                                                });
+                                                $('#changedFiles')
+                                                        .append($('<div class="alert alert-danger">{l s='Directory listing is enabled for some directories. To secure your shop, add an index.php file or restrict access.'}</div>'))
+                                                        .append($('<h4>').html('{l s='Directories with listing enabled'}' + ' (' + json.openDirectories.length + ')'))
+                                                        .append(html);
+                                        }
+                                }
+                        });
+                }
 
 		function runTests() {
 			$.ajax({
@@ -139,6 +151,74 @@
 				content += '</div>'
 			}
 			return content;
+		}
+		
+		// Notification helpers with safe fallbacks (TB admin has show*Message)
+		function notice(msg){ if (typeof showNoticeMessage === 'function') { showNoticeMessage(msg); } else if ($.growl && $.growl.notice) { $.growl.notice({ message: msg }); } else { console.log(msg); } }
+		function success(msg){ if (typeof showSuccessMessage === 'function') { showSuccessMessage(msg); } else if ($.growl) { $.growl({ message: msg, type: 'success' }); } else { console.log(msg); } }
+		function failure(msg){ if (typeof showErrorMessage === 'function') { showErrorMessage(msg); } else if ($.growl && $.growl.error) { $.growl.error({ message: msg }); } else { console.error(msg); } }
+		
+		function scanOpenDirs(offset = 0, total = null) {
+		  if (offset === 0) {
+			// Top panel banner + growl notice
+			$('#changedFiles').append(
+			  '<div id="openDirsScan" class="alert alert-info">' +
+			  '<i class="icon-spin icon-refresh"></i> ' +
+			  '{l s="Scanning for directories with listing enabled..." js=1}' +
+			  '</div>'
+			);
+			notice('{l s="Directory listing scan started…" js=1}');
+		  }
+
+		  $.ajax({
+			type: 'GET',
+			url: '{$link->getAdminLink('AdminInformation')|addslashes}',
+			data: { action: 'scanOpenDirs', ajax: 1, offset: offset, limit: 150 },
+			dataType: 'json'
+		  }).done(function (json) {
+			if (json.status !== 'success') {
+			  $('#openDirsScan').replaceWith('<div class="alert alert-danger">{l s="Directory scan failed." js=1}</div>');
+			  failure('{l s="Directory scan failed." js=1}');
+			  return;
+			}
+
+			// Append any newly found vulnerable directories
+			if (json.vulnerable && json.vulnerable.length) {
+			  let list = $('#open_directories');
+			  if (!list.length) {
+				$('#changedFiles')
+				  .append('<div class="alert alert-danger">{l s="Directory listing is enabled for some directories. Please, secure those!" js=1}</div>')
+				  .append('<h4>{l s="Directories with listing enabled" js=1} (<span id="openDirsCount">0</span>)</h4>')
+				  .append('<ul id="open_directories"></ul>');
+				list = $('#open_directories');
+			  }
+			  json.vulnerable.forEach(function (d) {
+				list.append($('<li>').text(d));
+			  });
+			  $('#openDirsCount').text($('#open_directories li').length);
+			}
+
+			// Progress / completion
+			if (json.done) {
+			  var found = $('#open_directories li').length;
+			  if (!found) {
+				$('#openDirsScan').replaceWith('<div class="alert alert-success">{l s="No directories with listing enabled were found." js=1}</div>');
+				success('{l s="Directory scan completed. No issues found." js=1}');
+			  } else {
+				$('#openDirsScan').remove();
+				// “X directories found” message
+				var doneMsg = '{l s="Directory scan completed. Found" js=1} ' + found + ' {l s="directories with listing enabled." js=1}';
+				failure(doneMsg);
+			  }
+			} else {
+			  const pct = Math.round(((json.offset) / json.total) * 100);
+			  $('#openDirsScan').html('<i class="icon-spin icon-refresh"></i> {l s="Scanning..." js=1} ' + pct + '%');
+			  scanOpenDirs(json.offset, json.total);
+			}
+		  }).fail(function () {
+			$('#openDirsScan').replaceWith('<div class="alert alert-danger">{l s="Directory scan request failed." js=1}</div>');
+			failure('{l s="Directory scan request failed." js=1}');
+		  });
 		}
 
 	</script>
