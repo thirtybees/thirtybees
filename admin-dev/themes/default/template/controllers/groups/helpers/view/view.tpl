@@ -30,7 +30,7 @@
 	<div class="col-lg-6">
 		<div class="panel">
 			<h3><i class="icon-group"></i> {l s='Group information'}</h3>
-			<h2><i class="icon-group"></i> {$group->name[$language->id]}</h2>
+			<h2><i class="icon-group"></i> {$group->name[$language->id]|escape:'html':'UTF-8'}</h2>
 			<div class="form-horizontal">
 				<div class="form-group">
 					<label class="col-lg-3 control-label">{l s='Discount:'}</label>

@@ -42,7 +42,7 @@
 						<option value="0">{l s='Please select a module'}</option>
 					{/if}
 					{foreach $modules as $module}
-						<option value="{$module->id|intval}"{if $id_module == $module->id || (!$id_module && $show_modules == $module->id)} selected="selected"{/if}>{$module->displayName|stripslashes}</option>
+						<option value="{$module->id|intval}"{if $id_module == $module->id || (!$id_module && $show_modules == $module->id)} selected="selected"{/if}>{$module->displayName|stripslashes|escape:'html':'UTF-8'}</option>
 					{/foreach}
 				</select>
 			</div>
@@ -55,7 +55,7 @@
 						<option value="0">{l s='Select a module above before choosing from available hooks'}</option>
 					{else}
 						{foreach $hooks as $hook}
-							<option value="{$hook['id_hook']}" {if $id_hook == $hook['id_hook']} selected="selected"{/if}>{$hook['name']}{if $hook['name'] != $hook['title']} ({$hook['title']}){/if}</option>
+							<option value="{$hook['id_hook']|intval}" {if $id_hook == $hook['id_hook']} selected="selected"{/if}>{$hook['name']|escape:'html':'UTF-8'}{if $hook['name'] != $hook['title']} ({$hook['title']|escape:'html':'UTF-8'}){/if}</option>
 						{/foreach}
 					{/if}
 				</select>
@@ -82,8 +82,8 @@
 		</div>
 		<div class="panel-footer">
 			{if $edit_graft}
-				<input type="hidden" name="id_module" value="{$id_module}" />
-				<input type="hidden" name="id_hook" value="{$id_hook}" />
+				<input type="hidden" name="id_module" value="{$id_module|intval}" />
+				<input type="hidden" name="id_hook" value="{$id_hook|intval}" />
 			{/if}
 			<button type="submit" name="{if $edit_graft}submitEditGraft{else}submitAddToHook{/if}" id="{$table}_form_submit_btn" class="btn btn-default pull-right"><i class="process-icon-save"></i> {l s='Save'}</button>
 		</div>

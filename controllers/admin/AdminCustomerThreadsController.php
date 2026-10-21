@@ -1010,10 +1010,10 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
             $content = '';
             if (!$message['private']) {
-                $content .= $this->l('Message to: ').' <span class="badge">'.(!$message['id_employee'] ? $message['subject'] : $message['customer_name']).'</span><br/>';
+                $content .= $this->l('Message to: ').' <span class="badge">'.Tools::safeOutput(!$message['id_employee'] ? $message['subject'] : $message['customer_name']).'</span><br/>';
             }
             if (Validate::isLoadedObject($product)) {
-                $content .= '<br/>'.$this->l('Product: ').'<span class="label label-info">'.$product->name.'</span><br/><br/>';
+                $content .= '<br/>'.$this->l('Product: ').'<span class="label label-info">'.Tools::safeOutput($product->name).'</span><br/><br/>';
             }
             $content .= Tools::safeOutput($message['message']);
 
@@ -1034,7 +1034,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
                 $content = '<a class="badge" target="_blank" href="'.Tools::safeOutput($linkOrder).'">'.$this->l('Order').' #'.(int) $order->id.'</a><br/><br/>';
 
-                $content .= '<span>'.$this->l('Status:').' '.$history['ostate_name'].'</span>';
+                $content .= '<span>'.$this->l('Status:').' '.Tools::safeOutput($history['ostate_name']).'</span>';
 
                 $timeline[$history['date_add']][] = [
                     'arrow'            => 'right',
