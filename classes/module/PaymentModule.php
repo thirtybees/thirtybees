@@ -710,6 +710,10 @@ abstract class PaymentModuleCore extends Module
             // Next !
             $cartRuleUsed = [];
 
+            // An order that starts out in payment error or cancelled does not spend its
+            // cart rules: their quantity stays and no remainder of a partial use is made
+            $spendCartRules = $idOrderState != Configuration::get('PS_OS_ERROR') && $idOrderState != Configuration::get('PS_OS_CANCELED');
+
             // Make sure CartRule caches are empty
             CartRule::cleanCache();
 
@@ -896,7 +900,7 @@ abstract class PaymentModuleCore extends Module
                         $voucher->reduction_currency = $order->id_currency;
                         $voucher->quantity_per_user = 1;
                         $voucher->free_shipping = 0;
-                        if ($voucher->add()) {
+                        if ($spendCartRules && $voucher->add()) {
                             // If the voucher has conditions, they are now copied to the new voucher
                             CartRule::copyConditions($cartRule->id, $voucher->id);
 
@@ -969,7 +973,7 @@ abstract class PaymentModuleCore extends Module
 
                     $order->addCartRule($cartRule->id, $cartRule->name, $values, 0, $cartRule->free_shipping);
 
-                    if ($idOrderState != Configuration::get('PS_OS_ERROR') && $idOrderState != Configuration::get('PS_OS_CANCELED') && !in_array($cartRule->id, $cartRuleUsed)) {
+                    if ($spendCartRules && !in_array($cartRule->id, $cartRuleUsed)) {
                         $cartRuleUsed[] = $cartRule->id;
 
                         // Create a new instance of Cart Rule without id_lang, in order to update its quantity
