@@ -1091,9 +1091,8 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
 
         $idThread = Tools::getIntValue('id_thread');
-        $messages = CustomerThread::getMessageCustomerThreads($idThread);
-        if (count($messages)) {
-            Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'customer_message` set `read` = 1 WHERE `id_employee` = '.(int) $this->context->employee->id.' AND `id_customer_thread` = '.(int) $idThread);
+        if ($idThread) {
+            Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'customer_message` SET `read` = 1 WHERE `id_customer_thread` = '.(int) $idThread.' AND `read` = 0');
         }
     }
 
