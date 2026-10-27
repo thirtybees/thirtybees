@@ -33,6 +33,7 @@
     </div>
   {/if}
   <form method="post" id="{$table}_form" action="{$url_submit|escape:'html':'UTF-8'}" class="form-horizontal">
+    <input type="hidden" id="mail-preview-token" value="{$mail_preview_token|escape:'html':'UTF-8'}" />
     <div class="panel">
       <input type="hidden" name="lang" value="{$lang}" />
       <input type="hidden" name="type" value="{$type}" />
@@ -115,7 +116,8 @@
                 dataType: 'html',
                 data: {
                   getEmailHTML : true,
-                  email : src
+                  email : src,
+                  token : $('#mail-preview-token').val()
                 },
                 success: function(result)
                 {
