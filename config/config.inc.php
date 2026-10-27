@@ -85,6 +85,21 @@ if (is_file(_PS_CUSTOM_CONFIG_FILE_)) {
     include_once(_PS_CUSTOM_CONFIG_FILE_);
 }
 
+// Admin credentials and sessions require server-confirmed HTTPS, even when storefront SSL is disabled.
+if (defined('_PS_ADMIN_DIR_') && !Tools::isPHPCLI()) {
+    $secureAdminRequest = false;
+    foreach (['HTTPS', 'SSL', 'REDIRECT_HTTPS'] as $serverVariable) {
+        if (isset($_SERVER[$serverVariable])) {
+            $secureAdminRequest = in_array(mb_strtolower((string)$_SERVER[$serverVariable]), ['1', 'on'], true);
+            break;
+        }
+    }
+    if (!$secureAdminRequest) {
+        http_response_code(403);
+        exit('Back office requires HTTPS.');
+    }
+}
+
 if (ServiceLocator::getInstance()->getProfiling()->isEnabled()) {
     include_once(_PS_TOOL_DIR_.'profiling/Controller.php');
     include_once(_PS_TOOL_DIR_.'profiling/ObjectModel.php');
@@ -168,7 +183,7 @@ if ($cookie_lifetime > 0) {
 }
 
 if (defined('_PS_ADMIN_DIR_')) {
-    $cookie = new Cookie('psAdmin', '', $cookie_lifetime);
+    $cookie = new Cookie('psAdmin', '', $cookie_lifetime, null, false, true);
 } else {
     $force_ssl = Configuration::get('PS_SSL_ENABLED');
     if ($context->shop->getGroup()->share_order) {
@@ -238,7 +253,7 @@ if (!defined('_PS_ADMIN_DIR_')) {
 }
 
 /* Link should also be initialized in the context here for retrocompatibility */
-$https_link = (Tools::usingSecureMode() && Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
+$https_link = (Tools::usingSecureMode() && (defined('_PS_ADMIN_DIR_') || Configuration::get('PS_SSL_ENABLED'))) ? 'https://' : 'http://';
 $context->link = new Link($https_link, $https_link);
 
 /**

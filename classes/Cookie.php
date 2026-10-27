@@ -187,6 +187,10 @@ class CookieCore
             ? str_pad('', 32, md5('ps'.__FILE__))
             : _COOKIE_IV_;
         $this->_secure = (bool) $secure;
+        // Invalidate admin sessions issued before the cookie required HTTPS.
+        if ($this->realName === 'psAdmin' && $this->_secure) {
+            $this->_salt .= ':secure-admin-v1';
+        }
 
         $this->update();
     }
