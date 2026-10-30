@@ -942,6 +942,7 @@
 		$('#id_lang option[value="'+id_lang+'"]').attr('selected', true);
 		$('#send_email_to_customer').attr('rel', jsonSummary.link_order);
 		$('#go_order_process').attr('href', jsonSummary.link_order);
+		$('#send_email_to_customer, #go_order_process').toggle(!!jsonSummary.link_order);
 		$('#order_message').val(jsonSummary.order_message);
 		resetBind();
 	}
@@ -1623,7 +1624,7 @@
 							{l s='Send an email to the customer with the link to process the payment.'}
 						</a>
 						<a id="go_order_process" href="" class="btn btn-link _blank">
-							{l s='Go on payment page to process the payment.'}
+							{l s='Open the customer payment link (customer sign-in required).'}
 							<i class="icon-external-link"></i>
 						</a>
 					</div>

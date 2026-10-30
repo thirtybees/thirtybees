@@ -2246,8 +2246,14 @@ class AdminOrdersControllerCore extends AdminController
             if (Validate::isLoadedObject($cart)) {
                 $customer = new Customer((int) $cart->id_customer);
                 if (Validate::isLoadedObject($customer)) {
+                    if ($customer->isGuest()) {
+                        $this->ajaxDie(json_encode(['errors' => true, 'result' => $this->l('Payment links require a registered customer account.')]));
+                    }
+                    if ($cart->OrderExists()) {
+                        $this->ajaxDie(json_encode(['errors' => true, 'result' => $this->l('This cart has already been ordered.')]));
+                    }
                     $mailVars = [
-                        '{order_link}' => $this->context->link->getPageLink('order', false, (int) $cart->id_lang, 'step=3&recover_cart='.(int) $cart->id.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int) $cart->id)),
+                        '{order_link}' => $this->context->link->getPageLink('order', true, (int) $cart->id_lang, 'step=3&recover_cart='.(int) $cart->id.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.(int) $cart->id), false, (int) $cart->id_shop),
                         '{firstname}'  => $customer->firstname,
                         '{lastname}'   => $customer->lastname,
                     ];
