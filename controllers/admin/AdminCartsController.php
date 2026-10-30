@@ -971,7 +971,7 @@ class AdminCartsControllerCore extends AdminController
     public function displayAjaxSearchCarts()
     {
         $idCustomer = Tools::getIntValue('id_customer');
-        $carts = Cart::getCustomerCarts((int) $idCustomer);
+        $carts = Cart::getCustomerCarts((int) $idCustomer, false);
         $orders = Order::getCustomerOrders((int) $idCustomer);
 
         if (count($carts)) {
