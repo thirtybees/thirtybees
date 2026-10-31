@@ -727,14 +727,22 @@ class CarrierCore extends ObjectModel implements InitializationCallback
                 unset($carrierList[$key]);
             }
 
-            if ($carrier->min_total > 0 && ($carrier->min_total > $cart->getOrderTotal($carrier->min_total_tax, Cart::BOTH_WITHOUT_SHIPPING))) {
-                $error[$carrier->id] = static::SHIPPING_PRICE_EXCEPTION;
-                unset($carrierList[$key]);
+            if ($carrier->min_total > 0) {
+                $orderTotal = $cart->getOrderTotal($carrier->min_total_tax, Cart::BOTH_WITHOUT_SHIPPING);
+                $orderTotal = Tools::convertPrice($orderTotal, $cart->id_currency, false);
+                if ($carrier->min_total > $orderTotal) {
+                    $error[$carrier->id] = static::SHIPPING_PRICE_EXCEPTION;
+                    unset($carrierList[$key]);
+                }
             }
 
-            if ($carrier->max_total > 0 && ($carrier->max_total < $cart->getOrderTotal($carrier->max_total_tax, Cart::BOTH_WITHOUT_SHIPPING))) {
-                $error[$carrier->id] = static::SHIPPING_PRICE_EXCEPTION;
-                unset($carrierList[$key]);
+            if ($carrier->max_total > 0) {
+                $orderTotal = $cart->getOrderTotal($carrier->max_total_tax, Cart::BOTH_WITHOUT_SHIPPING);
+                $orderTotal = Tools::convertPrice($orderTotal, $cart->id_currency, false);
+                if ($carrier->max_total < $orderTotal) {
+                    $error[$carrier->id] = static::SHIPPING_PRICE_EXCEPTION;
+                    unset($carrierList[$key]);
+                }
             }
 
             if ($carrier->min_weight > 0 && $cartWeight < $carrier->min_weight) {
