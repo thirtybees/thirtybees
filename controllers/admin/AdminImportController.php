@@ -2202,7 +2202,7 @@ class AdminImportControllerCore extends AdminController
                 // Bulk jobs: for performances, we need to do a minimum amount of SQL queries. No product inflation.
                 $uniqueIds = static::getExistingIdsFromIdsOrRefs($links);
                 try {
-                    Db::getInstance()->delete('accessory', '`id_product_1` = '.(int) $productId);
+                    Product::deleteAccessoriesForProduct((int) $productId, Product::areAccessoriesReciprocal());
                 } catch (PrestaShopDatabaseException $e) {
                     $this->warnings[] = sprintf($this->l('Unable to delete from table `%s`: %s'), 'accessory', $e->getMessage());
                 }
@@ -2287,18 +2287,10 @@ class AdminImportControllerCore extends AdminController
      */
     protected static function changeAccessoriesForProduct($accessoriesId, $productId)
     {
-        foreach ($accessoriesId as $idProduct2) {
-            try {
-                Db::getInstance()->insert(
-                    'accessory',
-                    [
-                        'id_product_1' => (int) $productId,
-                        'id_product_2' => (int) $idProduct2,
-                    ]
-                );
-            } catch (PrestaShopException $e) {
-                Context::getContext()->controller->warnings[] = sprintf(('Unable to insert products into accessory table: %s'), $e->getMessage());
-            }
+        try {
+            Product::changeAccessoriesForProduct($accessoriesId, (int) $productId);
+        } catch (PrestaShopException $e) {
+            Context::getContext()->controller->warnings[] = sprintf(('Unable to insert products into accessory table: %s'), $e->getMessage());
         }
     }
 
