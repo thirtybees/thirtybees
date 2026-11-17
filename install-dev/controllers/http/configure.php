@@ -186,19 +186,7 @@ class InstallControllerHttpConfigure extends InstallControllerHttp
      */
     public function getTimezones()
     {
-        if (!file_exists(_PS_INSTALL_DATA_PATH_.'xml/timezone.xml')) {
-            return [];
-        }
-
-        $xml = @simplexml_load_file(_PS_INSTALL_DATA_PATH_.'xml/timezone.xml');
-        $timezones = [];
-        if ($xml) {
-            foreach ($xml->entities->timezone as $timezone) {
-                $timezones[] = (string) $timezone['name'];
-            }
-        }
-
-        return $timezones;
+        return DateTimeZone::listIdentifiers(DateTimeZone::ALL_WITH_BC);
     }
 
     /**

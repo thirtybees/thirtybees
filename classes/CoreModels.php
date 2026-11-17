@@ -1209,14 +1209,6 @@ class CoreModelsCore
             ],
         ];
 
-        $timezone = [
-            'table' => 'timezone',
-            'primary' => 'id_timezone',
-            'fields' => [
-                'name'        => ['type' => ObjectModel::TYPE_STRING, 'size' => 32, 'required' => true],
-            ],
-        ];
-
         $warehouseCarrier = [
             'table' => 'warehouse_carrier',
             'fields' => [
@@ -1347,7 +1339,6 @@ class CoreModelsCore
             'TagCount' => $tagCount,
             'ThemeMeta' => $themeMeta,
             'ThemeSpecific' => $themeSpecific,
-            'Timezone' => $timezone,
             'WarehouseCarrier' => $warehouseCarrier,
             'WebBrowser' => $webBrowser,
             'WebservicePermission' => $webservicePermission,

@@ -96,7 +96,7 @@ class AdminLocalizationControllerCore extends AdminController
                         'validation' => 'isAnything',
                         'type'       => 'select',
                         'class'      => 'chosen',
-                        'list'       => Db::readOnly()->getArray((new DbQuery())->select('`name`')->from('timezone')),
+                        'list'       => Timezone::getList(),
                         'identifier' => 'name',
                         'visibility' => Shop::CONTEXT_ALL,
                     ],

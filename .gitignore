@@ -2,6 +2,7 @@
 # Editors, tools and OS's
 
 .buildpath
+.github
 .htaccess
 .project
 .settings
@@ -9,6 +10,7 @@
 .svn
 .DS_Store
 .sass-cache
+.vs
 config.codekit
 *.sublime-project
 *.sublime-workspace
