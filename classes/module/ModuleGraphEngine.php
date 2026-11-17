@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -128,43 +129,44 @@ class ModuleGraphEngineCore extends Module
         static $divid = 1;
 
         if (strpos($params['width'], '%') !== false) {
-            $params['width'] = (int) preg_replace('/\s*%\s*/', '', $params['width']).'%';
+            $params['width'] = (int) preg_replace('/\s*%\s*/', '', $params['width']) . '%';
         } else {
-            $params['width'] = (int) $params['width'].'px';
+            $params['width'] = (int) $params['width'] . 'px';
         }
 
         $nvd3Func = [
             'line' => '
-				nv.models.lineChart()',
+				nv.models.lineChart()
+                    .useInteractiveGuideline(true)',
             'pie' => '
 				nv.models.pieChart()
 					.x(function(d) { return d.label; })
 					.y(function(d) { return d.value; })
 					.showLabels(true)
-					.showLegend(false)'
+					.showLegend(false)',
         ];
 
         return '
-		<div id="nvd3_chart_'.$divid.'" class="chart with-transitions">
-			<svg style="width:'.$params['width'].';height:'.(int)$params['height'].'px"></svg>
+		<div id="nvd3_chart_' . $divid . '" class="chart with-transitions">
+			<svg style="width:' . $params['width'] . ';height:' . (int) $params['height'] . 'px"></svg>
 		</div>
 		<script>
 			$.ajax({
-			url: "'.addslashes($drawer).'",
+			url: "' . addslashes($drawer) . '",
 			dataType: "json",
 			type: "GET",
 			cache: false,
 			headers: {"cache-control": "no-cache"},
 			success: function(jsonData){
 				nv.addGraph(function(){
-					var chart = '.$nvd3Func[$params['type']].';
+					var chart = ' . $nvd3Func[$params['type']] . ';
 
 					if (jsonData.axisLabels.xAxis != null)
 						chart.xAxis.axisLabel(jsonData.axisLabels.xAxis);
 					if (jsonData.axisLabels.yAxis != null)
 						chart.yAxis.axisLabel(jsonData.axisLabels.yAxis);
 
-					d3.select("#nvd3_chart_'.($divid++).' svg")
+					d3.select("#nvd3_chart_' . ($divid++) . ' svg")
 						.datum(jsonData.data)
 						.transition().duration(500)
 						.call(chart);
@@ -194,8 +196,8 @@ class ModuleGraphEngineCore extends Module
      */
     public function setSize($width, $height)
     {
-        $this->_width = (int)$width;
-        $this->_height = (int)$height;
+        $this->_width = (int) $width;
+        $this->_height = (int) $height;
     }
 
     /**
@@ -224,9 +226,9 @@ class ModuleGraphEngineCore extends Module
         $array = [
             'axisLabels' => [
                 'xAxis' => $this->_titles['x'] ?? null,
-                'yAxis' => $this->_titles['y'] ?? null
+                'yAxis' => $this->_titles['y'] ?? null,
             ],
-            'data'       => [],
+            'data' => [],
         ];
 
         if (!isset($this->_values[0]) || !is_array($this->_values[0])) {

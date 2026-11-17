@@ -692,7 +692,7 @@ abstract class ModuleCore
             }
         }
 
-        if (isset($id2name[$idModule])) {
+        if ($idModule !== null && isset($id2name[$idModule])) {
             return Module::getInstanceByName($id2name[$idModule]);
         }
 

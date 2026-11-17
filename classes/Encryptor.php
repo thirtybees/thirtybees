@@ -50,7 +50,7 @@ class EncryptorCore
     /**
      * @var Encryptor[] $standalone
      */
-    protected static $standalone;
+    protected static $standalone = [];
 
     /**
      * Encryptor singleton
@@ -79,7 +79,7 @@ class EncryptorCore
      */
     public static function getStandaloneInstance($salt)
     {
-        if (! static::$standalone[$salt]) {
+        if (!isset(static::$standalone[$salt])) {
             static::$standalone[$salt] = new Encryptor(static::getStandaloneCipherTool($salt));
         }
 
