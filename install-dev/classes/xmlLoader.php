@@ -249,7 +249,7 @@ class InstallXmlLoader
      *
      * @throws PrestashopInstallerException
      */
-    protected function loadEntity($entity, $iso = null)
+    protected function loadEntity(string $entity, string $iso = ''): SimpleXMLElement
     {
         if (!isset($this->cache_xml_entity[$this->path_type][$entity][$iso])) {
             $path = $this->data_path.$entity.'.xml';

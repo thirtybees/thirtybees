@@ -260,7 +260,7 @@ class AdminFeaturesControllerCore extends AdminController
                     'desc' => $this->l('Add new feature values'),
                 ];
                 $this->toolbar_btn['back'] = [
-                    'href' => static::$currentIndex.'&token='.$this->token,
+                    'href' => $this->context->link->getAdminLink('AdminFeatures'),
                     'desc' => $this->l('Back to the list'),
                 ];
                 break;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -110,21 +111,21 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
      * @var array Object model definition
      */
     public static $definition = [
-        'table'     => 'manufacturer',
-        'primary'   => 'id_manufacturer',
+        'table' => 'manufacturer',
+        'primary' => 'id_manufacturer',
         'multilang' => true,
-        'fields'    => [
-            'name'              => ['type' => self::TYPE_STRING, 'validate' => 'isCatalogName', 'required' => true, 'size' => 64],
-            'date_add'          => ['type' => self::TYPE_DATE, 'dbNullable' => false],
-            'date_upd'          => ['type' => self::TYPE_DATE, 'dbNullable' => false],
-            'active'            => ['type' => self::TYPE_BOOL, 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
+        'fields' => [
+            'name' => ['type' => self::TYPE_STRING, 'validate' => 'isCatalogName', 'required' => true, 'size' => 64],
+            'date_add' => ['type' => self::TYPE_DATE, 'dbNullable' => false],
+            'date_upd' => ['type' => self::TYPE_DATE, 'dbNullable' => false],
+            'active' => ['type' => self::TYPE_BOOL, 'dbType' => 'tinyint(1)', 'dbDefault' => '0'],
 
             /* Lang fields */
-            'description'       => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
+            'description' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
             'short_description' => ['type' => self::TYPE_HTML, 'lang' => true, 'validate' => 'isCleanHtml', 'size' => ObjectModel::SIZE_TEXT],
-            'meta_title'        => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
-            'meta_keywords'     => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName'],
-            'meta_description'  => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
+            'meta_title' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 128],
+            'meta_keywords' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName'],
+            'meta_description' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'size' => 255],
         ],
         'keys' => [
             'manufacturer_shop' => [
@@ -143,8 +144,8 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
      * @var array Webservice parameters
      */
     protected $webserviceParameters = [
-        'fields'       => [
-            'active'       => [],
+        'fields' => [
+            'active' => [],
             'link_rewrite' => ['getter' => 'getLink', 'setter' => false],
         ],
         'associations' => [
@@ -219,7 +220,7 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
                 ->from('manufacturer', 'm')
                 ->join(Shop::addSqlAssociation('manufacturer', 'm'))
                 ->innerJoin('manufacturer_lang', 'ml', 'm.`id_manufacturer` = ml.`id_manufacturer`')
-                ->where('ml.`id_lang` = '.(int) $idLang)
+                ->where('ml.`id_lang` = ' . (int) $idLang)
                 ->where($active ? 'm.`active` = 1' : '')
                 ->groupBy($groupBy ? 'm.`id_manufacturer`' : '')
                 ->orderBy('m.`name` ASC')
@@ -230,7 +231,7 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
             $sqlGroups = '';
             if (!$allGroup) {
                 $groups = FrontController::getCurrentCustomerGroups();
-                $sqlGroups = (count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1');
+                $sqlGroups = (count($groups) ? 'IN (' . implode(',', $groups) . ')' : '= 1');
             }
 
             $categoryGroupSql = (new DbQuery())
@@ -238,7 +239,7 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
                 ->from('category_group', 'cg')
                 ->leftJoin('category_product', 'cp', 'cp.`id_category` = cg.`id_category`')
                 ->where('p.`id_product` = cp.`id_product`')
-                ->where('cg.`id_group` '.$sqlGroups);
+                ->where('cg.`id_group` ' . $sqlGroups);
             $results = $conn->getArray(
                 (new DbQuery())
                     ->select('p.`id_manufacturer`, COUNT(DISTINCT p.`id_product`) AS `nb_products`')
@@ -248,7 +249,7 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
                     ->where('p.`id_manufacturer` != 0')
                     ->where('product_shop.`visibility` NOT IN ("none")')
                     ->where($active ? 'product_shop.`active` = 1' : '')
-                    ->where(Group::isFeatureActive() && $allGroup ? '' : 'EXISTS ('.$categoryGroupSql->build().')')
+                    ->where(Group::isFeatureActive() && $allGroup ? '' : 'EXISTS (' . $categoryGroupSql->build() . ')')
                     ->groupBy('p.`id_manufacturer`')
             );
 
@@ -288,12 +289,14 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
      */
     public static function getNameById($idManufacturer)
     {
+        $idManufacturer = $idManufacturer ?? '';
+
         if (!isset(static::$cacheName[$idManufacturer])) {
             static::$cacheName[$idManufacturer] = Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('name')
                     ->from('manufacturer')
-                    ->where('`id_manufacturer` = '.(int) $idManufacturer)
+                    ->where('`id_manufacturer` = ' . (int) $idManufacturer)
                     ->where('`active` = 1')
             );
         }
@@ -315,7 +318,7 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
             (new DbQuery())
                 ->select('`id_manufacturer`')
                 ->from('manufacturer')
-                ->where('`name` = \''.pSQL($name).'\'')
+                ->where('`name` = \'' . pSQL($name) . '\'')
         );
 
         if (isset($result['id_manufacturer'])) {
@@ -380,7 +383,7 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
         }
 
         $groups = FrontController::getCurrentCustomerGroups();
-        $sqlGroups = count($groups) ? 'IN ('.implode(',', $groups).')' : '= 1';
+        $sqlGroups = count($groups) ? 'IN (' . implode(',', $groups) . ')' : '= 1';
 
         /* Return only the number of products */
         $connection = Db::readOnly();
@@ -389,25 +392,25 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
                 ->select('1')
                 ->from('category_group', 'cg')
                 ->leftJoin('category_product', 'cp', 'cp.`id_category` = cg.`id_category`')
-                ->join($activeCategory ? 'INNER JOIN `'._DB_PREFIX_.'category` ca ON (cp.`id_category` = ca.`id_category` AND ca.`active` = 1)' : '')
+                ->join($activeCategory ? 'INNER JOIN `' . _DB_PREFIX_ . 'category` ca ON (cp.`id_category` = ca.`id_category` AND ca.`active` = 1)' : '')
                 ->where('p.`id_product` = cp.`id_product`')
-                ->where('cg.`id_group` '.$sqlGroups);
+                ->where('cg.`id_group` ' . $sqlGroups);
             $result = $connection->getArray(
                 (new DbQuery())
                     ->select('p.`id_product`')
                     ->from('product', 'p')
                     ->join(Shop::addSqlAssociation('product', 'p'))
-                    ->where('p.`id_manufacturer` = '.(int) $idManufacturer)
+                    ->where('p.`id_manufacturer` = ' . (int) $idManufacturer)
                     ->where($active ? 'product_shop.`active` = 1' : '')
                     ->where($front ? 'product_shop.`visibility` IN ("both", "catalog")' : '')
-                    ->where('EXISTS ('.$categoryGroupSql->build().')')
+                    ->where('EXISTS (' . $categoryGroupSql->build() . ')')
             );
 
             return (int) count($result);
         }
         if (strpos($orderBy, '.') > 0) {
             $orderBy = explode('.', $orderBy);
-            $orderBy = pSQL($orderBy[0]).'.`'.pSQL($orderBy[1]).'`';
+            $orderBy = pSQL($orderBy[0]) . '.`' . pSQL($orderBy[1]) . '`';
         }
 
         if ($orderBy == 'price') {
@@ -428,22 +431,22 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
             ->select(Combination::isFeatureActive() ? 'product_attribute_shop.`minimal_quantity` AS `product_attribute_minimal_quantity`, IFNULL(product_attribute_shop.`id_product_attribute`,0) AS `id_product_attribute`' : '')
             ->select('pl.`description`, pl.`description_short`, pl.`link_rewrite`, pl.`meta_description`, pl.`meta_keywords`')
             ->select('pl.`meta_title`, pl.`name`, pl.`available_now`, pl.`available_later`, image_shop.`id_image` AS `id_image`, il.`legend`, m.`name` AS `manufacturer_name`')
-            ->select('DATEDIFF(product_shop.`date_add`, DATE_SUB("'.date('Y-m-d').' 00:00:00", INTERVAL '.(Validate::isUnsignedInt(Configuration::get('PS_NB_DAYS_NEW_PRODUCT')) ? (int) Configuration::get('PS_NB_DAYS_NEW_PRODUCT') : 20).' DAY)) > 0 AS `new`')
+            ->select('DATEDIFF(product_shop.`date_add`, DATE_SUB("' . date('Y-m-d') . ' 00:00:00", INTERVAL ' . (Validate::isUnsignedInt(Configuration::get('PS_NB_DAYS_NEW_PRODUCT')) ? (int) Configuration::get('PS_NB_DAYS_NEW_PRODUCT') : 20) . ' DAY)) > 0 AS `new`')
             ->from('product', 'p')
             ->join(Shop::addSqlAssociation('product', 'p'))
-            ->join(Combination::isFeatureActive() ? 'LEFT JOIN `'._DB_PREFIX_.'product_attribute_shop` product_attribute_shop ON (p.`id_product` = product_attribute_shop.`id_product` AND product_attribute_shop.`default_on` = 1 AND product_attribute_shop.`id_shop` = '.(int) $context->shop->id.')' : '')
+            ->join(Combination::isFeatureActive() ? 'LEFT JOIN `' . _DB_PREFIX_ . 'product_attribute_shop` product_attribute_shop ON (p.`id_product` = product_attribute_shop.`id_product` AND product_attribute_shop.`default_on` = 1 AND product_attribute_shop.`id_shop` = ' . (int) $context->shop->id . ')' : '')
             ->leftJoin('product_lang', 'pl', 'p.`id_product` = pl.`id_product`')
-            ->leftJoin('image_shop', 'image_shop', 'image_shop.`id_product` = p.`id_product` AND image_shop.cover=1 AND image_shop.id_shop='.(int) $context->shop->id)
-            ->leftJoin('image_lang', 'il', 'image_shop.`id_image` = il.`id_image` AND il.`id_lang` = '.(int) $idLang)
+            ->leftJoin('image_shop', 'image_shop', 'image_shop.`id_product` = p.`id_product` AND image_shop.cover=1 AND image_shop.id_shop=' . (int) $context->shop->id)
+            ->leftJoin('image_lang', 'il', 'image_shop.`id_image` = il.`id_image` AND il.`id_lang` = ' . (int) $idLang)
             ->leftJoin('manufacturer', 'm', 'm.`id_manufacturer` = p.`id_manufacturer`')
             ->join(Product::sqlStock('p', 0))
-            ->where('pl.`id_lang` = '.(int) $idLang.Shop::addSqlRestrictionOnLang('pl'));
+            ->where('pl.`id_lang` = ' . (int) $idLang . Shop::addSqlRestrictionOnLang('pl'));
 
         if (Group::isFeatureActive() || $activeCategory) {
             $sql->innerJoin('category_product', 'cp', 'p.`id_product` = cp.`id_product`');
             if (Group::isFeatureActive()) {
                 $sql->innerJoin('category_group', 'cg', 'cp.`id_category` = cg.`id_category`');
-                $sql->where('cg.`id_group` '.$sqlGroups);
+                $sql->where('cg.`id_group` ' . $sqlGroups);
             }
             if ($activeCategory) {
                 $sql->innerJoin('category', 'ca', 'cp.`id_category` = ca.`id_category`');
@@ -451,11 +454,11 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
             }
         }
 
-        $sql->where('p.`id_manufacturer` = '.(int) $idManufacturer);
+        $sql->where('p.`id_manufacturer` = ' . (int) $idManufacturer);
         $sql->where($active ? '`product_shop`.`active` = 1' : '');
         $sql->where($front ? '`product_shop`.`visibility` IN ("both", "catalog")' : '');
         $sql->groupBy('p.`id_product`');
-        $sql->orderBy($aliasWithDot.'`'.bqSQL($orderBy).'` '.pSQL($orderWay));
+        $sql->orderBy($aliasWithDot . '`' . bqSQL($orderBy) . '` ' . pSQL($orderWay));
         $sql->limit((int) $n, ((int) $p - 1) * (int) $n);
         $result = $connection->getArray($sql);
 
@@ -486,7 +489,7 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
             (new DbQuery())
                 ->select('`id_manufacturer`')
                 ->from('manufacturer', 'm')
-                ->where('m.`id_manufacturer` = '.(int) $idManufacturer)
+                ->where('m.`id_manufacturer` = ' . (int) $idManufacturer)
         );
 
         return isset($row['id_manufacturer']);
@@ -568,8 +571,8 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
                 ->from('product', 'p')
                 ->join(Shop::addSqlAssociation('product', 'p'))
                 ->leftJoin('product_lang', 'pl', 'p.`id_product` = pl.`id_product`')
-                ->where('pl.`id_lang` = '.(int) $idLang.$context->shop->addSqlRestrictionOnLang('pl'))
-                ->where('p.`id_manufacturer` = '.(int) $this->id)
+                ->where('pl.`id_lang` = ' . (int) $idLang . $context->shop->addSqlRestrictionOnLang('pl'))
+                ->where('p.`id_manufacturer` = ' . (int) $this->id)
                 ->where($front ? 'product_shop.`visibility` IN ("both", "catalog")' : '')
         );
     }
@@ -590,8 +593,8 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
                 ->from('address', 'a')
                 ->leftJoin('country_lang', 'cl', 'cl.`id_country` = a.`id_country`')
                 ->leftJoin('state', 's', 's.`id_state` = a.`id_state`')
-                ->where('cl.`id_lang` = '.(int) $idLang)
-                ->where('`id_manufacturer` = '.(int) $this->id)
+                ->where('cl.`id_lang` = ' . (int) $idLang)
+                ->where('`id_manufacturer` = ' . (int) $this->id)
                 ->where('a.`deleted` = 0')
         );
     }
@@ -609,7 +612,7 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
                 ->select('a.`id_address` AS `id`')
                 ->from('address', 'a')
                 ->join(Shop::addSqlAssociation('manufacturer', 'a'))
-                ->where('a.`id_manufacturer` = '.(int) $this->id)
+                ->where('a.`id_manufacturer` = ' . (int) $this->id)
                 ->where('a.`deleted` = 0')
         );
     }
@@ -636,7 +639,7 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
             [
                 'id_manufacturer' => 0,
             ],
-            '`id_manufacturer` = '.(int) $this->id.' AND `deleted` = 0'
+            '`id_manufacturer` = ' . (int) $this->id . ' AND `deleted` = 0'
         );
 
         $result2 = true;
@@ -644,15 +647,15 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
             $result2 = $conn->update(
                 'address',
                 [
-                    'id_customer'     => 0,
-                    'id_supplier'     => 0,
+                    'id_customer' => 0,
+                    'id_supplier' => 0,
                     'id_manufacturer' => (int) $this->id,
                 ],
-                '`id_address` IN('.implode(',', $ids).') AND `deleted` = 0'
+                '`id_address` IN(' . implode(',', $ids) . ') AND `deleted` = 0'
             );
         }
 
-        return ($result1 && $result2);
+        return $result1 && $result2;
     }
 
     /**
@@ -682,11 +685,11 @@ class ManufacturerCore extends ObjectModel implements InitializationCallback
             return 0;
         }
 
-        return (int)Db::readOnly()->getValue(
+        return (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_address`')
                 ->from('address')
-                ->where('`id_manufacturer` = '.(int) $this->id)
+                ->where('`id_manufacturer` = ' . (int) $this->id)
         );
     }
 

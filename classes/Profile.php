@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -36,10 +37,10 @@ use CoreUpdater\TableSchema;
  */
 class ProfileCore extends ObjectModel
 {
-    const PERMISSION_VIEW = 'view';
-    const PERMISSION_ADD = 'add';
-    const PERMISSION_EDIT = 'edit';
-    const PERMISSION_DELETE = 'delete';
+    public const PERMISSION_VIEW = 'view';
+    public const PERMISSION_ADD = 'add';
+    public const PERMISSION_EDIT = 'edit';
+    public const PERMISSION_DELETE = 'delete';
 
     /**
      * @var array
@@ -60,10 +61,10 @@ class ProfileCore extends ObjectModel
      * @var array Object model definition
      */
     public static $definition = [
-        'table'     => 'profile',
-        'primary'   => 'id_profile',
+        'table' => 'profile',
+        'primary' => 'id_profile',
         'multilang' => true,
-        'fields'    => [
+        'fields' => [
             /* Lang fields */
             'name' => ['type' => self::TYPE_STRING, 'lang' => true, 'validate' => 'isGenericName', 'required' => true, 'size' => 128],
         ],
@@ -86,7 +87,7 @@ class ProfileCore extends ObjectModel
                 ->select('p.`id_profile`, `name`')
                 ->from('profile', 'p')
                 ->leftJoin('profile_lang', 'pl', 'p.`id_profile` = pl.`id_profile`')
-                ->where('`id_lang` = '.(int) $idLang)
+                ->where('`id_lang` = ' . (int) $idLang)
                 ->orderBy('`id_profile` ASC')
         );
     }
@@ -113,8 +114,8 @@ class ProfileCore extends ObjectModel
                 ->select('`name`')
                 ->from('profile', 'p')
                 ->leftJoin('profile_lang', 'pl', 'p.`id_profile` = pl.`id_profile`')
-                ->where('p.`id_profile` = '.(int) $idProfile)
-                ->where('pl.`id_lang` = '.(int) $idLang)
+                ->where('p.`id_profile` = ' . (int) $idProfile)
+                ->where('pl.`id_lang` = ' . (int) $idLang)
         );
     }
 
@@ -129,7 +130,7 @@ class ProfileCore extends ObjectModel
      */
     public static function getProfileAccess($idProfile, $idTab)
     {
-        $idProfile = (int)$idProfile;
+        $idProfile = (int) $idProfile;
         $accesses = Profile::getProfileAccesses($idProfile);
 
         if (isset($accesses[$idTab]) && is_array($accesses[$idTab])) {
@@ -137,14 +138,15 @@ class ProfileCore extends ObjectModel
         }
 
         $perm = static::formatPermissionValue($idProfile === _PS_ADMIN_PROFILE_);
+
         return [
             'id_profile' => $idProfile,
-            'id_tab'     => $idTab,
+            'id_tab' => $idTab,
             'class_name' => '',
-            'view'       => $perm,
-            'add'        => $perm,
-            'edit'       => $perm,
-            'delete'     => $perm,
+            'view' => $perm,
+            'add' => $perm,
+            'edit' => $perm,
+            'delete' => $perm,
         ];
     }
 
@@ -161,7 +163,7 @@ class ProfileCore extends ObjectModel
      */
     public static function getProfilePermission($idProfile, $group, $permission)
     {
-        $idProfile = (int)$idProfile;
+        $idProfile = (int) $idProfile;
         if (! isset(static::$_cache_permissions[$idProfile])) {
             static::$_cache_permissions[$idProfile] = static::loadPermissions($idProfile);
         }
@@ -182,7 +184,7 @@ class ProfileCore extends ObjectModel
         $data = Db::readOnly()->getArray(
             (new DbQuery())
                 ->from('profile_permission')
-                ->where("id_profile = " . (int)$idProfile)
+                ->where('id_profile = ' . (int) $idProfile)
         );
 
         $result = [];
@@ -195,6 +197,7 @@ class ProfileCore extends ObjectModel
             }
             $result[$group][$permission] = $level;
         }
+
         return $result;
     }
 
@@ -209,7 +212,7 @@ class ProfileCore extends ObjectModel
      */
     public static function getProfileAccesses($idProfile, $type = 'id_tab')
     {
-        $idProfile = (int)$idProfile;
+        $idProfile = (int) $idProfile;
         if (!in_array($type, ['id_tab', 'class_name'])) {
             return false;
         }
@@ -224,12 +227,12 @@ class ProfileCore extends ObjectModel
                 foreach (Tab::getTabs(Context::getContext()->language->id) as $tab) {
                     static::$_cache_accesses[$idProfile][$type][$tab[$type]] = [
                         'id_profile' => _PS_ADMIN_PROFILE_,
-                        'id_tab'     => $tab['id_tab'],
+                        'id_tab' => $tab['id_tab'],
                         'class_name' => $tab['class_name'],
-                        'view'       => static::formatPermissionValue(true),
-                        'add'        => static::formatPermissionValue(true),
-                        'edit'       => static::formatPermissionValue(true),
-                        'delete'     => static::formatPermissionValue(true),
+                        'view' => static::formatPermissionValue(true),
+                        'add' => static::formatPermissionValue(true),
+                        'edit' => static::formatPermissionValue(true),
+                        'delete' => static::formatPermissionValue(true),
                     ];
                 }
             } else {
@@ -238,7 +241,7 @@ class ProfileCore extends ObjectModel
                         ->select('*')
                         ->from('access', 'a')
                         ->leftJoin('tab', 't', 't.`id_tab` = a.`id_tab`')
-                        ->where('`id_profile` = '.$idProfile)
+                        ->where('`id_profile` = ' . $idProfile)
                 );
 
                 foreach ($result as $row) {
@@ -246,7 +249,8 @@ class ProfileCore extends ObjectModel
                     $row[static::PERMISSION_ADD] = static::formatPermissionValue($row['add']);
                     $row[static::PERMISSION_EDIT] = static::formatPermissionValue($row['edit']);
                     $row[static::PERMISSION_DELETE] = static::formatPermissionValue($row['delete']);
-                    static::$_cache_accesses[$idProfile][$type][$row[$type]] = $row;
+                    $cacheKey = $row[$type] ?? '';
+                    static::$_cache_accesses[$idProfile][$type][$cacheKey] = $row;
                 }
             }
         }
@@ -266,12 +270,12 @@ class ProfileCore extends ObjectModel
     {
         if (parent::add($autoDate, true)) {
             $conn = Db::getInstance();
-            $result = $conn->execute('INSERT INTO '._DB_PREFIX_.'access (SELECT '.(int) $this->id.', id_tab, 0, 0, 0, 0 FROM '._DB_PREFIX_.'tab)');
+            $result = $conn->execute('INSERT INTO ' . _DB_PREFIX_ . 'access (SELECT ' . (int) $this->id . ', id_tab, 0, 0, 0, 0 FROM ' . _DB_PREFIX_ . 'tab)');
             $result = $conn->execute(
                 '
-				INSERT INTO '._DB_PREFIX_.'module_access
+				INSERT INTO ' . _DB_PREFIX_ . 'module_access
 				(`id_profile`, `id_module`, `configure`, `view`, `uninstall`)
-				(SELECT '.(int) $this->id.', id_module, 0, 1, 0 FROM '._DB_PREFIX_.'module)
+				(SELECT ' . (int) $this->id . ', id_module, 0, 1, 0 FROM ' . _DB_PREFIX_ . 'module)
 			'
             ) && $result;
 
@@ -291,10 +295,11 @@ class ProfileCore extends ObjectModel
     {
         if (parent::delete()) {
             $conn = Db::getInstance();
-            return (
-                $conn->delete('access', '`id_profile` = '.(int) $this->id) &&
-                $conn->delete('module_access', '`id_profile` = '.(int) $this->id)
-            );
+
+            return
+                $conn->delete('access', '`id_profile` = ' . (int) $this->id) &&
+                $conn->delete('module_access', '`id_profile` = ' . (int) $this->id)
+            ;
         }
 
         return false;
@@ -333,12 +338,12 @@ class ProfileCore extends ObjectModel
      */
     public static function isValidPermission($permission)
     {
-       return in_array((string)$permission, [
-           Profile::PERMISSION_VIEW,
-           Profile::PERMISSION_DELETE,
-           Profile::PERMISSION_ADD,
-           Profile::PERMISSION_EDIT,
-       ]);
+        return in_array((string) $permission, [
+            Profile::PERMISSION_VIEW,
+            Profile::PERMISSION_DELETE,
+            Profile::PERMISSION_ADD,
+            Profile::PERMISSION_EDIT,
+        ]);
     }
 
     /**
