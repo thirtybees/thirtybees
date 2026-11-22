@@ -858,7 +858,7 @@ class AdminOrdersControllerCore extends AdminController
                     $amount = 0;
                     $orderDetailList = [];
                     $fullQuantityList = [];
-                    // Missing field (other callers) keeps the old behaviour: notify
+                    // not posted by older templates or modules: keep sending the email
                     $notifyCustomer = Tools::getBoolValue('notifyCustomerRefund', true);
 
                     foreach ($refunds as $idOrderDetail => $providedAmountStr) {
@@ -949,7 +949,8 @@ class AdminOrdersControllerCore extends AdminController
                                 [
                                     'order' => $order,
                                     'productList' => $orderDetailList,
-                                    'qtyList' => $fullQuantityList
+                                    'qtyList' => $fullQuantityList,
+                                    'notifyCustomer' => $notifyCustomer,
                                 ], $order->id_shop
                             );
                             $customer = new Customer((int) ($order->id_customer));
@@ -1072,9 +1073,9 @@ class AdminOrdersControllerCore extends AdminController
             }
         } /* Cancel product from order */
         elseif (Tools::isSubmit('cancelProduct') && isset($order)) {
-            // Missing field (other callers) keeps the old behaviour: notify
-            $notifyCustomer = Tools::getBoolValue('notifyCustomer', true);
             if ($this->hasDeletePermission()) {
+                // not posted by older templates or modules: keep sending the email
+                $notifyCustomer = Tools::getBoolValue('notifyCustomer', true);
                 if (!Tools::isSubmit('id_order_detail') && !Tools::isSubmit('id_customization')) {
                     $this->errors[] = Tools::displayError('You must select a product.');
                 } elseif (!Tools::isSubmit('cancelQuantity') && !Tools::isSubmit('cancelCustomizationQuantity')) {
@@ -1231,7 +1232,8 @@ class AdminOrdersControllerCore extends AdminController
                                     [
                                         'order' => $order,
                                         'productList' => $fullProductList,
-                                        'qtyList' => $fullQuantityList
+                                        'qtyList' => $fullQuantityList,
+                                        'notifyCustomer' => $notifyCustomer,
                                     ], $order->id_shop
                                 );
                                 if ($notifyCustomer) {

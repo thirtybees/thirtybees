@@ -415,10 +415,10 @@ function toggleShippingCost() {
   generateCreditSlip = $('#generateCreditSlip').attr("checked");
   if (generateDiscount != 'checked' && generateCreditSlip != 'checked') {
     $('#spanShippingBack input[type=checkbox]').attr("checked", false);
-    $('#spanShippingBack').css('display', 'none');
+    $('#spanShippingBack, #spanNotifyCustomer').css('display', 'none');
   }
   else {
-    $('#spanShippingBack').css('display', 'block');
+    $('#spanShippingBack, #spanNotifyCustomer').css('display', 'block');
   }
 }
 

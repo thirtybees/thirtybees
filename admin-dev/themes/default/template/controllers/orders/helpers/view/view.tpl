@@ -1197,7 +1197,7 @@
                     {l s='Generate a voucher'}
                   </label>
                 </p>
-                <p class="checkbox">
+                <p class="checkbox" id="spanNotifyCustomer" style="display:none;">
                   <label for="notifyCustomer">
                     <input type="hidden" name="notifyCustomer" value="0"/>
                     <input type="checkbox" id="notifyCustomer" name="notifyCustomer" value="1" checked="checked"/>
