@@ -1197,6 +1197,13 @@
                     {l s='Generate a voucher'}
                   </label>
                 </p>
+                <p class="checkbox">
+                  <label for="notifyCustomer">
+                    <input type="hidden" name="notifyCustomer" value="0"/>
+                    <input type="checkbox" id="notifyCustomer" name="notifyCustomer" value="1" checked="checked"/>
+                    {l s='Notify the customer by email'}
+                  </label>
+                </p>
                 <p class="checkbox" id="spanShippingBack" style="display:none;">
                   <label for="shippingBack">
                     <input type="checkbox" id="shippingBack" name="shippingBack"/>
@@ -1251,6 +1258,13 @@
               <label for="generateDiscountRefund">
                 <input type="checkbox" id="generateDiscountRefund" name="generateDiscountRefund" onclick="toggleShippingCost()"/>
                 {l s='Generate a voucher'}
+              </label>
+            </p>
+            <p class="checkbox">
+              <label for="notifyCustomerRefund">
+                <input type="hidden" name="notifyCustomerRefund" value="0"/>
+                <input type="checkbox" id="notifyCustomerRefund" name="notifyCustomerRefund" value="1" checked="checked"/>
+                {l s='Notify the customer by email'}
               </label>
             </p>
             {if $order->total_discounts_tax_excl > 0 || $order->total_discounts_tax_incl > 0}

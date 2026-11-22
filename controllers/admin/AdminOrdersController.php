@@ -858,6 +858,8 @@ class AdminOrdersControllerCore extends AdminController
                     $amount = 0;
                     $orderDetailList = [];
                     $fullQuantityList = [];
+                    // Missing field (other callers) keeps the old behaviour: notify
+                    $notifyCustomer = Tools::getBoolValue('notifyCustomerRefund', true);
 
                     foreach ($refunds as $idOrderDetail => $providedAmountStr) {
                         $idOrderDetail = (int)$idOrderDetail;
@@ -956,21 +958,23 @@ class AdminOrdersControllerCore extends AdminController
                             $params['{id_order}'] = $order->id;
                             $params['{order_name}'] = $order->getUniqReference();
                             $params['{credit_slips_url}'] = $this->context->link->getPageLink('order-slip');
-                            @Mail::Send(
-                                (int) $order->id_lang,
-                                'credit_slip',
-                                Mail::l('New credit slip regarding your order', (int) $order->id_lang),
-                                $params,
-                                $customer->email,
-                                $customer->firstname.' '.$customer->lastname,
-                                null,
-                                null,
-                                null,
-                                null,
-                                _PS_MAIL_DIR_,
-                                true,
-                                (int) $order->id_shop
-                            );
+                            if ($notifyCustomer) {
+                                @Mail::Send(
+                                    (int) $order->id_lang,
+                                    'credit_slip',
+                                    Mail::l('New credit slip regarding your order', (int) $order->id_lang),
+                                    $params,
+                                    $customer->email,
+                                    $customer->firstname.' '.$customer->lastname,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    _PS_MAIL_DIR_,
+                                    true,
+                                    (int) $order->id_shop
+                                );
+                            }
                         }
 
                         foreach ($orderDetailList as &$product) {
@@ -1028,21 +1032,23 @@ class AdminOrdersControllerCore extends AdminController
                                     $params['{order_name}'] = $order->getUniqReference();
                                     $params['{voucher_amount}'] = Tools::displayPrice($cartRule->reduction_amount, $currency, false);
                                     $params['{voucher_num}'] = $cartRule->code;
-                                    @Mail::Send(
-                                        (int) $order->id_lang,
-                                        'voucher',
-                                        sprintf(Mail::l('New voucher for your order #%s', (int) $order->id_lang), $order->reference),
-                                        $params,
-                                        $customer->email,
-                                        $customer->firstname.' '.$customer->lastname,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        _PS_MAIL_DIR_,
-                                        true,
-                                        (int) $order->id_shop
-                                    );
+                                    if ($notifyCustomer) {
+                                        @Mail::Send(
+                                            (int) $order->id_lang,
+                                            'voucher',
+                                            sprintf(Mail::l('New voucher for your order #%s', (int) $order->id_lang), $order->reference),
+                                            $params,
+                                            $customer->email,
+                                            $customer->firstname.' '.$customer->lastname,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            _PS_MAIL_DIR_,
+                                            true,
+                                            (int) $order->id_shop
+                                        );
+                                    }
                                 }
                             }
                         }
@@ -1066,6 +1072,8 @@ class AdminOrdersControllerCore extends AdminController
             }
         } /* Cancel product from order */
         elseif (Tools::isSubmit('cancelProduct') && isset($order)) {
+            // Missing field (other callers) keeps the old behaviour: notify
+            $notifyCustomer = Tools::getBoolValue('notifyCustomer', true);
             if ($this->hasDeletePermission()) {
                 if (!Tools::isSubmit('id_order_detail') && !Tools::isSubmit('id_customization')) {
                     $this->errors[] = Tools::displayError('You must select a product.');
@@ -1226,21 +1234,23 @@ class AdminOrdersControllerCore extends AdminController
                                         'qtyList' => $fullQuantityList
                                     ], $order->id_shop
                                 );
-                                @Mail::Send(
-                                    (int) $order->id_lang,
-                                    'credit_slip',
-                                    Mail::l('New credit slip regarding your order', (int) $order->id_lang),
-                                    $params,
-                                    $customer->email,
-                                    $customer->firstname.' '.$customer->lastname,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    _PS_MAIL_DIR_,
-                                    true,
-                                    (int) $order->id_shop
-                                );
+                                if ($notifyCustomer) {
+                                    @Mail::Send(
+                                        (int) $order->id_lang,
+                                        'credit_slip',
+                                        Mail::l('New credit slip regarding your order', (int) $order->id_lang),
+                                        $params,
+                                        $customer->email,
+                                        $customer->firstname.' '.$customer->lastname,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        _PS_MAIL_DIR_,
+                                        true,
+                                        (int) $order->id_shop
+                                    );
+                                }
                             }
                         }
 
@@ -1301,21 +1311,23 @@ class AdminOrdersControllerCore extends AdminController
                                     $currency = $this->context->currency;
                                     $params['{voucher_amount}'] = Tools::displayPrice($cartRule->reduction_amount, $currency, false);
                                     $params['{voucher_num}'] = $cartRule->code;
-                                    @Mail::Send(
-                                        (int) $order->id_lang,
-                                        'voucher',
-                                        sprintf(Mail::l('New voucher for your order #%s', (int) $order->id_lang), $order->reference),
-                                        $params,
-                                        $customer->email,
-                                        $customer->firstname.' '.$customer->lastname,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        _PS_MAIL_DIR_,
-                                        true,
-                                        (int) $order->id_shop
-                                    );
+                                    if ($notifyCustomer) {
+                                        @Mail::Send(
+                                            (int) $order->id_lang,
+                                            'voucher',
+                                            sprintf(Mail::l('New voucher for your order #%s', (int) $order->id_lang), $order->reference),
+                                            $params,
+                                            $customer->email,
+                                            $customer->firstname.' '.$customer->lastname,
+                                            null,
+                                            null,
+                                            null,
+                                            null,
+                                            _PS_MAIL_DIR_,
+                                            true,
+                                            (int) $order->id_shop
+                                        );
+                                    }
                                 }
                             }
                         }
