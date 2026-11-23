@@ -414,15 +414,33 @@ class CustomerCore extends ObjectModel
      */
     public static function searchByName($query, $limit = null)
     {
-        $sqlBase = 'SELECT *
-				FROM `'._DB_PREFIX_.'customer`';
-        $sql = '('.$sqlBase.' WHERE `email` LIKE \'%'.pSQL($query).'%\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
-        $sql .= ' UNION ('.$sqlBase.' WHERE `id_customer` = '.(int) $query.' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
-        $sql .= ' UNION ('.$sqlBase.' WHERE `lastname` LIKE \'%'.pSQL($query).'%\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
-        $sql .= ' UNION ('.$sqlBase.' WHERE `firstname` LIKE \'%'.pSQL($query).'%\' '.Shop::addSqlRestriction(Shop::SHARE_CUSTOMER).')';
+        $query = trim((string)$query);
+        if (strlen($query) === 0) {
+            return [];
+        }
+
+        $conditions = [
+            '`email` LIKE \'%'.pSQL($query).'%\'',
+            '`lastname` LIKE \'%'.pSQL($query).'%\'',
+            '`firstname` LIKE \'%'.pSQL($query).'%\'',
+        ];
+
+        if (Validate::isUnsignedInt($query)) {
+            $conditions[] = '`id_customer` = '.(int) $query;
+        }
+
+        if (Configuration::get('PS_B2B_ENABLE')) {
+            $conditions[] = '`company` LIKE \'%'.pSQL($query).'%\'';
+        }
+
+        $sql = (new DbQuery())
+            ->select('*')
+            ->from('customer', 'c')
+            ->addCurrentShopRestriction('c', Shop::SHARE_CUSTOMER)
+            ->where(implode(' OR ', $conditions));
 
         if ($limit) {
-            $sql .= ' LIMIT 0, '.(int) $limit;
+            $sql->limit($limit);
         }
 
         return Db::readOnly()->getArray($sql);

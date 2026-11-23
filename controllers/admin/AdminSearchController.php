@@ -467,18 +467,24 @@ class AdminSearchControllerCore extends AdminController
      */
     protected function initCustomerList()
     {
-        $this->fields_list['customers'] = ([
+        $fields = [
             'id_customer' => ['title' => $this->l('ID'), 'align' => 'center', 'width' => 25],
             'is_guest'    => ['title' => $this->l('Type'), 'align' => 'center', 'callback' => 'renderCustomerType'],
             'id_gender'   => ['title' => $this->l('Social title'), 'align' => 'center', 'icon' => Gender::getIconList(), 'width' => 25],
             'firstname'   => ['title' => $this->l('First Name'), 'align' => 'left', 'width' => 150],
             'lastname'    => ['title' => $this->l('Name'), 'align' => 'left', 'width' => 'auto'],
+            'company'     => ['title' => $this->l('Company'), 'align' => 'left', 'width' => 'auto'],
             'email'       => ['title' => $this->l('Email address'), 'align' => 'left', 'width' => 250],
             'birthday'    => ['title' => $this->l('Birth date'), 'align' => 'center', 'type' => 'date', 'width' => 75],
             'date_add'    => ['title' => $this->l('Registration date'), 'align' => 'center', 'type' => 'date', 'width' => 75],
             'orders'      => ['title' => $this->l('Orders'), 'align' => 'center', 'width' => 50],
             'active'      => ['title' => $this->l('Enabled'), 'align' => 'center', 'active' => 'status', 'type' => 'bool', 'width' => 25],
-        ]);
+        ];
+        if (! Configuration::get('PS_B2B_ENABLE')) {
+            unset($fields['company']);
+        }
+
+        $this->fields_list['customers'] = $fields;
     }
 
     /**
