@@ -359,13 +359,22 @@ abstract class ModuleCore
      */
     public static function upgradeModuleVersion($name, $version)
     {
-        return Db::getInstance()->update(
-            'module',
-            [
-                'version' => pSQL($version),
-            ],
-            '`name` = \''.pSQL($name).'\''
+        $conn = Db::getInstance();
+        $nameEscaped = pSQL($name);
+        $data = $conn->getRow((new DbQuery())
+            ->select('version, id_module')
+            ->from('module')
+            ->where('name = "'.$nameEscaped.'"')
         );
+        if ($data) {
+            $oldVersion = $data['version'];
+            $moduleId = (int)$data['id_module'];
+            PrestaShopLogger::addLog("Module $name updated from '$oldVersion' to '$version'", 1, null, Module::class, $moduleId, true);
+            return $conn->update('module', ['version' => pSQL($version)], 'name = "' . $nameEscaped . '"');
+        } else {
+            PrestaShopLogger::addLog("Failed to upgrade module version: module '$name' not found");
+            return false;
+        }
     }
 
     /**
