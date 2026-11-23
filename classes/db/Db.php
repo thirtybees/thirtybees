@@ -218,13 +218,21 @@ class DbCore implements ReadOnlyConnection
             $dsn .= 'host=' . $host;
         }
 
-        return new PDO($dsn, $user, $password, [
+        $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_SILENT,
             PDO::ATTR_TIMEOUT => $timeout,
-            PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
             PDO::ATTR_STRINGIFY_FETCHES => _TB_DB_STRINGIFY_FETCHES_,
-            PDO::MYSQL_ATTR_MULTI_STATEMENTS => _TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_,
-        ]);
+        ];
+        // PHP 8.5 deprecated PDO::MYSQL_ATTR_* constants in favor of \Pdo\Mysql::ATTR_*.
+        // The new namespaced class exists from PHP 8.4; fall back for PHP <= 8.3.
+        if (class_exists('\\Pdo\\Mysql', false)) {
+            $options[\Pdo\Mysql::ATTR_USE_BUFFERED_QUERY] = true;
+            $options[\Pdo\Mysql::ATTR_MULTI_STATEMENTS] = _TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_;
+        } else {
+            $options[PDO::MYSQL_ATTR_USE_BUFFERED_QUERY] = true;
+            $options[PDO::MYSQL_ATTR_MULTI_STATEMENTS] = _TB_DB_ALLOW_MULTI_STATEMENTS_QUERIES_;
+        }
+        return new PDO($dsn, $user, $password, $options);
     }
 
     /**
