@@ -1229,12 +1229,13 @@ class DispatcherCore
             $idShop = (int) Context::getContext()->shop->id;
         }
 
+        $routeId = trim($routeId ?? '');
+
         if (!isset($this->routes[$idShop])) {
             $this->loadRoutes($idShop);
         }
 
         if (!isset($this->routes[$idShop][$idLang][$routeId])) {
-            $routeId = trim($routeId ?? '');
             switch ($routeId) {
                 case '':
                     return '';
