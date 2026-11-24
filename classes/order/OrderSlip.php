@@ -53,6 +53,7 @@ class OrderSlipCore extends ObjectModel
             'shipping_cost_amount'    => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbNullable' => false],
             'partial'                 => ['type' => self::TYPE_INT, 'dbType' => 'tinyint(1)', 'dbNullable' => false],
             'order_slip_type'         => ['type' => self::TYPE_INT, 'validate' => 'isInt', 'size' => 1, 'dbDefault' => '0'],
+            'refund_amount'           => ['type' => self::TYPE_PRICE, 'validate' => 'isPrice', 'dbNullable' => true, 'allow_null' => true],
             'date_add'                => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
             'date_upd'                => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
         ],
@@ -93,6 +94,12 @@ class OrderSlipCore extends ObjectModel
     public $date_upd;
     /** @var int */
     public $order_slip_type = 0;
+    /**
+     * @var float|null Amount given back to the customer, tax and shipping included, in the order currency,
+     *                 after deducting vouchers or as chosen by the merchant. Null when not known (slips created
+     *                 before this field existed, or by OrderSlip::createPartialOrderSlip()).
+     */
+    public $refund_amount = null;
 
     /**
      * @var array Webservice parameters
@@ -273,7 +280,8 @@ class OrderSlipCore extends ObjectModel
      * @param array $productList List of arrays with product descriptions.
      * @param float|bool $shippingCost Shipping costs to be refunded. Explicit shipping costs amount can be passed,
      *                                 or boolean value to indicate if total shipping costs should be refunded
-     * @param int $amount
+     * @param float $amount Vouchers deducted from the products refund (tax incl), or, when $amountChoosen,
+     *                      the amount chosen by the merchant for the products (tax incl, shipping comes on top)
      * @param bool $amountChoosen
      * @param bool $addTax True if prices are without tax, else false.
      *
@@ -370,12 +378,16 @@ class OrderSlipCore extends ObjectModel
             $orderSlip->amount = $orderSlip->total_products_tax_incl;
         }
 
-        if ((float) $amount && !$amountChoosen) {
-            $orderSlip->order_slip_type = 1;
+        // 1 = vouchers deducted, 2 = amount chosen by the merchant
+        if ((float) $amount) {
+            $orderSlip->order_slip_type = $amountChoosen ? 2 : 1;
         }
-        if (((float) $amount && $amountChoosen) || $orderSlip->shipping_cost_amount > 0) {
-            $orderSlip->order_slip_type = 2;
-        }
+
+        // what the customer gets back: the chosen amount, or the products minus the deducted vouchers; plus shipping
+        $refundedProducts = $amountChoosen
+            ? (float)$amount
+            : $orderSlip->total_products_tax_incl - (float)$amount;
+        $orderSlip->refund_amount = Tools::roundPrice($refundedProducts + $orderSlip->total_shipping_tax_incl);
 
         if (!$orderSlip->add()) {
             return false;
