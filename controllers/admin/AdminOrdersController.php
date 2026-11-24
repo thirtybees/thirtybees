@@ -1195,11 +1195,12 @@ class AdminOrdersControllerCore extends AdminController
                         // Generate credit slip
                         if (Tools::isSubmit('generateCreditSlip') && !count($this->errors)) {
                             $productList = [];
-                            $amount = $orderDetail->unit_price_tax_incl * $fullQuantityList[$idOrderDetail];
 
+                            // OrderSlip::create() expects the deducted vouchers, or the chosen amount
+                            $amount = 0;
                             $chosen = false;
                             if (Tools::getIntValue('refund_total_voucher_off') === 1) {
-                                $amount -= Tools::getNumberValue('order_discount_price');
+                                $amount = Tools::getNumberValue('order_discount_price');
                             } elseif (Tools::getIntValue('refund_total_voucher_off') === 2) {
                                 $chosen = true;
                                 $amount = Tools::getNumberValue('refund_total_voucher_choose');
@@ -1210,7 +1211,7 @@ class AdminOrdersControllerCore extends AdminController
                                     'id_order_detail' => $idOrderDetail,
                                     'quantity'        => $fullQuantityList[$idOrderDetail],
                                     'unit_price'      => $orderDetail->unit_price_tax_excl,
-                                    'amount'          => $amount ?? $orderDetail->unit_price_tax_incl * $fullQuantityList[$idOrderDetail],
+                                    'amount'          => $orderDetail->unit_price_tax_incl * $fullQuantityList[$idOrderDetail],
                                 ];
                             }
 
