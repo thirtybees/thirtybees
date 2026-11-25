@@ -227,6 +227,8 @@ class GroupCore extends ObjectModel
      */
     public static function getReductionByIdGroup($idGroup)
     {
+        $idGroup = (string) $idGroup;
+
         if (!isset(static::$cache_reduction['group'][$idGroup])) {
             static::$cache_reduction['group'][$idGroup] = Db::readOnly()->getValue(
                 (new DbQuery())
@@ -260,7 +262,9 @@ class GroupCore extends ObjectModel
      */
     public static function getPriceDisplayMethod($idGroup)
     {
-        if ( ! isset(static::$group_price_display_method[$idGroup])) {
+        $idGroup = (string) $idGroup;
+
+        if (!isset(static::$group_price_display_method[$idGroup])) {
             static::$group_price_display_method[$idGroup] = (int)Db::readOnly()->getValue(
                 (new DbQuery())
                     ->select('`price_display_method`')

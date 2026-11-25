@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -34,7 +35,6 @@
  */
 class ProductDownloadCore extends ObjectModel
 {
-
     /** @deprecated 1.0.2 This cache is no longer used. */
     protected static $_productIds = [];
 
@@ -61,18 +61,18 @@ class ProductDownloadCore extends ObjectModel
      * @var array Object model definition
      */
     public static $definition = [
-        'table'   => 'product_download',
+        'table' => 'product_download',
         'primary' => 'id_product_download',
-        'fields'  => [
-            'id_product'         => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'unique' => true],
-            'display_filename'   => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 255],
-            'filename'           => ['type' => self::TYPE_STRING, 'validate' => 'isSha1', 'size' => 255],
-            'date_add'           => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
-            'date_expiration'    => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
+        'fields' => [
+            'id_product' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedId', 'required' => true, 'unique' => true],
+            'display_filename' => ['type' => self::TYPE_STRING, 'validate' => 'isGenericName', 'size' => 255],
+            'filename' => ['type' => self::TYPE_STRING, 'validate' => 'isSha1', 'size' => 255],
+            'date_add' => ['type' => self::TYPE_DATE, 'validate' => 'isDate', 'dbNullable' => false],
+            'date_expiration' => ['type' => self::TYPE_DATE, 'validate' => 'isDate'],
             'nb_days_accessible' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt'],
-            'nb_downloadable'    => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '1', 'dbNullable' => true],
-            'active'             => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
-            'is_shareable'       => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
+            'nb_downloadable' => ['type' => self::TYPE_INT, 'validate' => 'isUnsignedInt', 'dbDefault' => '1', 'dbNullable' => true],
+            'active' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '1'],
+            'is_shareable' => ['type' => self::TYPE_BOOL, 'validate' => 'isBool', 'dbDefault' => '0'],
         ],
         'keys' => [
             'product_download' => [
@@ -119,11 +119,13 @@ class ProductDownloadCore extends ObjectModel
      */
     public static function getIdFromIdProduct($idProduct, $active = true)
     {
+        $idProduct = $idProduct ?? '';
+
         $id = (int) Db::readOnly()->getValue(
             (new DbQuery())
                 ->select('`id_product_download`')
                 ->from('product_download')
-                ->where('`id_product` = '.(int) $idProduct)
+                ->where('`id_product` = ' . (int) $idProduct)
                 ->where($active ? '`active` = 1' : '')
                 ->orderBy('`id_product_download` DESC')
         );
@@ -161,7 +163,7 @@ class ProductDownloadCore extends ObjectModel
             (new DbQuery())
                 ->select('`id_product_download`')
                 ->from('product_download')
-                ->where('`filename` = \''.pSQL($filename).'\'')
+                ->where('`filename` = \'' . pSQL($filename) . '\'')
         );
     }
 
@@ -180,7 +182,7 @@ class ProductDownloadCore extends ObjectModel
             (new DbQuery())
                 ->select('`filename`')
                 ->from('product_download')
-                ->where('`id_product` = '.(int) $idProduct)
+                ->where('`id_product` = ' . (int) $idProduct)
                 ->where('`active` = 1')
         );
     }
@@ -200,7 +202,7 @@ class ProductDownloadCore extends ObjectModel
             (new DbQuery())
                 ->select('`display_filename`')
                 ->from('product_download')
-                ->where('`filename` = \''.pSQL($filename).'\'')
+                ->where('`filename` = \'' . pSQL($filename) . '\'')
         );
     }
 
@@ -213,7 +215,7 @@ class ProductDownloadCore extends ObjectModel
     {
         do {
             $filename = sha1(microtime());
-        } while (file_exists(_PS_DOWNLOAD_DIR_.$filename));
+        } while (file_exists(_PS_DOWNLOAD_DIR_ . $filename));
 
         return $filename;
     }
@@ -273,6 +275,7 @@ class ProductDownloadCore extends ObjectModel
             // Retrocompatibility.
             if ($idProductDownload) {
                 $download = new ProductDownload($idProductDownload);
+
                 return $download->delete();
             }
         }
@@ -280,7 +283,7 @@ class ProductDownloadCore extends ObjectModel
         $result = !$this->checkFile();
 
         if (!$result) {
-            $result = @unlink(_PS_DOWNLOAD_DIR_.$this->filename);
+            $result = @unlink(_PS_DOWNLOAD_DIR_ . $this->filename);
             if ($result) {
                 $this->filename = '';
                 $this->display_filename = '';
@@ -302,7 +305,7 @@ class ProductDownloadCore extends ObjectModel
             return false;
         }
 
-        return file_exists(_PS_DOWNLOAD_DIR_.$this->filename);
+        return file_exists(_PS_DOWNLOAD_DIR_ . $this->filename);
     }
 
     /**
@@ -321,11 +324,11 @@ class ProductDownloadCore extends ObjectModel
         Tools::displayAsDeprecated();
 
         $link = $this->getTextLink($admin, $hash);
-        $html = '<a href="'.$link.'" title=""';
+        $html = '<a href="' . $link . '" title=""';
         if ($class) {
-            $html .= ' class="'.$class.'"';
+            $html .= ' class="' . $class . '"';
         }
-        $html .= '>'.$this->display_filename.'</a>';
+        $html .= '>' . $this->display_filename . '</a>';
 
         return $html;
     }
@@ -343,9 +346,9 @@ class ProductDownloadCore extends ObjectModel
     public function getTextLink($admin = true, $hash = false, $params = [])
     {
         if ($admin) {
-            $link = 'get-file-admin.php?file='.$this->filename;
+            $link = 'get-file-admin.php?file=' . $this->filename;
         } else {
-            $params['key'] = $this->filename.'-'.($hash ? $hash : 'orderdetail');
+            $params['key'] = $this->filename . '-' . ($hash ? $hash : 'orderdetail');
             $link = Context::getContext()->link->getPageLink('get-file', null, null, $params);
         }
 
@@ -362,7 +365,7 @@ class ProductDownloadCore extends ObjectModel
         if (!(int) $this->nb_days_accessible) {
             return '0000-00-00 00:00:00';
         }
-        $timestamp = strtotime('+'.(int) $this->nb_days_accessible.' day');
+        $timestamp = strtotime('+' . (int) $this->nb_days_accessible . ' day');
 
         return date('Y-m-d H:i:s', $timestamp);
     }
@@ -375,6 +378,6 @@ class ProductDownloadCore extends ObjectModel
     public function getHash()
     {
         // TODO check if this hash not already in database
-        return sha1(microtime().$this->id);
+        return sha1(microtime() . $this->id);
     }
 }

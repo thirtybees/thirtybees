@@ -1083,7 +1083,7 @@ abstract class ObjectModelCore implements Core_Foundation_Database_EntityInterfa
 
             // If the object has not been loaded in multilanguage, then the value is the one for the current language of the object
             if (!is_array($values)) {
-                $values = [$this->id_lang => $values];
+                $values = [(string) $this->id_lang => $values];
             }
 
             // The value for the default must always be set, so we put an empty string if it does not exists

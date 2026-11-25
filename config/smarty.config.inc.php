@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 2007-2016 PrestaShop
  *
@@ -32,20 +33,46 @@
 /** @noinspection PhpUnhandledExceptionInspection */
 /** @noinspection PhpUnused */
 
-define('_PS_SMARTY_DIR_', _PS_TOOL_DIR_.'smarty/');
+define('_PS_SMARTY_DIR_', _PS_TOOL_DIR_ . 'smarty/');
 
 // smarty is declared as global for backwards compatibility reasons
 global $smarty;
 
 $smarty = new SmartyCustom();
-$smarty->setCompileDir(_PS_CACHE_DIR_.'smarty/compile');
-$smarty->setCacheDir(_PS_CACHE_DIR_.'smarty/cache');
+
+$smarty->registerClass('AddressFormat', 'AddressFormat');
+$smarty->registerClass('AdminCategoriesController', 'AdminCategoriesController');
+$smarty->registerClass('AdminImportController', 'AdminImportController');
+$smarty->registerClass('AdminModulesController', 'AdminModulesController');
+$smarty->registerClass('AdminProductsController', 'AdminProductsController');
+$smarty->registerClass('Carrier', 'Carrier');
+$smarty->registerClass('Cart', 'Cart');
+$smarty->registerClass('Configuration', 'Configuration');
+$smarty->registerClass('Context', 'Context');
+$smarty->registerClass('CurrencyRateModule', 'CurrencyRateModule');
+$smarty->registerClass('Customer', 'Customer');
+$smarty->registerClass('HelperList', 'HelperList');
+$smarty->registerClass('ImageManager', 'ImageManager');
+$smarty->registerClass('Link', 'Link');
+$smarty->registerClass('Media', 'Media');
+$smarty->registerClass('Module', 'Module');
+$smarty->registerClass('Order', 'Order');
+$smarty->registerClass('Pack', 'Pack');
+$smarty->registerClass('Product', 'Product');
+$smarty->registerClass('Profile', 'Profile');
+$smarty->registerClass('Shop', 'Shop');
+$smarty->registerClass('Tab', 'Tab');
+$smarty->registerClass('Tools', 'Tools');
+$smarty->registerClass('Validate', 'Validate');
+
+$smarty->setCompileDir(_PS_CACHE_DIR_ . 'smarty/compile');
+$smarty->setCacheDir(_PS_CACHE_DIR_ . 'smarty/cache');
 $smarty->use_sub_dirs = true; // Unused in community-theme-default.
-$smarty->setConfigDir(_PS_SMARTY_DIR_.'configs');
+$smarty->setConfigDir(_PS_SMARTY_DIR_ . 'configs');
 $smarty->caching = false;
 $smarty->force_compile = Configuration::get('PS_SMARTY_FORCE_COMPILE') == _PS_SMARTY_FORCE_COMPILE_;
 $smarty->compile_check = Configuration::get('PS_SMARTY_FORCE_COMPILE') >= _PS_SMARTY_CHECK_COMPILE_;
-$smarty->debug_tpl = _PS_ALL_THEMES_DIR_.'debug.tpl';
+$smarty->debug_tpl = _PS_ALL_THEMES_DIR_ . 'debug.tpl';
 
 // custom blocks
 smartyRegisterFunction($smarty, 'block', 'addJsDefL', ['Media', 'addJsDefL']);
@@ -70,40 +97,59 @@ smartyRegisterFunction($smarty, 'function', 'm', 'smartyMaxWords'); // unused
 smartyRegisterFunction($smarty, 'function', 'p', 'smartyShowObject'); // Debug only
 smartyRegisterFunction($smarty, 'function', 't', 'smartyTruncate'); // unused
 smartyRegisterFunction($smarty, 'function', 'toolsConvertPrice', 'toolsConvertPrice');
+smartyRegisterFunction($smarty, 'modifier', 'file_exists', 'file_exists');
+smartyRegisterFunction($smarty, 'modifier', 'preg_match_all', 'preg_match_all');
+smartyRegisterFunction($smarty, 'modifier', 'preg_match', 'preg_match');
+smartyRegisterFunction($smarty, 'modifier', 'preg_replace', 'preg_replace');
+smartyRegisterFunction($smarty, 'modifier', 'strstr', 'strstr');
+smartyRegisterFunction($smarty, 'modifier', 'version_compare', 'version_compare');
 
 // custom modifiers
 smartyRegisterFunction($smarty, 'modifier', 'addcslashes', 'addcslashes');
 smartyRegisterFunction($smarty, 'modifier', 'addslashes', 'addslashes');
+smartyRegisterFunction($smarty, 'modifier', 'array_key_exists', 'array_key_exists');
+smartyRegisterFunction($smarty, 'modifier', 'array_keys', 'array_keys');
 smartyRegisterFunction($smarty, 'modifier', 'array_sum', 'array_sum');
 smartyRegisterFunction($smarty, 'modifier', 'boolval', ['Tools', 'boolval']);
+smartyRegisterFunction($smarty, 'modifier', 'call_user_func', 'call_user_func');
 smartyRegisterFunction($smarty, 'modifier', 'cleanHtml', 'smartyCleanHtml');
 smartyRegisterFunction($smarty, 'modifier', 'constant', 'constant');
 smartyRegisterFunction($smarty, 'modifier', 'convertAndFormatPrice', ['Product', 'convertAndFormatPrice']); // used twice
 smartyRegisterFunction($smarty, 'modifier', 'date_format', 'smarty_modifier_date_format');
+smartyRegisterFunction($smarty, 'modifier', 'date', 'date');
+smartyRegisterFunction($smarty, 'modifier', 'defined', 'defined');
 smartyRegisterFunction($smarty, 'modifier', 'end', 'smartyEndModifier');
 smartyRegisterFunction($smarty, 'modifier', 'explode', 'explode');
 smartyRegisterFunction($smarty, 'modifier', 'floatval', 'floatval');
+smartyRegisterFunction($smarty, 'modifier', 'floor', 'floor');
+smartyRegisterFunction($smarty, 'modifier', 'get_class', 'get_class');
 smartyRegisterFunction($smarty, 'modifier', 'html_entity_decode', 'html_entity_decode');
 smartyRegisterFunction($smarty, 'modifier', 'htmlentities', 'htmlentities');
 smartyRegisterFunction($smarty, 'modifier', 'htmlspecialchars', 'htmlspecialchars');
 smartyRegisterFunction($smarty, 'modifier', 'idnToUtf8', ['Tools', 'convertEmailFromIdn']);
 smartyRegisterFunction($smarty, 'modifier', 'implode', 'implode');
 smartyRegisterFunction($smarty, 'modifier', 'in_array', 'in_array');
-smartyRegisterFunction($smarty, 'modifier', 'is_array', 'is_array');
+smartyRegisterFunction($smarty, 'modifier', 'ini_get', 'ini_get');
 smartyRegisterFunction($smarty, 'modifier', 'intval', 'intval');
+smartyRegisterFunction($smarty, 'modifier', 'is_array', 'is_array');
+smartyRegisterFunction($smarty, 'modifier', 'is_numeric', 'is_numeric');
 smartyRegisterFunction($smarty, 'modifier', 'json_decode', ['Tools', 'jsonDecode']);
 smartyRegisterFunction($smarty, 'modifier', 'json_encode', ['Tools', 'jsonEncode']);
 smartyRegisterFunction($smarty, 'modifier', 'lcfirst', 'lcfirst');
+smartyRegisterFunction($smarty, 'modifier', 'max', 'max');
 smartyRegisterFunction($smarty, 'modifier', 'md5', 'md5');
+smartyRegisterFunction($smarty, 'modifier', 'min', 'min');
+smartyRegisterFunction($smarty, 'modifier', 'parse_url', 'parse_url');
 smartyRegisterFunction($smarty, 'modifier', 'rand', 'rand');
 smartyRegisterFunction($smarty, 'modifier', 'secureReferrer', ['Tools', 'secureReferrer']);
 smartyRegisterFunction($smarty, 'modifier', 'sha1', 'sha1');
+smartyRegisterFunction($smarty, 'modifier', 'sizeof', 'sizeof');
 smartyRegisterFunction($smarty, 'modifier', 'sprintf', 'sprintf');
 smartyRegisterFunction($smarty, 'modifier', 'str_replace', 'str_replace');
 smartyRegisterFunction($smarty, 'modifier', 'stripslashes', 'stripslashes');
+smartyRegisterFunction($smarty, 'modifier', 'strpos', 'strpos');
 smartyRegisterFunction($smarty, 'modifier', 'strtolower', 'strtolower');
 smartyRegisterFunction($smarty, 'modifier', 'strtoupper', 'strtoupper');
-smartyRegisterFunction($smarty, 'modifier', 'strpos', 'strpos');
 smartyRegisterFunction($smarty, 'modifier', 'strval', 'strval');
 smartyRegisterFunction($smarty, 'modifier', 'substr', 'substr');
 smartyRegisterFunction($smarty, 'modifier', 'trim', 'trim');
@@ -113,11 +159,21 @@ smartyRegisterFunction($smarty, 'modifier', 'urlencode', 'urlencode');
 smartyRegisterFunction($smarty, 'modifier', 'utf8ToIdn', ['Tools', 'convertEmailToIdn']);
 smartyRegisterFunction($smarty, 'modifier', 'var_export', 'var_export');
 
+// Explicitly register PHP functions used in templates (Smarty 4.5+)
+smartyRegisterFunction($smarty, 'modifier', 'is_bool', 'is_bool');
+smartyRegisterFunction($smarty, 'modifier', 'is_float', 'is_float');
+smartyRegisterFunction($smarty, 'modifier', 'is_int', 'is_int');
+smartyRegisterFunction($smarty, 'modifier', 'is_null', 'is_null');
+smartyRegisterFunction($smarty, 'modifier', 'is_object', 'is_object');
+smartyRegisterFunction($smarty, 'modifier', 'is_string', 'is_string');
+smartyRegisterFunction($smarty, 'modifier', 'microtime', 'microtime');
+smartyRegisterFunction($smarty, 'modifier', 'number_format', 'number_format');
+
 if (defined('_PS_ADMIN_DIR_')) {
     smartyRegisterFunction($smarty, 'function', 'l', ['Translate', 'smartyAdminTranslate'], false);
 } else {
     smartyRegisterFunction($smarty, 'function', 'l', ['Translate', 'smartyFrontTranslate'], false);
-    $smarty->setTemplateDir(_PS_THEME_DIR_.'tpl');
+    $smarty->setTemplateDir(_PS_THEME_DIR_ . 'tpl');
     if (Configuration::get('PS_JS_HTML_THEME_COMPRESSION')) {
         $smarty->registerFilter('output', 'smartyPackJSinHTML');
     }
@@ -156,11 +212,11 @@ function smartyMaxWords($params, $smarty)
 
     foreach ($words as &$word) {
         if (mb_strlen($word) > $params['n']) {
-            $word = mb_substr(trim(chunk_split($word, $params['n']-1, '- ')), 0, -1);
+            $word = mb_substr(trim(chunk_split($word, $params['n'] - 1, '- ')), 0, -1);
         }
     }
 
-    return implode(' ',  Tools::htmlentitiesUTF8($words));
+    return implode(' ', Tools::htmlentitiesUTF8($words));
 }
 
 /**
@@ -172,6 +228,7 @@ function smartyEndModifier($array)
     if (is_array($array)) {
         return end($array);
     }
+
     return false;
 }
 
@@ -191,7 +248,7 @@ function smartyTruncate($params, $smarty)
     $sep = $params['sep'] ?? '...';
 
     if (mb_strlen($text) > $length + mb_strlen($sep)) {
-        $text = mb_substr($text, 0, $length).$sep;
+        $text = mb_substr($text, 0, $length) . $sep;
     }
 
     return isset($params['encode'])
@@ -214,16 +271,17 @@ function smarty_modifier_truncate($string, $length = 80, $etc = '...', $break_wo
         return '';
     }
 
-    $string = trim((string)$string);
+    $string = trim((string) $string);
 
     if (mb_strlen($string) > $length) {
         $length -= min($length, mb_strlen($etc));
         if (!$break_words && !$middle) {
-            $string = preg_replace('/\s+?(\S+)?$/u', '', mb_substr($string, 0, $length+1, $charset));
+            $string = preg_replace('/\s+?(\S+)?$/u', '', mb_substr($string, 0, $length + 1, $charset));
         }
+
         return !$middle
-            ? mb_substr($string, 0, $length, $charset).$etc
-            : mb_substr($string, 0, $length/2, $charset).$etc.mb_substr($string, -$length/2, $length, $charset);
+            ? mb_substr($string, 0, $length, $charset) . $etc
+            : mb_substr($string, 0, $length / 2, $charset) . $etc . mb_substr($string, -$length / 2, $length, $charset);
     } else {
         return $string;
     }
@@ -251,6 +309,7 @@ function smartyMinifyHTML($tplOutput, $smarty)
     if (isset($context->controller) && in_array($context->controller->php_self, ['pdf-invoice', 'pdf-order-return', 'pdf-order-slip'])) {
         return $tplOutput;
     }
+
     return Media::minifyHTML($tplOutput);
 }
 
@@ -268,6 +327,7 @@ function smartyPackJSinHTML($tplOutput, $smarty)
     if (isset($context->controller) && in_array($context->controller->php_self, ['pdf-invoice', 'pdf-order-return', 'pdf-order-slip'])) {
         return $tplOutput;
     }
+
     return Media::packJSinHTML($tplOutput);
 }
 
@@ -315,15 +375,17 @@ function smartyHook($params, $smarty)
         if (!empty($params['mod'])) {
             $module = Module::getInstanceByName($params['mod']);
             if ($module && $module->id) {
-                $id_module = (int)$module->id;
+                $id_module = (int) $module->id;
             } else {
                 return '';
             }
             unset($hook_params['mod']);
         }
         unset($hook_params['h']);
+
         return Hook::displayHook($params['h'], $hook_params, $id_module);
     }
+
     return null;
 }
 
@@ -337,6 +399,7 @@ function smartyCleanHtml($data)
     if (Validate::isCleanHtml($data)) {
         return $data;
     }
+
     return null;
 }
 
@@ -440,7 +503,7 @@ function smarty_modifier_date_format($string, $format = null, $defaultDate = '',
                 '%r',
                 '%R',
                 '%t',
-                '%T'
+                '%T',
             ];
             $_win_to = [
                 '%m/%d/%y',
@@ -449,7 +512,7 @@ function smarty_modifier_date_format($string, $format = null, $defaultDate = '',
                 '%I:%M:%S %p',
                 '%H:%M',
                 "\t",
-                '%H:%M:%S'
+                '%H:%M:%S',
             ];
             if (strpos($format, '%e') !== false) {
                 $_win_from[] = '%e';
@@ -461,6 +524,7 @@ function smarty_modifier_date_format($string, $format = null, $defaultDate = '',
             }
             $format = str_replace($_win_from, $_win_to, $format);
         }
+
         return Tools::strftime($format, $timestamp);
     } else {
         return date($format, $timestamp);
@@ -503,7 +567,7 @@ class SmartyLazyRegister
 
         $this->registry[$name] = [
             'callable' => $callable,
-            'type' => $type
+            'type' => $type,
         ];
     }
 
@@ -539,6 +603,7 @@ class SmartyLazyRegister
         if (!self::$instance) {
             self::$instance = new static();
         }
+
         return self::$instance;
     }
 }
