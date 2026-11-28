@@ -519,11 +519,13 @@ class AdminCartsControllerCore extends AdminController
             'addresses'            => $addresses,
             'id_cart'              => $idCart,
             'order_message'        => $messageContent,
-            'link_order'           => $this->context->link->getPageLink(
+            'link_order'           => $this->context->customer->isGuest() ? '' : $this->context->link->getPageLink(
                 'order',
-                false,
+                true,
                 (int) $this->context->cart->id_lang,
-                'step=3&recover_cart='.$idCart.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.$idCart)
+                'step=3&recover_cart='.$idCart.'&token_cart='.md5(_COOKIE_KEY_.'recover_cart_'.$idCart),
+                false,
+                (int) $this->context->cart->id_shop
             ),
             'free_shipping'        => (int) $freeShipping,
         ];

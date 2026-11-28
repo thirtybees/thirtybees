@@ -1699,27 +1699,31 @@ class FrontControllerCore extends Controller
      */
     protected function recoverCart()
     {
-        if (($idCart = Tools::getIntValue('recover_cart')) && Tools::getValue('token_cart') == md5(_COOKIE_KEY_.'recover_cart_'.$idCart)) {
-            $cart = new Cart((int) $idCart);
-            if (Validate::isLoadedObject($cart)) {
-                $customer = new Customer((int) $cart->id_customer);
-                if (Validate::isLoadedObject($customer)) {
-                    $customer->logged = 1;
-                    $this->context->customer = $customer;
-                    $this->context->cookie->id_customer = (int) $customer->id;
-                    $this->context->cookie->customer_lastname = $customer->lastname;
-                    $this->context->cookie->customer_firstname = $customer->firstname;
-                    $this->context->cookie->logged = 1;
-                    $this->context->cookie->check_cgv = 1;
-                    $this->context->cookie->is_guest = $customer->isGuest();
-                    $this->context->cookie->passwd = $customer->passwd;
-                    $this->context->cookie->email = $customer->email;
-
-                    return $idCart;
-                }
-            }
-        } else {
+        $idCart = Tools::getIntValue('recover_cart');
+        $token = Tools::getValue('token_cart');
+        if (!$idCart || !is_string($token) || !hash_equals(md5(_COOKIE_KEY_.'recover_cart_'.$idCart), $token)) {
             return false;
+        }
+
+        $cart = new Cart($idCart);
+        if (!Validate::isLoadedObject($cart) || $cart->OrderExists() || (int) $cart->id_shop !== (int) $this->context->shop->id) {
+            return false;
+        }
+
+        $customer = $this->context->customer;
+        if ($customer->isLogged(true)) {
+            return (int) $customer->id === (int) $cart->id_customer ? $idCart : false;
+        }
+
+        // A recovery link may select a cart, but it must not authenticate its owner.
+        $cartCustomer = new Customer((int) $cart->id_customer);
+        if (Validate::isLoadedObject($cartCustomer) && !$cartCustomer->isGuest()) {
+            $back = $this->context->link->getPageLink('order', true, (int) $cart->id_lang, [
+                'step'         => 3,
+                'recover_cart' => $idCart,
+                'token_cart'   => $token,
+            ], false, (int) $cart->id_shop);
+            Tools::redirect($this->context->link->getPageLink('authentication', true, (int) $cart->id_lang, ['back' => $back], false, (int) $cart->id_shop));
         }
 
         return false;
