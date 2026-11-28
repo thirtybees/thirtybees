@@ -68,8 +68,8 @@ if (file_exists(_PS_TRANSLATIONS_DIR_.$iso.'/admin.php')) {
 }
 
 /* Server Params */
-$protocolLink = (Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
-$protocolContent = (isset($useSSL) and $useSSL and Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
+$protocolLink = Tools::usingSecureMode() ? 'https://' : 'http://';
+$protocolContent = Tools::usingSecureMode() ? 'https://' : 'http://';
 $link = new Link($protocolLink, $protocolContent);
 $context->link = $link;
 if (!defined('_PS_BASE_URL_')) {

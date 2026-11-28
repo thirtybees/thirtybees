@@ -4069,8 +4069,8 @@ class AdminControllerCore extends Controller implements DatasetQuery
         }
 
         /* Server Params */
-        $protocol_link = (Tools::usingSecureMode() && Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
-        $protocol_content = (Tools::usingSecureMode() && Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://';
+        $protocol_link = Tools::usingSecureMode() ? 'https://' : 'http://';
+        $protocol_content = Tools::usingSecureMode() ? 'https://' : 'http://';
 
         $this->context->link = new Link($protocol_link, $protocol_content);
 
