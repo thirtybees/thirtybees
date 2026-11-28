@@ -194,17 +194,19 @@ class AdminCartsControllerCore extends AdminController
 			    'icon' => 'process-icon-export',
 			];
 
-			$this->page_header_toolbar_btn['delete_empty_carts'] = [
-			    'href' => static::$currentIndex.'&delete_empty_carts&token='.$this->token,
-			    'desc' => $this->l('Delete empty carts', null, null, false),
-			    'icon' => 'process-icon-delete',
-			];
+			if ($this->hasDeletePermission()) {
+				$this->page_header_toolbar_btn['delete_empty_carts'] = [
+				    'href' => static::$currentIndex.'&delete_empty_carts&token='.$this->token,
+				    'desc' => $this->l('Delete empty carts', null, null, false),
+				    'icon' => 'process-icon-delete',
+				];
 
-			$this->page_header_toolbar_btn['delete_old_carts'] = [
-			    'href' => self::$currentIndex.'&deleteoldcarts&token='.$this->token,
-			    'desc' => $this->l(sprintf('Delete carts older than %d days', $cookieLifetimeDays), null, null, false),
-			    'icon' => 'process-icon-delete',
-			];
+				$this->page_header_toolbar_btn['delete_old_carts'] = [
+				    'href' => self::$currentIndex.'&deleteoldcarts&token='.$this->token,
+				    'desc' => $this->l(sprintf('Delete carts older than %d days', $cookieLifetimeDays), null, null, false),
+				    'icon' => 'process-icon-delete',
+				];
+			}
 		}
 
 		parent::initPageHeaderToolbar();
@@ -1119,16 +1121,81 @@ class AdminCartsControllerCore extends AdminController
     }
 
     /**
+     * @return int[]
+     * @throws PrestaShopException
+     */
+    private function getCartDeletionShopIds()
+    {
+        return array_values(array_map('intval', array_filter(
+            Shop::getContextListShopID(),
+            [$this->context->employee, 'hasAuthOnShop']
+        )));
+    }
+
+    /**
+     * @return ObjectModel|false
+     * @throws PrestaShopException
+     */
+    public function processDelete()
+    {
+        if (!$this->hasDeletePermission()) {
+            $this->errors[] = Tools::displayError('You do not have permission to delete this.');
+            return false;
+        }
+
+        $cart = $this->loadObject();
+        if (!Validate::isLoadedObject($cart)) {
+            return false;
+        }
+        if (!in_array((int) $cart->id_shop, $this->getCartDeletionShopIds(), true)) {
+            $this->errors[] = Tools::displayError('You do not have permission to delete this.');
+            return false;
+        }
+
+        return parent::processDelete();
+    }
+
+    /**
+     * @return bool
+     * @throws PrestaShopException
+     */
+    protected function processBulkDelete()
+    {
+        if (!$this->hasDeletePermission()) {
+            $this->errors[] = Tools::displayError('You do not have permission to delete this.');
+            return false;
+        }
+
+        $shopIds = $this->getCartDeletionShopIds();
+        foreach ((array) $this->boxes as $id) {
+            $cart = new Cart((int) $id);
+            if (!Validate::isLoadedObject($cart) || !in_array((int) $cart->id_shop, $shopIds, true)) {
+                $this->errors[] = Tools::displayError('You do not have permission to delete this.');
+                return false;
+            }
+        }
+
+        return parent::processBulkDelete();
+    }
+
+    /**
      * Delete empty carts
      *
      * @throws PrestaShopException
      */
     public function processDeleteEmptyCarts()
     {
+		if (!$this->hasDeletePermission()) {
+			$this->errors[] = Tools::displayError('You do not have permission to delete this.');
+			return;
+		}
+
+		$shopIds = $this->getCartDeletionShopIds();
 		$sql = new DbQuery();
 		$sql->select('id_cart');
 		$sql->from('cart');
 		$sql->where('id_cart NOT IN (SELECT id_cart FROM '._DB_PREFIX_.'cart_product)');
+		$sql->where('id_shop IN ('.implode(', ', $shopIds ?: [0]).')');
 
 		$emptyCarts = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
 
@@ -1136,7 +1203,7 @@ class AdminCartsControllerCore extends AdminController
 
 		foreach ($emptyCarts as $cart) {
 			$cartObj = new Cart((int)$cart['id_cart']);
-			if (Validate::isLoadedObject($cartObj)) {
+			if (Validate::isLoadedObject($cartObj) && in_array((int) $cartObj->id_shop, $shopIds, true)) {
 				if ($cartObj->delete()) {
 					$deletedCount++;
 				}
@@ -1157,6 +1224,12 @@ class AdminCartsControllerCore extends AdminController
 	 */
 	protected function processDeleteOldCarts()
 	{
+		if (!$this->hasDeletePermission()) {
+			$this->errors[] = Tools::displayError('You do not have permission to delete this.');
+			return;
+		}
+
+		$shopIds = $this->getCartDeletionShopIds();
 		// Get the cookie lifetime setting in hours
 		$cookieLifetimeHours = (int) Configuration::get('PS_COOKIE_LIFETIME_FO');
 
@@ -1171,6 +1244,7 @@ class AdminCartsControllerCore extends AdminController
 		$sql->select('id_cart');
 		$sql->from('cart');
 		$sql->where('date_add < "'.pSQL($cutoffDate).'" AND id_cart NOT IN (SELECT id_cart FROM '._DB_PREFIX_.'orders)');
+		$sql->where('id_shop IN ('.implode(', ', $shopIds ?: [0]).')');
 
 		$oldCarts = Db::getInstance(_PS_USE_SQL_SLAVE_)->getArray($sql);
 
@@ -1178,7 +1252,7 @@ class AdminCartsControllerCore extends AdminController
 
 		foreach ($oldCarts as $cart) {
 			$cartObj = new Cart((int)$cart['id_cart']);
-			if (Validate::isLoadedObject($cartObj)) {
+			if (Validate::isLoadedObject($cartObj) && in_array((int) $cartObj->id_shop, $shopIds, true)) {
 				if ($cartObj->delete()) {
 					$deletedCount++;
 				}
@@ -1199,14 +1273,20 @@ class AdminCartsControllerCore extends AdminController
      */
     public function postProcess()
     {
-		if (Tools::isSubmit('delete_empty_carts')) {
-			$this->processDeleteEmptyCarts();
-            $this->redirect_after = Context::getContext()->link->getAdminLink('AdminCarts');
-		}
+		$deleteEmpty = Tools::isSubmit('delete_empty_carts');
+		$deleteOld = Tools::isSubmit('deleteoldcarts');
+		if (($deleteEmpty || $deleteOld) && !$this->hasDeletePermission()) {
+			$this->errors[] = Tools::displayError('You do not have permission to delete this.');
+		} else {
+			if ($deleteEmpty) {
+				$this->processDeleteEmptyCarts();
+                $this->redirect_after = Context::getContext()->link->getAdminLink('AdminCarts');
+			}
 
-		if (Tools::isSubmit('deleteoldcarts')) {
-			$this->processDeleteOldCarts();
-            $this->redirect_after = Context::getContext()->link->getAdminLink('AdminCarts');
+			if ($deleteOld) {
+				$this->processDeleteOldCarts();
+                $this->redirect_after = Context::getContext()->link->getAdminLink('AdminCarts');
+			}
 		}
 
 		parent::postProcess();
