@@ -352,4 +352,162 @@ class AdminInformationControllerCore extends AdminController
             }
         }
     }
+    
+    /**
+     * AJAX: scan a batch of directories for directory-listing.
+     * params: offset, limit
+     */
+    public function displayAjaxScanOpenDirs()
+    {
+        $this->setJSendErrorHandling();
+
+        // Small safety on inputs
+        $offset = max(0, (int) Tools::getValue('offset', 0));
+        $limit  = min(300, max(50, (int) Tools::getValue('limit', 150)));
+
+        // Build the full dir list (fast), then slice and probe
+        $all = $this->listDirsRecursively(_PS_ROOT_DIR_);
+        $slice = array_slice($all, $offset, $limit);
+
+        $base = rtrim(Tools::getShopDomainSsl(true) . __PS_BASE_URI__, '/') . '/';
+
+        $vulnerable = [];
+        foreach ($slice as $abs) {
+            // Quick FS shortcut
+            if (file_exists($abs.'/index.php') || file_exists($abs.'/index.html') || file_exists($abs.'/index.htm')) {
+                continue;
+            }
+
+            $rel = ltrim(str_replace(_PS_ROOT_DIR_, '', $abs), DIRECTORY_SEPARATOR);
+            $rel = str_replace(DIRECTORY_SEPARATOR, '/', $rel);
+            if ($rel === '') {
+                continue;
+            }
+            $url = $base . rtrim($rel, '/') . '/';
+
+            $probe = $this->probeDirectory($url);
+            if ($probe['status'] === 'listing') {
+                $vulnerable[] = rtrim($rel, '/') . '/';
+            }
+        }
+
+        $next = $offset + count($slice);
+        $done = $next >= count($all);
+
+        $this->ajaxDie(json_encode([
+            'status'     => 'success',
+            'offset'     => $next,
+            'total'      => count($all),
+            'done'       => $done,
+            'vulnerable' => $vulnerable,
+        ]));
+    }
+
+    /**
+     * Recursively enumerate ALL directories under $root, but:
+     * - DO NOT descend into cache/smarty/cache/** and cache/smarty/compile/**
+     * - Still include cache/smarty/cache and cache/smarty/compile themselves in the result
+     * Returns absolute paths without trailing slash.
+     */
+    protected function listDirsRecursively($root)
+    {
+        $root = rtrim($root, DIRECTORY_SEPARATOR);
+
+        // Normalize absolute prefixes for the two subtrees to skip
+        $smartyBase   = $root . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'smarty';
+        $skipCache    = $smartyBase . DIRECTORY_SEPARATOR . 'cache'   . DIRECTORY_SEPARATOR;
+        $skipCompile  = $smartyBase . DIRECTORY_SEPARATOR . 'compile' . DIRECTORY_SEPARATOR;
+
+        $dirs = [];
+
+        $it = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator(
+                $root,
+                FilesystemIterator::SKIP_DOTS // do NOT follow symlinks to avoid loops
+            ),
+            RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($it as $info) {
+            /** @var SplFileInfo $info */
+            if (!$info->isDir()) {
+                continue;
+            }
+
+            // Absolute path + with trailing slash for prefix comparisons
+            $absNoTrail = rtrim($info->getPathname(), DIRECTORY_SEPARATOR);
+            $abs        = $absNoTrail . DIRECTORY_SEPARATOR;
+
+            if ($abs === rtrim($skipCache, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR
+             || $abs === rtrim($skipCompile, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR) {
+                $dirs[] = $absNoTrail;
+                // Do NOT "continue 2"; we simply don't need a special action here. Children will be skipped by the checks below.
+                continue;
+            }
+
+            // Skip ANY directory that is under the two subtrees
+            // (i.e., has one of the skip prefixes)
+            if (strpos($abs, $skipCache) === 0 || strpos($abs, $skipCompile) === 0) {
+                continue;
+            }
+
+            // Otherwise, include this directory
+            $dirs[] = $absNoTrail;
+        }
+
+        sort($dirs);
+        return $dirs;
+    }
+
+    /** Quiet HTTP probe + listing detection. */
+    protected function probeDirectory($url)
+    {
+        $ctx = stream_context_create([
+            'http' => [
+                'method'        => 'GET',
+                'timeout'       => 2,
+                'ignore_errors' => true, // do not emit warnings on 4xx/5xx
+                'header'        =>
+                    "User-Agent: TB-DirProbe/1.0\r\n" .
+                    "Accept: text/html\r\n" .
+                    "Range: bytes=0-16383\r\n",
+            ],
+        ]);
+
+        $body = @file_get_contents($url, false, $ctx);
+
+        $code = 0;
+        if (isset($http_response_header[0]) && preg_match('#HTTP/\S+\s+(\d{3})#', $http_response_header[0], $m)) {
+            $code = (int) $m[1];
+        }
+
+        $sig = $this->detectListingSignature((string) $body);
+
+        if ($code >= 200 && $code < 300 && $sig !== null) {
+            return ['status' => 'listing', 'code' => $code, 'sig' => $sig];
+        }
+        return ['status' => 'ok', 'code' => $code, 'sig' => $sig];
+    }
+
+    /** Heuristic for Apache/nginx/lighttpd directory indexes. */
+    protected function detectListingSignature($html)
+    {
+        if ($html === '') {
+            return null;
+        }
+        $tests = [
+            '~<title>\s*Index of /~i'        => 'apache-title',
+            '~<h1>\s*Index of /~i'           => 'apache-h1',
+            '~Parent Directory</a>~i'        => 'apache-parent',
+            '~<pre>\s*<a href="/?">../</a>~i'=> 'nginx-pre',
+            '~<address>lighttpd/.*</address>~i' => 'lighttpd',
+        ];
+        foreach ($tests as $rx => $label) {
+            if (preg_match($rx, $html)) {
+                return $label;
+            }
+        }
+        return null;
+    }
+
 }
