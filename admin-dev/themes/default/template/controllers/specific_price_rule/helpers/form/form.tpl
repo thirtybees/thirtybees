@@ -45,14 +45,17 @@
 					{/foreach}
 				</select>
 			</div>
-			<div class="col-lg-1">
-				<a class="btn btn-default" href="#" id="add_condition_category">
-					<i class="icon-plus-sign"></i> {l s='Add condition'}
-				</a>
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
+                        <div class="col-lg-4">
+                                <a class="btn btn-default" href="#" id="add_condition_category">
+                                        <i class="icon-plus-sign"></i> {l s='Add condition'}
+                                </a>
+                                <a class="btn btn-default" href="#" id="add_condition_category_not">
+                                        <i class="icon-minus-sign"></i> {l s='Add negative condition'}
+                                </a>
+                        </div>
+                </div>
+        </div>
+        <div class="form-group">
 		<label for="id_manufacturer" class="control-label col-lg-3">{l s='Manufacturer'}</label>
 		<div class="col-lg-9">
 			<div class="col-lg-8">
@@ -62,14 +65,17 @@
 					{/foreach}
 				</select>
 			</div>
-			<div class="col-lg-1">
-				<a class="btn btn-default" href="#" id="add_condition_manufacturer">
-					<i class="icon-plus-sign"></i> {l s='Add condition'}
-				</a>
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
+                        <div class="col-lg-4">
+                                <a class="btn btn-default" href="#" id="add_condition_manufacturer">
+                                        <i class="icon-plus-sign"></i> {l s='Add condition'}
+                                </a>
+                                <a class="btn btn-default" href="#" id="add_condition_manufacturer_not">
+                                        <i class="icon-minus-sign"></i> {l s='Add negative condition'}
+                                </a>
+                        </div>
+                </div>
+        </div>
+        <div class="form-group">
 		<label for="id_supplier" class="control-label col-lg-3">{l s='Supplier'}</label>
 		<div class="col-lg-9">
 			<div class="col-lg-8">
@@ -79,14 +85,17 @@
 					{/foreach}
 				</select>
 			</div>
-			<div class="col-lg-1">
-				<a class="btn btn-default" href="#" id="add_condition_supplier">
-					<i class="icon-plus-sign"></i> {l s='Add condition'}
-				</a>
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
+                        <div class="col-lg-4">
+                                <a class="btn btn-default" href="#" id="add_condition_supplier">
+                                        <i class="icon-plus-sign"></i> {l s='Add condition'}
+                                </a>
+                                <a class="btn btn-default" href="#" id="add_condition_supplier_not">
+                                        <i class="icon-minus-sign"></i> {l s='Add negative condition'}
+                                </a>
+                        </div>
+                </div>
+        </div>
+        <div class="form-group">
 		<label for="id_attribute_group" class="control-label col-lg-3">{l s='Attributes'}</label>
 		<div class="col-lg-9">
 			<div class="col-lg-4">
@@ -105,14 +114,17 @@
 					</select>
 				{/foreach}
 			</div>
-			<div class="col-lg-1">
-				<a class="btn btn-default" href="#" id="add_condition_attribute">
-					<i class="icon-plus-sign"></i> {l s='Add condition'}
-				</a>
-			</div>
-		</div>
-	</div>
-	<div class="form-group">
+                        <div class="col-lg-4">
+                                <a class="btn btn-default" href="#" id="add_condition_attribute">
+                                        <i class="icon-plus-sign"></i> {l s='Add condition'}
+                                </a>
+                                <a class="btn btn-default" href="#" id="add_condition_attribute_not">
+                                        <i class="icon-minus-sign"></i> {l s='Add negative condition'}
+                                </a>
+                        </div>
+                </div>
+        </div>
+        <div class="form-group">
 		<label for="id_feature" class="control-label col-lg-3">{l s='Features'}</label>
 		<div class="col-lg-9">
 			<div class="col-lg-4">
@@ -131,13 +143,16 @@
 					</select>
 				{/foreach}
 			</div>
-			<div class="col-lg-1">
-				<a class="btn btn-default" href="#" id="add_condition_feature">
-					<i class="icon-plus-sign"></i> {l s='Add condition'}
-				</a>
-			</div>
-		</div>
-	</div>
+                        <div class="col-lg-4">
+                                <a class="btn btn-default" href="#" id="add_condition_feature">
+                                        <i class="icon-plus-sign"></i> {l s='Add condition'}
+                                </a>
+                                <a class="btn btn-default" href="#" id="add_condition_feature_not">
+                                        <i class="icon-minus-sign"></i> {l s='Add negative condition'}
+                                </a>
+                        </div>
+                </div>
+        </div>
 {if !$is_multishop}
 	<input type="hidden" name="id_shop" value="1" />
 {/if}
@@ -148,6 +163,7 @@
 var current_id_condition_group = 0;
 var last_condition_group = 0;
 var conditions = new Array();
+var textNot = '{l s='NOT' js=1} ';
 
 function toggle_condition_group(id_condition_group)
 {
@@ -233,8 +249,8 @@ $(document).ready(function() {
 		$('#id_attribute_'+$(this).val()).show();
 	});
 
-	$('#add_condition_category').click(function() {
-		var id_condition = add_condition(current_id_condition_group, 'category', $('#id_category option:selected').val());
+        $('#add_condition_category').click(function() {
+                var id_condition = add_condition(current_id_condition_group, 'category', $('#id_category option:selected').val());
 		if (!id_condition)
 			return false;
 
@@ -242,10 +258,21 @@ $(document).ready(function() {
 		appendConditionToGroup(html);
 
 		return false;
-	});
+        });
 
-	$('#add_condition_manufacturer').click(function() {
-		var id_condition = add_condition(current_id_condition_group, 'manufacturer', $('#id_manufacturer option:selected').val());
+        $('#add_condition_category_not').click(function() {
+                var id_condition = add_condition(current_id_condition_group, 'category', '-' + $('#id_category option:selected').val());
+                if (!id_condition)
+                        return false;
+
+                var html = '<tr id="'+id_condition+'"><td>{l s='Category'}</td><td>'+textNot+$('#id_category option:selected').html()+'</td><td><a href="#" onclick="delete_condition(\''+id_condition+'\');" class="btn btn-default"><i class="icon-remove"></i> {l s='Delete'}</a></td></tr>';
+                appendConditionToGroup(html);
+
+                return false;
+        });
+
+        $('#add_condition_manufacturer').click(function() {
+                var id_condition = add_condition(current_id_condition_group, 'manufacturer', $('#id_manufacturer option:selected').val());
 		if (!id_condition)
 			return false;
 
@@ -253,10 +280,21 @@ $(document).ready(function() {
 		appendConditionToGroup(html);
 
 		return false;
-	});
+        });
 
-	$('#add_condition_supplier').click(function() {
-		var id_condition = add_condition(current_id_condition_group, 'supplier', $('#id_supplier option:selected').val());
+        $('#add_condition_manufacturer_not').click(function() {
+                var id_condition = add_condition(current_id_condition_group, 'manufacturer', '-' + $('#id_manufacturer option:selected').val());
+                if (!id_condition)
+                        return false;
+
+                var html = '<tr id="'+id_condition+'"><td>{l s='Manufacturer'}</td><td>'+textNot+$('#id_manufacturer option:selected').html()+'</td><td><a href="#" onclick="delete_condition(\''+id_condition+'\');" class="btn btn-default"><i class="icon-remove"></i> {l s='Delete'}</a></td></tr>';
+                appendConditionToGroup(html);
+
+                return false;
+        });
+
+        $('#add_condition_supplier').click(function() {
+                var id_condition = add_condition(current_id_condition_group, 'supplier', $('#id_supplier option:selected').val());
 		if (!id_condition)
 			return false;
 
@@ -264,10 +302,21 @@ $(document).ready(function() {
 		appendConditionToGroup(html);
 
 		return false;
-	});
+        });
 
-	$('#add_condition_attribute').click(function() {
-		var id_condition = add_condition(current_id_condition_group, 'attribute', $('#id_attribute_'+$('#id_attribute_group option:selected').val()+' option:selected').val());
+        $('#add_condition_supplier_not').click(function() {
+                var id_condition = add_condition(current_id_condition_group, 'supplier', '-' + $('#id_supplier option:selected').val());
+                if (!id_condition)
+                        return false;
+
+                var html = '<tr id="'+id_condition+'"><td>{l s='Supplier'}</td><td>'+textNot+$('#id_supplier option:selected').html()+'</td><td><a href="#" onclick="delete_condition(\''+id_condition+'\');" class="btn btn-default"><i class="icon-remove"></i> {l s='Delete'}</a></td></tr>';
+                appendConditionToGroup(html);
+
+                return false;
+        });
+
+        $('#add_condition_attribute').click(function() {
+                var id_condition = add_condition(current_id_condition_group, 'attribute', $('#id_attribute_'+$('#id_attribute_group option:selected').val()+' option:selected').val());
 		if (!id_condition)
 			return false;
 
@@ -275,10 +324,21 @@ $(document).ready(function() {
 		appendConditionToGroup(html);
 
 		return false;
-	});
+        });
 
-	$('#add_condition_feature').click(function() {
-		var id_condition = add_condition(current_id_condition_group, 'feature', $('#id_feature_'+$('#id_feature option:selected').val()+' option:selected').val());
+        $('#add_condition_attribute_not').click(function() {
+                var id_condition = add_condition(current_id_condition_group, 'attribute', '-' + $('#id_attribute_'+$('#id_attribute_group option:selected').val()+' option:selected').val());
+                if (!id_condition)
+                        return false;
+
+                var html = '<tr id="'+id_condition+'"><td>{l s='Attribute'}</td><td>'+$('#id_attribute_group option:selected').html()+': '+textNot+$('#id_attribute_'+$('#id_attribute_group option:selected').val()+' option:selected').html()+'</td><td><a href="#" onclick="delete_condition(\''+id_condition+'\');" class="btn btn-default"><i class="icon-remove"></i> {l s='Delete'}</a></td></tr>';
+                appendConditionToGroup(html);
+
+                return false;
+        });
+
+        $('#add_condition_feature').click(function() {
+                var id_condition = add_condition(current_id_condition_group, 'feature', $('#id_feature_'+$('#id_feature option:selected').val()+' option:selected').val());
 		if (!id_condition)
 			return false;
 
@@ -286,7 +346,18 @@ $(document).ready(function() {
 		appendConditionToGroup(html);
 
 		return false;
-	});
+        });
+
+        $('#add_condition_feature_not').click(function() {
+                var id_condition = add_condition(current_id_condition_group, 'feature', '-' + $('#id_feature_'+$('#id_feature option:selected').val()+' option:selected').val());
+                if (!id_condition)
+                        return false;
+
+                var html = '<tr id="'+id_condition+'"><td>{l s='Feature'}</td><td>'+$('#id_feature option:selected').html()+': '+textNot+$('#id_feature_'+$('#id_feature option:selected').val()+' option:selected').html()+'</td><td><a href="#" onclick="delete_condition(\''+id_condition+'\');" class="btn btn-default"><i class="icon-remove"></i> {l s='Delete'}</a></td></tr>';
+                appendConditionToGroup(html);
+
+                return false;
+        });
 
 	$('#add_condition_group').click(function() {
 		new_condition_group();
@@ -302,18 +373,32 @@ $(document).ready(function() {
 	{foreach from=$conditions key='id_group_condition' item='condition_group'}
 		new_condition_group();
 		{foreach from=$condition_group item='condition'}
-			{if $condition.type == 'attribute'}
-				$('#id_attribute_group option[value="{$condition.id_attribute_group}"]').attr('selected', true);
-				$('#id_attribute_{$condition.id_attribute_group} option[value="{$condition.value}"]').attr('selected', true);
-			{elseif $condition.type == 'feature'}
-				$('#id_feature option[value="{$condition.id_feature}"]').attr('selected', true);
-				$('#id_feature_{$condition.id_feature} option[value="{$condition.value}"]').attr('selected', true);
-			{else}
-				$('#id_{$condition.type} option[value="{$condition.value}"]').attr('selected', true);
-			{/if}
-			$('#add_condition_{$condition.type}').click();
-		{/foreach}
-	{/foreach}
+                        {if $condition.type == 'attribute'}
+                                $('#id_attribute_group option[value="{$condition.id_attribute_group}"]').attr('selected', true);
+                                $('#id_attribute_{$condition.id_attribute_group} option[value="{$condition.value|abs}"]').attr('selected', true);
+                                {if $condition.value < 0}
+                                        $('#add_condition_attribute_not').click();
+                                {else}
+                                        $('#add_condition_attribute').click();
+                                {/if}
+                        {elseif $condition.type == 'feature'}
+                                $('#id_feature option[value="{$condition.id_feature}"]').attr('selected', true);
+                                $('#id_feature_{$condition.id_feature} option[value="{$condition.value|abs}"]').attr('selected', true);
+                                {if $condition.value < 0}
+                                        $('#add_condition_feature_not').click();
+                                {else}
+                                        $('#add_condition_feature').click();
+                                {/if}
+                        {else}
+                                $('#id_{$condition.type} option[value="{$condition.value|abs}"]').attr('selected', true);
+                                {if $condition.value < 0}
+                                        $('#add_condition_{$condition.type}_not').click();
+                                {else}
+                                        $('#add_condition_{$condition.type}').click();
+                                {/if}
+                        {/if}
+                {/foreach}
+        {/foreach}
 	$('#id_attribute_group').change();
 	$('#id_feature').change();
 });
