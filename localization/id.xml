@@ -55,6 +55,10 @@
     <state name="Kalbar" iso_code="ID-KB" country="ID" zone="Asia"/>
     <state name="NTB" iso_code="ID-NB" country="ID" zone="Asia"/>
     <state name="Papuabarat" iso_code="ID-PB" country="ID" zone="Asia"/>
+    <state name="Papua Barat Daya" iso_code="ID-PD" country="ID" zone="Asia"/>
+    <state name="Papua Pegunungan" iso_code="ID-PE" country="ID" zone="Asia"/>
+    <state name="Papua Selatan" iso_code="ID-PS" country="ID" zone="Asia"/>
+    <state name="Papua Tengah" iso_code="ID-PT" country="ID" zone="Asia"/>
     <state name="Sulbar" iso_code="ID-SR" country="ID" zone="Asia"/>
     <state name="Sumbar" iso_code="ID-SB" country="ID" zone="Asia"/>
     <state name="DIY" iso_code="ID-YO" country="ID" zone="Asia"/>
