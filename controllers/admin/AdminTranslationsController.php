@@ -1347,18 +1347,19 @@ class AdminTranslationsControllerCore extends AdminController
      */
     protected function submitTranslationsMails()
     {
+        if ($this->type_selected !== 'mails') {
+            throw new PrestaShopException(Tools::displayError('Invalid translation type.'));
+        }
+
         $arrMailContent = [];
-        $arrMailPath = [];
+        $arrMailPath = [
+            'core_mail' => $this->theme_selected
+                ? $this->translations_informations['mails']['override']['dir']
+                : $this->translations_informations['mails']['dir'],
+        ];
 
         if (Tools::getValue('core_mail')) {
             $arrMailContent['core_mail'] = Tools::getValue('core_mail');
-
-            // Get path of directory for find a good path of translation file
-            if (!$this->theme_selected) {
-                $arrMailPath['core_mail'] = $this->translations_informations[$this->type_selected]['dir'];
-            } else {
-                $arrMailPath['core_mail'] = $this->translations_informations[$this->type_selected]['override']['dir'];
-            }
         }
 
         if (Tools::getValue('module_mail')) {
@@ -1374,19 +1375,35 @@ class AdminTranslationsControllerCore extends AdminController
 
         // Save each mail content
         foreach ($arrMailContent as $groupName => $allContent) {
+            if (!is_array($allContent)) {
+                throw new PrestaShopException(Tools::displayError('Invalid mail translations.'));
+            }
             foreach ($allContent as $typeContent => $mails) {
+                if (!in_array($typeContent, ['html', 'txt'], true) || !is_array($mails)) {
+                    throw new PrestaShopException(Tools::displayError('Invalid mail template type.'));
+                }
                 foreach ($mails as $mailName => $content) {
+                    if (!is_string($content)) {
+                        throw new PrestaShopException(Tools::displayError('Invalid mail translation.'));
+                    }
+
+                    $mailName = (string)$mailName;
                     $moduleName = false;
-                    $moduleNamePipePos = stripos($mailName, '|');
-                    if ($moduleNamePipePos) {
+                    $moduleNamePipePos = strpos($mailName, '|');
+                    if ($groupName === 'module_mail') {
+                        if ($moduleNamePipePos === false) {
+                            throw new PrestaShopException(Tools::displayError('Invalid module mail name.'));
+                        }
                         $moduleName = substr($mailName, 0, $moduleNamePipePos);
                         if (!Validate::isModuleName($moduleName)) {
                             throw new PrestaShopException(sprintf(Tools::displayError('Invalid module name "%s"'), Tools::safeOutput($moduleName)));
                         }
                         $mailName = substr($mailName, $moduleNamePipePos + 1);
-                        if (!Validate::isTplName($mailName)) {
-                            throw new PrestaShopException(sprintf(Tools::displayError('Invalid mail name "%s"'), Tools::safeOutput($mailName)));
-                        }
+                    } elseif ($moduleNamePipePos !== false) {
+                        throw new PrestaShopException(Tools::displayError('Invalid core mail name.'));
+                    }
+                    if (!Validate::isTplName($mailName)) {
+                        throw new PrestaShopException(sprintf(Tools::displayError('Invalid mail name "%s"'), Tools::safeOutput($mailName)));
                     }
 
                     if ($typeContent == 'html') {
@@ -1405,6 +1422,9 @@ class AdminTranslationsControllerCore extends AdminController
 
                     if ($content) {
                         if (Validate::isCleanHTML($content)) {
+                            if (strpos($content, '<?') !== false) {
+                                throw new PrestaShopException(Tools::displayError('Mail templates cannot contain PHP code.'));
+                            }
                             $path = $arrMailPath[$groupName];
                             if ($moduleName) {
                                 $path = str_replace('{module}', $moduleName, $path);
@@ -1412,7 +1432,15 @@ class AdminTranslationsControllerCore extends AdminController
                             if (!file_exists($path) && !mkdir($path, 0777, true)) {
                                 throw new PrestaShopException(sprintf(Tools::displayError('Directory "%s" cannot be created'), dirname($path)));
                             }
-                            file_put_contents($path . $mailName . '.' . $typeContent, $content);
+                            $directory = realpath($path);
+                            $destination = $path . $mailName . '.' . $typeContent;
+                            $existingFile = realpath($destination);
+                            if ($directory === false || !is_dir($directory)
+                                || ((file_exists($destination) || is_link($destination))
+                                    && ($existingFile === false || dirname($existingFile) !== $directory || !is_file($existingFile)))) {
+                                throw new PrestaShopException(Tools::displayError('Invalid mail template path.'));
+                            }
+                            file_put_contents($destination, $content);
                         } else {
                             throw new PrestaShopException(Tools::displayError('Your HTML email templates cannot contain JavaScript code.'));
                         }
