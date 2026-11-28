@@ -712,7 +712,7 @@
       <name>Bali</name>
     </state>
     <state id="BB" id_country="ID" id_zone="Asia" iso_code="BB" tax_behavior="0" active="1">
-      <name>Bangka</name>
+      <name>Bangka Belitung Islands</name>
     </state>
     <state id="BT_1" id_country="ID" id_zone="Asia" iso_code="BT" tax_behavior="0" active="1">
       <name>Banten</name>
@@ -726,20 +726,26 @@
     <state id="KT" id_country="ID" id_zone="Asia" iso_code="KT" tax_behavior="0" active="1">
       <name>Central Kalimantan</name>
     </state>
+    <state id="PT_1" id_country="ID" id_zone="Asia" iso_code="PT" tax_behavior="0" active="1">
+      <name>Central Papua</name>
+    </state>
     <state id="ST" id_country="ID" id_zone="Asia" iso_code="ST" tax_behavior="0" active="1">
       <name>Central Sulawesi</name>
     </state>
     <state id="JI" id_country="ID" id_zone="Asia" iso_code="JI" tax_behavior="0" active="1">
-      <name>Coat of arms of East Java</name>
+      <name>East Java</name>
     </state>
     <state id="KI" id_country="ID" id_zone="Asia" iso_code="KI" tax_behavior="0" active="1">
-      <name>East kalimantan</name>
+      <name>East Kalimantan</name>
     </state>
     <state id="NT_1" id_country="ID" id_zone="Asia" iso_code="NT" tax_behavior="0" active="1">
       <name>East Nusa Tenggara</name>
     </state>
     <state id="GO_1" id_country="ID" id_zone="Asia" iso_code="GO" tax_behavior="0" active="1">
-      <name>Lambang propinsi</name>
+      <name>Gorontalo</name>
+    </state>
+    <state id="PE_2" id_country="ID" id_zone="Asia" iso_code="PE" tax_behavior="0" active="1">
+      <name>Highland Papua</name>
     </state>
     <state id="JK" id_country="ID" id_zone="Asia" iso_code="JK" tax_behavior="0" active="1">
       <name>Jakarta</name>
@@ -752,6 +758,9 @@
     </state>
     <state id="MA_1" id_country="ID" id_zone="Asia" iso_code="MA" tax_behavior="0" active="1">
       <name>Maluku</name>
+    </state>
+    <state id="KU" id_country="ID" id_zone="Asia" iso_code="KU" tax_behavior="0" active="1">
+      <name>North Kalimantan</name>
     </state>
     <state id="MU" id_country="ID" id_zone="Asia" iso_code="MU" tax_behavior="0" active="1">
       <name>North Maluku</name>
@@ -769,7 +778,7 @@
       <name>Riau</name>
     </state>
     <state id="KR_1" id_country="ID" id_zone="Asia" iso_code="KR" tax_behavior="0" active="1">
-      <name>Lambang Riau</name>
+      <name>Riau Islands</name>
     </state>
     <state id="SG" id_country="ID" id_zone="Asia" iso_code="SG" tax_behavior="0" active="1">
       <name>Southeast Sulawesi</name>
@@ -777,11 +786,17 @@
     <state id="KS_1" id_country="ID" id_zone="Asia" iso_code="KS" tax_behavior="0" active="1">
       <name>South Kalimantan</name>
     </state>
+    <state id="PS" id_country="ID" id_zone="Asia" iso_code="PS" tax_behavior="0" active="1">
+      <name>South Papua</name>
+    </state>
     <state id="SN" id_country="ID" id_zone="Asia" iso_code="SN" tax_behavior="0" active="1">
       <name>South Sulawesi</name>
     </state>
     <state id="SS_1" id_country="ID" id_zone="Asia" iso_code="SS" tax_behavior="0" active="1">
       <name>South Sumatra</name>
+    </state>
+    <state id="PD_1" id_country="ID" id_zone="Asia" iso_code="PD" tax_behavior="0" active="1">
+      <name>Southwest Papua</name>
     </state>
     <state id="JB" id_country="ID" id_zone="Asia" iso_code="JB" tax_behavior="0" active="1">
       <name>West Java</name>
@@ -793,7 +808,7 @@
       <name>West Nusa Tenggara</name>
     </state>
     <state id="PB" id_country="ID" id_zone="Asia" iso_code="PB" tax_behavior="0" active="1">
-      <name>Lambang Provinsi Papua Barat</name>
+      <name>West Papua</name>
     </state>
     <state id="SR_1" id_country="ID" id_zone="Asia" iso_code="SR" tax_behavior="0" active="1">
       <name>West Sulawesi</name>
