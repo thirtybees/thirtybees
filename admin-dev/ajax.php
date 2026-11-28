@@ -165,7 +165,19 @@ if (Tools::isSubmit('getZones')) {
     die(json_encode($array));
 }
 
-if (Tools::isSubmit('getEmailHTML') && $email = Tools::getValue('email')) {
-    $email_html = AdminTranslationsController::getEmailHTML($email);
-    die($email_html);
+if (Tools::isSubmit('getEmailHTML')) {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        exit;
+    }
+
+    $token = Tools::getValue('token');
+    if (!$context->employee->hasAccess('AdminTranslations', Profile::PERMISSION_VIEW)
+        || !is_string($token)
+        || $token !== Tools::getAdminTokenLite('AdminTranslations')) {
+        http_response_code(403);
+        exit;
+    }
+
+    die(AdminTranslationsController::getEmailHTML(Tools::getValue('email')));
 }

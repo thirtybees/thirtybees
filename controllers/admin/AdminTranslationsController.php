@@ -86,18 +86,50 @@ class AdminTranslationsControllerCore extends AdminController
      */
     public static function getEmailHTML($email)
     {
-        if (__PS_BASE_URI__ != '/') {
-            $emailFile = str_replace(__PS_BASE_URI__, '', _PS_ROOT_DIR_.'/').$email;
+        if (!is_string($email) || strpos($email, __PS_BASE_URI__) !== 0) {
+            return '';
+        }
+
+        $path = substr($email, strlen(__PS_BASE_URI__));
+        $parts = explode('/', $path);
+        foreach ($parts as $part) {
+            if ($part === '' || $part === '.' || $part === '..' || preg_match('/[\\\\:\x00-\x1F\x7F]/', $part)) {
+                return '';
+            }
+        }
+
+        $count = count($parts);
+        if (!preg_match('/\.html$/i', $parts[$count - 1])) {
+            return '';
+        }
+
+        if ($count === 3 && $parts[0] === 'mails') {
+            $mailDirectory = _PS_MAIL_DIR_;
+            $lang = $parts[1];
+        } elseif ($count === 5 && $parts[0] === 'modules' && $parts[2] === 'mails') {
+            $mailDirectory = _PS_MODULE_DIR_.$parts[1].'/mails/';
+            $lang = $parts[3];
+        } elseif ($count === 5 && $parts[0] === 'themes' && $parts[2] === 'mails') {
+            $mailDirectory = _PS_ROOT_DIR_.'/themes/'.$parts[1].'/mails/';
+            $lang = $parts[3];
+        } elseif ($count === 7 && $parts[0] === 'themes' && $parts[2] === 'modules' && $parts[4] === 'mails') {
+            $mailDirectory = _PS_ROOT_DIR_.'/themes/'.$parts[1].'/modules/'.$parts[3].'/mails/';
+            $lang = $parts[5];
         } else {
-            $emailFile = _PS_ROOT_DIR_.$email;
+            return '';
         }
 
-
-        if (file_exists($emailFile)) {
-            return (string)file_get_contents($emailFile);
+        $mailRoot = realpath($mailDirectory);
+        $languageDirectory = realpath($mailDirectory.$lang);
+        $emailFile = realpath($mailDirectory.$lang.'/'.$parts[$count - 1]);
+        if ($mailRoot === false || $languageDirectory === false || $emailFile === false
+            || dirname($languageDirectory) !== $mailRoot
+            || dirname($emailFile) !== $languageDirectory
+            || !is_file($emailFile)) {
+            return '';
         }
 
-        return '';
+        return (string)file_get_contents($emailFile);
     }
 
     /**
@@ -2665,6 +2697,7 @@ class AdminTranslationsControllerCore extends AdminController
                 'cancel_url'           => $this->context->link->getAdminLink('AdminTranslations'),
                 'module_mails'         => $moduleMails,
                 'theme_name'           => $this->theme_selected,
+                'mail_preview_token'   => $this->token,
             ]
         );
 
