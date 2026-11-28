@@ -670,7 +670,7 @@ class FrontControllerCore extends Controller
             $this->context->smarty->assign(
                 [
                     'js_def' => Media::getJsDef(),
-                    'js_files' => $defer ? array_unique($this->js_files) : [],
+                    'js_files' => $defer ? Media::getDeferredScripts($this->js_files) : [],
                     'js_inline' => ($defer && $domAvailable) ? Media::getInlineScript() : [],
                 ]
             );
