@@ -175,6 +175,33 @@ class AdminCartRulesControllerCore extends AdminController
     public function postProcess()
     {
         if (Tools::isSubmit('submitAddcart_rule') || Tools::isSubmit('submitAddcart_ruleAndStay')) {
+            $discountType = Tools::getValue('apply_discount');
+            $applyDiscountTo = Tools::getValue('apply_discount_to');
+            if ($discountType !== 'percent' && in_array($applyDiscountTo, ['cheapest', 'selection', 'cart_cheapest'])) {
+                $applyDiscountTo = 'order';
+            }
+
+            switch ($applyDiscountTo) {
+                case 'cheapest':
+                    $_POST['reduction_product'] = CartRule::APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_FROM_SELECTION;
+                    break;
+                case 'selection':
+                    $_POST['reduction_product'] = CartRule::APPLY_DISCOUNT_TO_SELECTED_PRODUCTS;
+                    break;
+                case 'cart_cheapest':
+                    $_POST['reduction_product'] = CartRule::APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_IN_CART;
+                    break;
+                case 'order':
+                    $_POST['reduction_product'] = CartRule::APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING;
+                    break;
+            }
+
+            if ($discountType !== 'percent' || $applyDiscountTo !== 'cart_cheapest') {
+                $_POST['reduction_cart_quantity'] = 0;
+            } else {
+                $_POST['reduction_cart_quantity'] = Tools::getIntValue('reduction_cart_quantity');
+            }
+
             // If the reduction is associated to a specific product, then it must be part of the product restrictions
             if (Tools::getIntValue('reduction_product') && Tools::getValue('apply_discount_to') == 'specific' && Tools::getValue('apply_discount') != 'off') {
                 $reductionProduct = Tools::getIntValue('reduction_product');
@@ -253,6 +280,9 @@ class AdminCartRulesControllerCore extends AdminController
             }
             if (Tools::getIntValue('reduction_percent_max') < 0) {
                 $this->errors[] = Tools::displayError('Reduction max amount cannot be lower than zero.');
+            }
+            if ($discountType === 'percent' && $applyDiscountTo === 'cart_cheapest' && Tools::getIntValue('reduction_cart_quantity') < 1) {
+                $this->errors[] = Tools::displayError('The minimum cart quantity for cheapest-product discount must be at least 1.');
             }
             if (Tools::getValue('code') && ($sameCode = (int) CartRule::getIdByCode(Tools::getValue('code'))) && $sameCode !== Tools::getIntValue('id_cart_rule')) {
                 $this->errors[] = sprintf(Tools::displayError('This cart rule code is already used (conflict with cart rule %d)'), $sameCode);
@@ -550,18 +580,18 @@ class AdminCartRulesControllerCore extends AdminController
     public function renderForm()
     {
         $limit = 40;
-        $this->toolbar_btn['save-and-stay'] = [
-            'href' => '#',
-            'desc' => $this->l('Save and Stay'),
-        ];
 
         /** @var CartRule $currentObject */
         $currentObject = $this->loadObject(true);
 
         if ($currentObject->isCheapestProductSystemRule()) {
-            $this->errors[] = $this->l('This cart rule cannot be edited: it is managed by the system.');
-            return '';
+            return $this->renderSystemCartRuleForm($currentObject);
         }
+
+        $this->toolbar_btn['save-and-stay'] = [
+            'href' => '#',
+            'desc' => $this->l('Save and Stay'),
+        ];
 
         // All the filter are prefilled with the correct information
         $customerFilter = '';
@@ -671,6 +701,7 @@ class AdminCartRulesControllerCore extends AdminController
             'APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING' => CartRule::APPLY_DISCOUNT_TO_ORDER_WITHOUT_SHIPPING,
             'APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_FROM_SELECTION' => CartRule::APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_FROM_SELECTION,
             'APPLY_DISCOUNT_TO_SELECTED_PRODUCTS' => CartRule::APPLY_DISCOUNT_TO_SELECTED_PRODUCTS,
+            'APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_IN_CART' => CartRule::APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_IN_CART,
         ]);
         $this->content .= $this->createTemplate('form.tpl')->fetch();
 
@@ -678,6 +709,199 @@ class AdminCartRulesControllerCore extends AdminController
         $this->addJqueryPlugin(['jscroll', 'typewatch']);
 
         return parent::renderForm();
+    }
+
+    /**
+     * @param CartRule $cartRule
+     *
+     * @return string
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
+    protected function renderSystemCartRuleForm(CartRule $cartRule): string
+    {
+        $this->toolbar_btn = [
+            'back' => [
+                'href' => static::$currentIndex.'&token='.$this->token,
+                'desc' => $this->l('Back to list'),
+            ],
+        ];
+
+        $systemRuleDetails = $this->getSystemCartRuleDetails($cartRule);
+
+        $this->context->smarty->assign(
+            [
+                'show_toolbar' => true,
+                'toolbar_btn' => $this->toolbar_btn,
+                'toolbar_scroll' => $this->toolbar_scroll,
+                'title' => [$this->l('Payment: '), $this->l('Cart Rules')],
+                'currentObject' => $cartRule,
+                'systemRuleDetails' => $systemRuleDetails,
+            ]
+        );
+
+        return $this->createTemplate('system_rule.tpl')->fetch();
+    }
+
+    /**
+     * @param CartRule $cartRule
+     *
+     * @return array
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     */
+    protected function getSystemCartRuleDetails(CartRule $cartRule): array
+    {
+        $sourceRuleId = $cartRule->getCheapestProductSystemSourceCartRuleId();
+        $sourceRuleName = trim($cartRule->getCheapestProductSystemSourceName());
+        $sourceRuleCode = trim($cartRule->getCheapestProductSystemSourceCode());
+        $sourceRuleLink = '';
+        if ($sourceRuleId) {
+            $sourceRule = new CartRule($sourceRuleId, (int)$this->context->language->id);
+            if (Validate::isLoadedObject($sourceRule)) {
+                $sourceRuleName = (string)$sourceRule->name;
+                $sourceRuleCode = (string)$sourceRule->code;
+                $sourceRuleLink = $this->context->link->getAdminLink('AdminCartRules').'&id_cart_rule='.$sourceRuleId.'&updatecart_rule';
+            }
+        }
+
+        $orderId = $cartRule->getCheapestProductSystemOrderId();
+        $orderReference = trim($cartRule->getCheapestProductSystemOrderReference());
+        $orderLink = '';
+        $orderCurrency = null;
+        if ($orderId) {
+            $order = new Order($orderId);
+            if (Validate::isLoadedObject($order)) {
+                $orderReference = (string)$order->reference;
+                $orderLink = $this->context->link->getAdminLink('AdminOrders').'&id_order='.$orderId.'&vieworder';
+                $orderCurrency = new Currency((int)$order->id_currency);
+            }
+        }
+
+        $productId = $cartRule->getCheapestProductId();
+        $productAttributeId = $cartRule->getCheapestProductAttributeId();
+        $productLabel = (string)$productId;
+        $productLink = '';
+        $combinationLabel = '';
+        if ($productId) {
+            $product = new Product($productId, false, (int)$this->context->language->id);
+            if (Validate::isLoadedObject($product)) {
+                $productLabel = $product->name;
+                if (!empty($product->reference)) {
+                    $productLabel = $product->reference.' - '.$productLabel;
+                }
+                $productLink = $this->context->link->getAdminLink('AdminProducts').'&updateproduct&id_product='.(int)$productId;
+
+                if ($productAttributeId) {
+                    $attributeParts = [];
+                    foreach ($product->getAttributeCombinationsById($productAttributeId, (int)$this->context->language->id) as $combination) {
+                        if (!empty($combination['group_name']) && !empty($combination['attribute_name'])) {
+                            $attributeParts[] = $combination['group_name'].': '.$combination['attribute_name'];
+                        }
+                    }
+                    if ($attributeParts) {
+                        $combinationLabel = implode(', ', $attributeParts);
+                    } else {
+                        $combinationLabel = (string)$productAttributeId;
+                    }
+                }
+            }
+        }
+
+        $sourceRuleLabel = $sourceRuleName ?: $this->l('Unknown cart rule');
+        if ($sourceRuleId) {
+            $sourceRuleLabel .= ' (#'.$sourceRuleId.')';
+        }
+        if ($sourceRuleCode !== '') {
+            $sourceRuleLabel .= ' ['.$sourceRuleCode.']';
+        }
+
+        $orderLabel = $orderReference ?: $this->l('Unknown order');
+        if ($orderId) {
+            $orderLabel .= ' (#'.$orderId.')';
+        }
+
+        $discountPercent = (float)$cartRule->reduction_percent;
+        $discountPercentLabel = rtrim(rtrim(number_format($discountPercent, 2, '.', ''), '0'), '.').'%';
+        $discountAmountLabel = $this->l('Unknown');
+        if (isset($order) && Validate::isLoadedObject($order)) {
+            foreach ($order->getOrderDetailList() as $orderDetail) {
+                if ((int)$orderDetail['product_id'] !== $productId) {
+                    continue;
+                }
+                if ((int)$orderDetail['product_attribute_id'] !== $productAttributeId) {
+                    continue;
+                }
+
+                $discountAmountTaxExcl = Tools::roundPrice((float)$orderDetail['unit_price_tax_excl'] * $discountPercent / 100);
+                $discountAmountTaxIncl = Tools::roundPrice((float)$orderDetail['unit_price_tax_incl'] * $discountPercent / 100);
+                $discountAmountLabel = Tools::displayPrice($discountAmountTaxExcl, $orderCurrency);
+                if (abs($discountAmountTaxIncl - $discountAmountTaxExcl) > 0.000001) {
+                    $discountAmountLabel .= ' '.$this->l('(tax excl.)').' / '.Tools::displayPrice($discountAmountTaxIncl, $orderCurrency).' '.$this->l('(tax incl.)');
+                }
+                break;
+            }
+        }
+
+        return [
+            'back_link' => static::$currentIndex.'&token='.$this->token,
+            'source_rule_label' => $sourceRuleLabel,
+            'source_rule_link' => $sourceRuleLink,
+            'order_label' => $orderLabel,
+            'order_link' => $orderLink,
+            'product_label' => $productLabel,
+            'product_link' => $productLink,
+            'combination_label' => $combinationLabel,
+            'discount_percent_label' => $discountPercentLabel,
+            'discount_amount_label' => $discountAmountLabel,
+            'created_at' => $cartRule->date_add,
+        ];
+    }
+
+    /**
+     * @param string|null $token
+     * @param int $id
+     * @param string|null $name
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
+    public function displayEditLink($token, $id, $name = null)
+    {
+        $cartRule = new CartRule((int)$id);
+        if ($cartRule->isCheapestProductSystemRule()) {
+            $tpl = $this->createTemplate('helpers/list/list_action_view.tpl');
+            $tpl->assign(
+                [
+                    'href' => $this->context->link->getAdminLink('AdminCartRules')
+                        .'&'.$this->identifier.'='.(int)$id
+                        .'&update'.$this->table
+                        .($this->page && $this->page > 1 ? '&page='.(int)$this->page : ''),
+                    'action' => $this->l('View'),
+                ]
+            );
+
+            return $tpl->fetch();
+        }
+
+        $tpl = $this->createTemplate('helpers/list/list_action_edit.tpl');
+        $tpl->assign(
+            [
+                'href' => $this->context->link->getAdminLink('AdminCartRules')
+                    .'&'.$this->identifier.'='.(int)$id
+                    .'&update'.$this->table
+                    .($this->page && $this->page > 1 ? '&page='.(int)$this->page : ''),
+                'action' => $this->l('Edit'),
+                'id' => (int)$id,
+            ]
+        );
+
+        return $tpl->fetch();
     }
 
     /**

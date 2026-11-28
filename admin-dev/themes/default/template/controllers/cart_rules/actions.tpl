@@ -127,6 +127,12 @@
 			</label>
 		</p>
 		<p class="radio">
+			<label for="apply_discount_to_cart_cheapest">
+				<input type="radio" name="apply_discount_to" id="apply_discount_to_cart_cheapest" value="cart_cheapest"{if $reductionProduct === CartRule::APPLY_DISCOUNT_TO_CHEAPEST_PRODUCT_IN_CART} checked="checked"{/if} />
+				{l s='Cheapest product in cart'}
+			</label>
+		</p>
+		<p class="radio">
 			<label for="apply_discount_to_selection">
 				<input type="radio" name="apply_discount_to" id="apply_discount_to_selection" value="selection"{if $reductionProduct === CartRule::APPLY_DISCOUNT_TO_SELECTED_PRODUCTS} checked="checked"{/if} {if $product_rule_groups|@count == 0}disabled="disabled"{/if} />
 				{l s='Selected product(s)'}
@@ -136,6 +142,20 @@
 				</span>
 			</label>
 		</p>
+	</div>
+</div>
+
+<div id="apply_discount_to_cart_cheapest_quantity_div" class="form-group">
+	<label class="control-label col-lg-3">
+		<span class="label-tooltip" data-toggle="tooltip" title="{l s='Minimum total product quantity required in the cart before the cheapest product gets the percentage discount.'}">
+			{l s='Minimum cart quantity'}
+		</span>
+	</label>
+	<div class="col-lg-9">
+		<div class="input-group col-lg-2">
+			<input type="text" id="reduction_cart_quantity" name="reduction_cart_quantity" value="{if $currentTab->getFieldValue($currentObject, 'reduction_cart_quantity')|intval > 0}{$currentTab->getFieldValue($currentObject, 'reduction_cart_quantity')|intval}{else}1{/if}" />
+		</div>
+		<span class="help-block">{l s='Example: set 3 to create a "buy 3 items, get the cheapest one discounted" rule.'}</span>
 	</div>
 </div>
 
