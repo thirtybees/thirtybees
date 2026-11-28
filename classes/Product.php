@@ -1930,7 +1930,7 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
         $productImplode = [];
         foreach ($productIds as $idProduct) {
-            if ((int) $idProduct && !array_key_exists($idProduct.'-'.$idLang, static::$_cacheFeatures)) {
+            if ((int) $idProduct && !array_key_exists((int) $idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
                 $productImplode[] = (int) $idProduct;
             }
         }
@@ -1940,24 +1940,30 @@ class ProductCore extends ObjectModel implements InitializationCallback
 
         $result = Db::readOnly()->getArray(
             '
-		SELECT id_product, name, value, pf.id_feature
-		FROM '._DB_PREFIX_.'feature_product pf
-		LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
-		LEFT JOIN '._DB_PREFIX_.'feature_value fv ON (fv.id_feature_value = pf.id_feature_value)
-		LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
-		LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature)
-		'.Shop::addSqlAssociation('feature', 'f').'
-		WHERE `id_product` IN ('.implode(',', $productImplode).')
-		ORDER BY f.position ASC, fv.position ASC'
+				SELECT pf.id_product, COALESCE(NULLIF(fl.public_name, \'\'), fl.name) AS name, fvl.value, IFNULL(pfl.displayable, fvl.displayable) AS displayable, fl.multiple_schema, fl.multiple_separator, pf.id_feature, f.allows_multiple_values
+				FROM '._DB_PREFIX_.'feature_product pf
+				LEFT JOIN '._DB_PREFIX_.'feature_product_lang pfl ON (pfl.id_feature_value = pf.id_feature_value AND pfl.id_lang = '.(int) $idLang.' AND pfl.id_product = pf.id_product)
+				LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
+				LEFT JOIN '._DB_PREFIX_.'feature_value fv ON (fv.id_feature_value = pf.id_feature_value)
+				LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
+				LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
+				'.Shop::addSqlAssociation('feature', 'f').'
+				WHERE pf.id_product IN ('.implode(',', $productImplode).')
+				ORDER BY f.position ASC,
+				    (CASE WHEN f.sorting='.Feature::SORT_VALUE_ASC.' THEN fvl.value END) ASC,
+				    (CASE WHEN f.sorting='.Feature::SORT_VALUE_DESC.' THEN fvl.value END) DESC,
+				    (CASE WHEN f.sorting='.Feature::SORT_CUSTOM.' THEN fv.position END) ASC
+				    '
         );
 
+        $rowsByProduct = array_fill_keys($productImplode, []);
         foreach ($result as $row) {
-            if (!array_key_exists($row['id_product'].'-'.$idLang, static::$_frontFeaturesCache)) {
-                static::$_frontFeaturesCache[$row['id_product'].'-'.$idLang] = [];
-            }
-            if (!isset(static::$_frontFeaturesCache[$row['id_product'].'-'.$idLang][$row['id_feature']])) {
-                static::$_frontFeaturesCache[$row['id_product'].'-'.$idLang][$row['id_feature']] = $row;
-            }
+            $idProduct = (int) $row['id_product'];
+            unset($row['id_product']);
+            $rowsByProduct[$idProduct][] = $row;
+        }
+        foreach ($rowsByProduct as $idProduct => $rows) {
+            static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = static::buildFrontFeatures($rows);
         }
     }
 
@@ -2250,85 +2256,80 @@ class ProductCore extends ObjectModel implements InitializationCallback
             return [];
         }
         if (!array_key_exists($idProduct.'-'.$idLang, static::$_frontFeaturesCache)) {
-            $feature_values = Db::readOnly()->getArray(
-                '
-				SELECT COALESCE(NULLIF(fl.public_name, \'\'), fl.name) AS name, fvl.value, IFNULL(pfl.displayable, fvl.displayable) AS displayable, fl.multiple_schema, fl.multiple_separator, pf.id_feature, f.allows_multiple_values
-				FROM '._DB_PREFIX_.'feature_product pf
-				LEFT JOIN '._DB_PREFIX_.'feature_product_lang pfl ON (pfl.id_feature_value = pf.id_feature_value AND pfl.id_lang = '.(int) $idLang.' AND pfl.id_product = '.(int)$idProduct.')
-				LEFT JOIN '._DB_PREFIX_.'feature_lang fl ON (fl.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
-				LEFT JOIN '._DB_PREFIX_.'feature_value fv ON (fv.id_feature_value = pf.id_feature_value)
-				LEFT JOIN '._DB_PREFIX_.'feature_value_lang fvl ON (fvl.id_feature_value = pf.id_feature_value AND fvl.id_lang = '.(int) $idLang.')
-				LEFT JOIN '._DB_PREFIX_.'feature f ON (f.id_feature = pf.id_feature AND fl.id_lang = '.(int) $idLang.')
-				'.Shop::addSqlAssociation('feature', 'f').'
-				WHERE pf.id_product = '.(int) $idProduct.'
-				ORDER BY f.position ASC,
-				    (CASE WHEN f.sorting='.Feature::SORT_VALUE_ASC.' THEN fvl.value END) ASC,
-				    (CASE WHEN f.sorting='.Feature::SORT_VALUE_DESC.' THEN fvl.value END) DESC,
-				    (CASE WHEN f.sorting='.Feature::SORT_CUSTOM.' THEN fv.position END) ASC
-				    '
-            );
-
-            $feature_values_helper = [];
-
-            // Get concatenated values, min_value and max_value per id_feature
-            foreach ($feature_values as $feature_value) {
-
-                $id_feature = (int)$feature_value['id_feature'];
-                $display_value = $feature_value['displayable'] ?: $feature_value['value'];
-
-                if (!isset($feature_values_helper[$id_feature])) {
-                    $feature_values_helper[$id_feature]['id_feature'] = $id_feature; // Helpful in cases the keys got lost due to sorting
-                    $feature_values_helper[$id_feature]['name'] = $feature_value['name'];
-                    $feature_values_helper[$id_feature]['values'][] = $display_value;
-                    $feature_values_helper[$id_feature]['values_string'] = $display_value;
-                    $feature_values_helper[$id_feature]['min_value'] = $feature_value;
-                    $feature_values_helper[$id_feature]['max_value'] = $feature_value;
-                }
-                else {
-                    $feature_values_helper[$id_feature]['multiple_schema'] = $feature_value['multiple_schema']; // Multiple Schema should only apply, if really multiple values were selected
-                    $feature_values_helper[$id_feature]['values'][] = $display_value;
-
-                    // Concatenate values
-                    $display_separator = $feature_value['multiple_separator'] ?: ', ';
-                    $feature_values_helper[$id_feature]['values_string'] .= $display_separator . $display_value;
-
-                    // Update min and max value
-                    if ($feature_values_helper[$id_feature]['min_value']['value'] > $feature_value['value']) {
-                        $feature_values_helper[$id_feature]['min_value'] = $feature_value;
-                    }
-
-                    if ($feature_values_helper[$id_feature]['max_value']['value'] < $feature_value['value']) {
-                        $feature_values_helper[$id_feature]['max_value'] = $feature_value;
-                    }
-                }
-            }
-
-            // Now create the 'value' based on the multiple_schema
-            foreach ($feature_values_helper as &$feature_value_helper) {
-                if (isset($feature_value_helper['multiple_schema']) && ($multiple_schema = $feature_value_helper['multiple_schema'])) {
-                    $value = str_replace('{values}', $feature_value_helper['values_string'], $multiple_schema);
-                    $value = str_replace('{count_values}', count($feature_value_helper['values']), $value);
-                    $value = str_replace('{min_value}', $feature_value_helper['min_value']['value'], $value);
-                    $value = str_replace('{max_value}', $feature_value_helper['max_value']['value'], $value);
-                    $value = str_replace('{first_value}', $feature_value_helper['values'][0], $value);
-                    $value = str_replace('{last_value}', $feature_value_helper['values'][array_key_last($feature_value_helper['values'])], $value);
-
-                    $display_value_min = $feature_value_helper['min_value']['displayable'] ?: $feature_value_helper['min_value']['value'];
-                    $display_value_max = $feature_value_helper['max_value']['displayable'] ?: $feature_value_helper['max_value']['value'];
-                    $value = str_replace('{min_displayable}', $display_value_min, $value);
-                    $value = str_replace('{max_displayable}', $display_value_max, $value);
-
-                    $feature_value_helper['value'] = $value;
-                }
-                else {
-                    $feature_value_helper['value'] = $feature_value_helper['values_string'];
-                }
-            }
-
-            static::$_frontFeaturesCache[$idProduct.'-'.$idLang] = $feature_values_helper;
+            static::cacheFrontFeatures([$idProduct], $idLang);
         }
 
-        return static::$_frontFeaturesCache[$idProduct.'-'.$idLang];
+        return static::$_frontFeaturesCache[$idProduct.'-'.$idLang] ?? [];
+    }
+
+    /**
+     * Builds the front office features of a single product from its feature value rows
+     *
+     * @param array $feature_values
+     *
+     * @return array
+     */
+    protected static function buildFrontFeatures(array $feature_values)
+    {
+        $feature_values_helper = [];
+
+        // Get concatenated values, min_value and max_value per id_feature
+        foreach ($feature_values as $feature_value) {
+
+            $id_feature = (int)$feature_value['id_feature'];
+            $display_value = $feature_value['displayable'] ?: $feature_value['value'];
+
+            if (!isset($feature_values_helper[$id_feature])) {
+                $feature_values_helper[$id_feature]['id_feature'] = $id_feature; // Helpful in cases the keys got lost due to sorting
+                $feature_values_helper[$id_feature]['name'] = $feature_value['name'];
+                $feature_values_helper[$id_feature]['values'][] = $display_value;
+                $feature_values_helper[$id_feature]['values_string'] = $display_value;
+                $feature_values_helper[$id_feature]['min_value'] = $feature_value;
+                $feature_values_helper[$id_feature]['max_value'] = $feature_value;
+            }
+            else {
+                $feature_values_helper[$id_feature]['multiple_schema'] = $feature_value['multiple_schema']; // Multiple Schema should only apply, if really multiple values were selected
+                $feature_values_helper[$id_feature]['values'][] = $display_value;
+
+                // Concatenate values
+                $display_separator = $feature_value['multiple_separator'] ?: ', ';
+                $feature_values_helper[$id_feature]['values_string'] .= $display_separator . $display_value;
+
+                // Update min and max value
+                if ($feature_values_helper[$id_feature]['min_value']['value'] > $feature_value['value']) {
+                    $feature_values_helper[$id_feature]['min_value'] = $feature_value;
+                }
+
+                if ($feature_values_helper[$id_feature]['max_value']['value'] < $feature_value['value']) {
+                    $feature_values_helper[$id_feature]['max_value'] = $feature_value;
+                }
+            }
+        }
+
+        // Now create the 'value' based on the multiple_schema
+        foreach ($feature_values_helper as &$feature_value_helper) {
+            if (isset($feature_value_helper['multiple_schema']) && ($multiple_schema = $feature_value_helper['multiple_schema'])) {
+                $value = str_replace('{values}', $feature_value_helper['values_string'], $multiple_schema);
+                $value = str_replace('{count_values}', count($feature_value_helper['values']), $value);
+                $value = str_replace('{min_value}', $feature_value_helper['min_value']['value'], $value);
+                $value = str_replace('{max_value}', $feature_value_helper['max_value']['value'], $value);
+                $value = str_replace('{first_value}', $feature_value_helper['values'][0], $value);
+                $value = str_replace('{last_value}', $feature_value_helper['values'][array_key_last($feature_value_helper['values'])], $value);
+
+                $display_value_min = $feature_value_helper['min_value']['displayable'] ?: $feature_value_helper['min_value']['value'];
+                $display_value_max = $feature_value_helper['max_value']['displayable'] ?: $feature_value_helper['max_value']['value'];
+                $value = str_replace('{min_displayable}', $display_value_min, $value);
+                $value = str_replace('{max_displayable}', $display_value_max, $value);
+
+                $feature_value_helper['value'] = $value;
+            }
+            else {
+                $feature_value_helper['value'] = $feature_value_helper['values_string'];
+            }
+        }
+        unset($feature_value_helper);
+
+        return $feature_values_helper;
     }
 
     /**
