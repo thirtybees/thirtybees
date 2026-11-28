@@ -165,6 +165,7 @@ class AdminCustomerThreadsControllerCore extends AdminController
 
         $this->_select = '
 			CONCAT(c.`firstname`," ",c.`lastname`) as customer, cl.`name` as contact, l.`name` as language, group_concat(message) as messages, cm.private,
+			SUM(cm.`read` = 0 AND IFNULL(cm.`id_employee`, 0) = 0) as unread_messages,
 			(
 				SELECT IFNULL(CONCAT(LEFT(e.`firstname`, 1),". ",e.`lastname`), "--")
 				FROM `'._DB_PREFIX_.'customer_message` cm2
@@ -1078,6 +1079,9 @@ class AdminCustomerThreadsControllerCore extends AdminController
             if (isset($this->_list[$i]['email'])) {
                 $this->_list[$i]['email'] = Tools::convertEmailFromIdn($this->_list[$i]['email']);
             }
+            if (!empty($this->_list[$i]['unread_messages'])) {
+                $this->_list[$i]['class'] = 'unread-thread';
+            }
         }
     }
 
@@ -1091,9 +1095,8 @@ class AdminCustomerThreadsControllerCore extends AdminController
         }
 
         $idThread = Tools::getIntValue('id_thread');
-        $messages = CustomerThread::getMessageCustomerThreads($idThread);
-        if (count($messages)) {
-            Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'customer_message` set `read` = 1 WHERE `id_employee` = '.(int) $this->context->employee->id.' AND `id_customer_thread` = '.(int) $idThread);
+        if ($idThread) {
+            Db::getInstance()->execute('UPDATE `'._DB_PREFIX_.'customer_message` SET `read` = 1 WHERE `id_customer_thread` = '.(int) $idThread.' AND `read` = 0');
         }
     }
 

@@ -26,6 +26,9 @@
 {extends file="helpers/list/list_header.tpl"}
 
 {block name="leadin"}
+	<style>
+		table.customer_thread tr.unread-thread td { font-weight: bold; }
+	</style>
 	<div id="CustomerThreadContacts" class="row">
 		{assign var=nb_categories value=count($categories)}
 		{foreach $categories as $key => $val}
