@@ -170,14 +170,14 @@ class CustomerThreadCore extends ObjectModel
     {
         return Db::readOnly()->getArray(
             (new DbQuery())
-                ->select('cl.*, COUNT(*) as `total`')
-                ->select('(SELECT `id_customer_thread` FROM `'._DB_PREFIX_.'customer_thread` ct2 WHERE status = "open" AND ct.`id_contact` = ct2.`id_contact` '.Shop::addSqlRestriction().' ORDER BY `date_upd` ASC LIMIT 1) AS `id_customer_thread`')
+                ->select('cl.*, ct.`id_shop`, COUNT(*) as `total`')
+                ->select('(SELECT `id_customer_thread` FROM `'._DB_PREFIX_.'customer_thread` ct2 WHERE status = "open" AND ct.`id_contact` = ct2.`id_contact` AND ct.`id_shop` = ct2.`id_shop` '.Shop::addSqlRestriction(false, 'ct2').' ORDER BY `date_upd` ASC LIMIT 1) AS `id_customer_thread`')
                 ->from('customer_thread', 'ct')
                 ->leftJoin('contact_lang', 'cl', 'cl.`id_contact` = ct.`id_contact` AND cl.`id_lang` = '.(int) Context::getContext()->language->id)
                 ->where('ct.`status` = "open"')
                 ->where('ct.`id_contact` IS NOT NULL')
                 ->where('cl.`id_contact` IS NOT NULL '.Shop::addSqlRestriction())
-                ->groupBy('ct.`id_contact`')
+                ->groupBy('ct.`id_contact`, ct.`id_shop`')
                 ->having('COUNT(*) > 0')
         );
     }
