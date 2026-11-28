@@ -2795,12 +2795,6 @@ CREATE TABLE `PREFIX_theme_specific` (
   PRIMARY KEY (`id_theme`,`id_shop`,`entity`,`id_object`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE `PREFIX_timezone` (
-  `id_timezone` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id_timezone`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TABLE `PREFIX_tracking_consent` (
   `id_tracking_consent` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `id_employee` int(11) unsigned NOT NULL,

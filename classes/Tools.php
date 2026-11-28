@@ -5113,13 +5113,7 @@ FileETag none
      */
     public static function getTimeZone()
     {
-        $timezone = Configuration::get('PS_TIMEZONE');
-        if (! $timezone) {
-            // Fallback use php timezone settings.
-            $timezone = date_default_timezone_get();
-        }
-
-        return $timezone;
+        return Timezone::getTimeZone();
     }
 
     /**
