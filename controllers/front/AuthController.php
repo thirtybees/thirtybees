@@ -319,6 +319,19 @@ class AuthControllerCore extends FrontController
      */
     protected function processSubmitLogin()
     {
+        if (!$this->isValidLoginRequest()) {
+            $this->errors[] = Tools::displayError('Invalid login request.');
+            if ($this->ajax) {
+                $this->ajaxDie(json_encode([
+                    'hasError' => true,
+                    'errors' => $this->errors,
+                    'token' => Tools::getToken(false),
+                ]));
+            }
+            $this->context->smarty->assign('authentification_error', $this->errors);
+            return;
+        }
+
         Hook::triggerEvent('actionBeforeAuthentication');
         $passwd = trim(Tools::getValue('passwd'));
         $_POST['passwd'] = null;
@@ -401,6 +414,45 @@ class AuthControllerCore extends FrontController
         } else {
             $this->context->smarty->assign('authentification_error', $this->errors);
         }
+    }
+
+    /**
+     * Only accept login submissions made by a form on this shop.
+     *
+     * @return bool
+     */
+    protected function isValidLoginRequest()
+    {
+        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST'
+            || !(isset($_POST['SubmitLogin']) || isset($_POST['SubmitLogin_x']) || isset($_POST['SubmitLogin_y']))
+            || !isset($_POST['email'], $_POST['passwd'])
+            || !is_string($_POST['email'])
+            || !is_string($_POST['passwd'])
+        ) {
+            return false;
+        }
+
+        $source = $_SERVER['HTTP_ORIGIN'] ?? ($_SERVER['HTTP_REFERER'] ?? '');
+        if (!is_string($source) || $source === '' || $source === 'null') {
+            return false;
+        }
+
+        $sourceUrl = parse_url($source);
+        $loginUrl = parse_url($this->context->link->getPageLink('authentication', true));
+        if (!$sourceUrl || !$loginUrl
+            || !isset($sourceUrl['scheme'], $sourceUrl['host'], $loginUrl['scheme'], $loginUrl['host'])
+        ) {
+            return false;
+        }
+
+        $sourceScheme = strtolower($sourceUrl['scheme']);
+        $loginScheme = strtolower($loginUrl['scheme']);
+        $sourcePort = $sourceUrl['port'] ?? ($sourceScheme === 'https' ? 443 : 80);
+        $loginPort = $loginUrl['port'] ?? ($loginScheme === 'https' ? 443 : 80);
+
+        return $sourceScheme === $loginScheme
+            && strtolower($sourceUrl['host']) === strtolower($loginUrl['host'])
+            && $sourcePort === $loginPort;
     }
 
     /**
