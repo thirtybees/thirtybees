@@ -207,7 +207,7 @@ class CacheFsCore extends Cache
         for ($i = 0, $length = strlen($chars); $i < $length; $i++) {
             $newDir = $directory.$chars[$i].'/';
             if (mkdir($newDir)) {
-                if (chmod($newDir, 0777)) {
+                if (chmod($newDir, Tools::applyUmask(0777))) {
                     if ($levelDepth - 1 > 0) {
                         CacheFs::createCacheDirectories($levelDepth - 1, $newDir);
                     }

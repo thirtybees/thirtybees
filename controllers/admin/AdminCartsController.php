@@ -667,7 +667,7 @@ class AdminCartsControllerCore extends AdminController
                             continue;
                         } elseif (!ImageManager::resize($tmpName, _PS_UPLOAD_DIR_.$fileName.'_small', (int) Configuration::get('PS_PRODUCT_PICTURE_WIDTH'), (int) Configuration::get('PS_PRODUCT_PICTURE_HEIGHT'))) {
                             $errors[] = Tools::displayError('An error occurred during the image upload process.');
-                        } elseif (!chmod(_PS_UPLOAD_DIR_.$fileName, 0777) || !chmod(_PS_UPLOAD_DIR_.$fileName.'_small', 0777)) {
+                        } elseif (!chmod(_PS_UPLOAD_DIR_.$fileName, Tools::applyUmask(0777)) || !chmod(_PS_UPLOAD_DIR_.$fileName.'_small', Tools::applyUmask(0777))) {
                             $errors[] = Tools::displayError('An error occurred during the image upload process.');
                         } else {
                             $this->context->cart->addPictureToProduct((int) $product->id, (int) $customizationField['id_customization_field'], Product::CUSTOMIZE_FILE, $fileName);

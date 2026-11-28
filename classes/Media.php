@@ -686,7 +686,7 @@ class MediaCore
                 $content = '@charset "UTF-8";'."\n".$content;
                 $content = implode('', $importUrl).$content;
                 file_put_contents($cacheFilename, $content);
-                chmod($cacheFilename, 0777);
+                chmod($cacheFilename, Tools::applyUmask(0777));
             }
             $compressedCssFiles[$media] = $cacheFilename;
         }
@@ -843,7 +843,7 @@ class MediaCore
             }
 
             file_put_contents($compressedJsPath, $content);
-            chmod($compressedJsPath, 0777);
+            chmod($compressedJsPath, Tools::applyUmask(0777));
         }
 
         // rebuild the original js_files array

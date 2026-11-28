@@ -1353,6 +1353,19 @@ class ToolsCore
     }
 
     /**
+     * Returns the permission mode with the bits in _TB_UMASK_ removed, when that
+     * constant is defined. Use it for chmod(), which ignores the process umask.
+     *
+     * @param int $mode
+     *
+     * @return int
+     */
+    public static function applyUmask($mode)
+    {
+        return defined('_TB_UMASK_') ? ($mode & ~_TB_UMASK_) : $mode;
+    }
+
+    /**
      * Delete file
      *
      * @param string $file File path
